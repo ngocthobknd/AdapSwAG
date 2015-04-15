@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ASCII"?>
+<eu.telecombretagne.variability:Variability xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:eu.telecombretagne.variability="http://telecombretagne.eu/variability">
+  <variationPoints name="Client">
+    <associationType xsi:type="eu.telecombretagne.variability:Optional">
+      <variants name="Variable"/>
+    </associationType>
+  </variationPoints>
+  <variationPoints name="Server">
+    <associationType xsi:type="eu.telecombretagne.variability:Mandatory">
+      <variants name="Server1"/>
+      <variants name="Server2"/>
+    </associationType>
+  </variationPoints>
+  
+</eu.telecombretagne.variability:Variability>
