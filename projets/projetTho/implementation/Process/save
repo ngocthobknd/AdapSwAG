@@ -1,0 +1,1893 @@
+package test;
+
+
+
+import java.awt.BorderLayout;
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTree;
+import javax.swing.SwingConstants;
+
+
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeWillExpandListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.ExpandVetoException;
+import javax.swing.tree.TreePath;
+
+import javax.swing.tree.DefaultTreeModel;
+
+import javax.swing.tree.TreeCellRenderer;
+
+import test.CheckNodeTreeExample.NodeSelectionListener;
+
+
+
+public class TestTreeCheckBox {
+	JTree tree;
+	JSplitPane splitPane;
+	public TestTreeCheckBox(){
+		JCheckBox jchBox = new JCheckBox();
+		jchBox = null;
+		Icon iconsch=new ImageIcon(TestTreeCheckBox.class.getResource("..\\graphic\\icon\\computer.gif"));
+		DefaultMutableTreeNode root=  new DefaultMutableTreeNode(new IconData1(iconsch,false,"RootFeature"));
+		
+		
+		
+		
+		int i = 0;
+		Icon icon = new ImageIcon(TestTreeCheckBox.class.getResource("..\\graphic\\icon\\group.gif"));
+		JCheckBox jchBox1 = new JCheckBox();
+		DefaultMutableTreeNode vpNode =  new DefaultMutableTreeNode(new IconData1(icon,true,"Test"));
+		// add variation point to tree root
+		
+		
+		
+	
+		Icon icon2 = new ImageIcon(TestTreeCheckBox.class.getResource("..\\graphic\\icon\\group.gif"));
+		JCheckBox jchBox2 = new JCheckBox();
+		DefaultMutableTreeNode vpNode2 = new DefaultMutableTreeNode(new IconData1(icon2,true,"Test2"));
+		// add variation point to tree root
+		root.add(vpNode);
+		root.add(vpNode2);
+		
+		
+		DefaultTreeModel model = new DefaultTreeModel(root);
+		tree = new JTree(model);
+				
+		// action to expand and collapse
+		
+		tree.addTreeWillExpandListener(new TreeWillExpandListener()	{
+			public void treeWillExpand(TreeExpansionEvent e)  throws ExpandVetoException { 
+				
+			}
+			public void treeWillCollapse(TreeExpansionEvent e)	{
+				
+			}
+		});
+
+		
+		tree.addMouseListener(new NodeSelectionListener1(tree));
+		tree.getSelectionModel().addTreeSelectionListener(
+                                         new TreeSelectionListener()
+        {
+            public void valueChanged(TreeSelectionEvent e)
+            {
+               TreePath path = e.getNewLeadSelectionPath();
+               DefaultMutableTreeNode node = (DefaultMutableTreeNode)path.getLastPathComponent();
+               IconData1 parent ;
+               if (path.getPathCount() > 1) {
+            	   parent = (IconData1) node.getParent();
+               } else parent = (IconData1) node;
+               //System.out.println(parent.getString());
+               
+             //  IconData1 idb = (IconData1)node;
+               
+            }
+        });
+                                         
+              
+		IconCellRenderer1 renderer1 = new IconCellRenderer1();
+    	tree.setCellRenderer(renderer1); 
+    	JFrame fr = new JFrame();
+		
+		fr.add(tree);
+		fr.setSize(400,450);
+		fr.setVisible(true);
+		
+    }
+	
+	public static void main(String arg[]) {
+		
+		new TestTreeCheckBox();
+		
+	}
+}
+
+class IconCellRenderer1 implements TreeCellRenderer {
+    JPanel panel; int i = 0;
+	public IconCellRenderer1(){
+		 panel = new JPanel(new FlowLayout());
+	}
+	public Component getTreeCellRendererComponent(JTree tree,
+										            Object value,
+										            boolean selected,
+										            boolean expanded,
+										            boolean leaf,
+										            int row,
+										            boolean hasFocus) 
+	{
+		
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
+		IconData1 icondata1 = (IconData1)node.getUserObject();
+		panel.removeAll();
+		panel.setBackground(null);
+		if (icondata1.getSelected() == true) {
+			panel.add(new JCheckBox());
+		}
+		
+		panel.add(new JLabel(icondata1.getString(), icondata1.getIcon(), SwingConstants.CENTER));
+		
+		System.out.println(icondata1.getString()+i);
+		i++;
+		return panel;
+			
+	}
+	
+}
+class IconData1 extends DefaultMutableTreeNode {
+	 Icon   m_icon;
+	 boolean m_selected;
+	 String m_data;
+	 int    m_id;
+	  
+	public IconData1(Icon icon, boolean expandedIcon, String data)	{
+		this.m_icon = icon;
+		this.m_selected = expandedIcon;
+		this.m_data = data;
+		
+	}
+	public int getId() {
+		return m_id;
+	}
+	public Icon getIcon() { 
+		return m_icon;
+	}
+
+	
+	public String getString()	{ 
+		return m_data;
+  	}
+
+	
+	public boolean getSelected() {
+		return m_selected;
+	}
+	public void setSelected(boolean select) {
+		m_selected = select;
+	}
+	 public boolean isSelected() {
+		    return m_selected;
+	}
+}
+class NodeSelectionListener1 extends MouseAdapter {
+    JTree tree;
+    
+    NodeSelectionListener1(JTree tree) {
+      this.tree = tree;
+    }
+    
+    public void mouseClicked(MouseEvent e) {
+      int x = e.getX();
+      int y = e.getY();
+      int row = tree.getRowForLocation(x, y);
+      TreePath  path = tree.getPathForRow(row);
+      //TreePath  path = tree.getSelectionPath();
+      if (path != null) {
+    	  IconData1 node = (IconData1)path.getLastPathComponent();
+        boolean isSelected = ! (node.isSelected());
+        node.setSelected(isSelected);
+        
+        ((DefaultTreeModel) tree.getModel()).nodeChanged(node);
+        // I need revalidate if node is root.  but why?
+        if (row == 0) {
+          tree.revalidate();
+          tree.repaint();
+        }
+      }
+    }
+  }
+
+---------------------------------------------------
+----------------------------------------------------
+package test;
+
+
+
+import java.awt.BorderLayout;
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTree;
+import javax.swing.SwingConstants;
+
+
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeWillExpandListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.ExpandVetoException;
+import javax.swing.tree.TreePath;
+
+import javax.swing.tree.DefaultTreeModel;
+
+import javax.swing.tree.TreeCellRenderer;
+
+import test.CheckNodeTreeExample.NodeSelectionListener;
+
+
+
+public class TestTreeCheckBox {
+	JTree tree;
+	JSplitPane splitPane;
+	public TestTreeCheckBox(){
+		JCheckBox jchBox = new JCheckBox();
+		jchBox = null;
+		Icon iconsch=new ImageIcon(TestTreeCheckBox.class.getResource("..\\graphic\\icon\\computer.gif"));
+		DefaultMutableTreeNode root=  new DefaultMutableTreeNode(new IconData1("Leaf0",iconsch,false));
+		
+		
+		
+		
+		int i = 0;
+		Icon icon = new ImageIcon(TestTreeCheckBox.class.getResource("..\\graphic\\icon\\group.gif"));
+		JCheckBox jchBox1 = new JCheckBox();
+		DefaultMutableTreeNode vpNode =  new DefaultMutableTreeNode(new IconData1("Leaf1",icon,jchBox1, true));
+		// add variation point to tree root
+		
+		
+		
+	
+		Icon icon2 = new ImageIcon(TestTreeCheckBox.class.getResource("..\\graphic\\icon\\group.gif"));
+		
+		JCheckBox jchBox2 = new JCheckBox();
+		DefaultMutableTreeNode vpNode2 = new DefaultMutableTreeNode(new IconData1("Leaf2",icon2,jchBox1, false));
+		// add variation point to tree root
+		root.add(vpNode);
+		root.add(vpNode2);
+		
+		
+		DefaultTreeModel model = new DefaultTreeModel(root);
+		tree = new JTree(model);
+				
+		// action to expand and collapse
+		
+		tree.addTreeWillExpandListener(new TreeWillExpandListener()	{
+			public void treeWillExpand(TreeExpansionEvent e)  throws ExpandVetoException { 
+				
+			}
+			public void treeWillCollapse(TreeExpansionEvent e)	{
+				
+			}
+		});
+
+	          
+		IconCellRenderer1 renderer1 = new IconCellRenderer1();
+    	tree.setCellRenderer(renderer1); 
+        tree.putClientProperty("JTree.lineStyle", "Angled");
+
+        tree.addMouseListener(new NodeSelectionListener1(tree));
+
+    	JFrame fr = new JFrame();
+		
+		fr.add(tree);
+		fr.setSize(400,450);
+		fr.setVisible(true);
+		
+    }
+	
+	public static void main(String arg[]) {
+		
+		new TestTreeCheckBox();
+		
+	}
+}
+class NodeSelectionListener1 extends MouseAdapter {
+    JTree tree;
+    
+    NodeSelectionListener1(JTree tree) {
+      this.tree = tree;
+    }
+    
+    public void mouseClicked(MouseEvent e) {
+      int x = e.getX();
+      int y = e.getY();
+      int row = tree.getRowForLocation(x, y);
+      System.out.println(row);
+      
+      TreePath  path = tree.getPathForRow(row);
+      //TreePath  path = tree.getSelectionPath();
+      System.out.println(path.toString());
+    		  
+      if (path != null) {
+    	System.out.println(row+1);
+    	Object node = (Object)path.getLastPathComponent();
+    	
+    	System.out.println(node.toString()+"ok");
+    	
+    	/*
+    	boolean isSelected = ! (node.isSelected());
+        node.setSelected(isSelected);
+        if ( isSelected) {
+        	tree.expandPath(path);
+	    } else {
+	        tree.collapsePath(path);
+	    }
+        System.out.println(node.getJLabel().getText());
+        
+        // I need revalidate if node is root.  but why?
+        if (row == 0) {
+          tree.revalidate();
+          tree.repaint();
+        }*/
+      }
+    }
+  }
+
+
+
+
+class IconCellRenderer1 implements TreeCellRenderer {
+    JPanel panel; int i = 0;
+	public IconCellRenderer1(){
+		 panel = new JPanel(new FlowLayout());
+	}
+	public Component getTreeCellRendererComponent(JTree tree,
+										            Object value,
+										            boolean selected,
+										            boolean expanded,
+										            boolean leaf,
+										            int row,
+										            boolean hasFocus) 
+	{
+		
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
+		IconData1 icondata1 = (IconData1)node.getUserObject();
+		panel.removeAll();
+		panel.setBackground(null);
+		
+		if (icondata1.getJCheckBox() != null) {
+			icondata1.getJCheckBox().setSelected(icondata1.getSelected());
+			panel.add(icondata1.getJCheckBox());
+		}
+		String str = icondata1.getUserObject().toString();
+		System.out.println(str);
+		panel.add(new JLabel(str, icondata1.getIcon(), SwingConstants.LEFT));
+		
+		i++;
+		return panel;
+			
+	}
+	
+}
+class IconData1 extends DefaultMutableTreeNode {
+	protected Object object; 
+	Icon   m_icon;
+	 JCheckBox jCheckBox;
+	 boolean m_selected;
+	 
+	 int    m_id;
+	  
+	public IconData1(String object, Icon icon, boolean selected)	{
+		this(object, icon, null, selected);
+		
+	}
+	public IconData1(String object, Icon icon, JCheckBox jCheckBox, boolean selected)	{
+		super(object,true);
+		this.m_icon = icon;
+		this.jCheckBox = jCheckBox;
+		this.m_selected = selected;
+		
+	}
+	
+	public int getId() {
+		return m_id;
+	}
+	public Icon getIcon() { 
+		return m_icon;
+	}
+	public Object getObject(){
+		return object;
+		
+	}
+	public String toString1() { 
+		return object.toString();
+	}
+	public JCheckBox getJCheckBox() { 
+		return jCheckBox;
+	}
+	
+	public boolean getSelected() {
+		return m_selected;
+	}
+	public void setSelected(boolean select) {
+		m_selected = select;
+	}
+	 public boolean isSelected() {
+		    return m_selected;
+	}
+}
+
+class TreeObject extends Object{
+	JLabel lb = new JLabel();
+	public TreeObject(JLabel lb){
+		this.lb = lb;
+	}
+}
+-----------------
+==================
+package test;
+
+
+
+import java.awt.BorderLayout;
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.EventObject;
+
+
+
+import javax.swing.AbstractCellEditor;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTree;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+
+
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeWillExpandListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.ExpandVetoException;
+import javax.swing.tree.TreeCellEditor;
+import javax.swing.tree.TreePath;
+
+import javax.swing.tree.DefaultTreeModel;
+
+import javax.swing.tree.TreeCellRenderer;
+
+
+
+
+
+
+import test.CheckNodeTreeExample.NodeSelectionListener;
+
+
+
+public class TestTreeCheckBox {
+	JTree tree;
+	JSplitPane splitPane;
+	public TestTreeCheckBox(){
+		JCheckBox jchBox = new JCheckBox();
+		jchBox = null;
+	
+
+		Icon iconsch=new ImageIcon(TestTreeCheckBox.class.getResource("..\\graphic\\icon\\computer.gif"));
+		JLabel lb = new JLabel("root", iconsch, SwingConstants.RIGHT);
+		DefaultMutableTreeNode root=  new DefaultMutableTreeNode(new TreeNode(lb,jchBox,false));
+		
+		
+		
+		
+		int i = 0;
+		Icon icon = new ImageIcon(TestTreeCheckBox.class.getResource("..\\graphic\\icon\\group.gif"));
+		JLabel lb1 = new JLabel("leaf1", icon, SwingConstants.RIGHT);
+
+		JCheckBox jchBox1 = new JCheckBox();
+		jchBox1.setEnabled(true);
+		DefaultMutableTreeNode vpNode =  new DefaultMutableTreeNode(new TreeNode(lb1,jchBox1, false));
+		DefaultMutableTreeNode vpNode5 =  new DefaultMutableTreeNode(new TreeNode(lb1,jchBox1, false));
+		// add variation point to tree root
+		
+		
+		
+	
+		Icon icon2 = new ImageIcon(TestTreeCheckBox.class.getResource("..\\graphic\\icon\\group.gif"));
+		JLabel lb2 = new JLabel("leaf2", icon2, SwingConstants.RIGHT);
+		JCheckBox jchBox2 = new JCheckBox();
+		DefaultMutableTreeNode vpNode2 = new DefaultMutableTreeNode(new TreeNode(lb2,null, false));
+		// add variation point to tree root
+		Icon icon3 = new ImageIcon(TestTreeCheckBox.class.getResource("..\\graphic\\icon\\group.gif"));
+		JLabel lb3 = new JLabel("leaf3", icon3, SwingConstants.RIGHT);
+		JCheckBox jchBox3 = new JCheckBox();
+		DefaultMutableTreeNode vpNode3 = new DefaultMutableTreeNode(new TreeNode(lb3,jchBox3, true));
+		DefaultMutableTreeNode vpNode4 = new DefaultMutableTreeNode(new TreeNode(lb3,jchBox3, true));
+
+		vpNode2.add(vpNode);
+		vpNode2.add(vpNode5);
+		root.add(vpNode2);
+		root.add(vpNode3);
+		root.add(vpNode4);
+		
+		DefaultTreeModel model = new DefaultTreeModel(root);
+		tree = new JTree(model);
+				
+		// action to expand and collapse
+		
+		tree.addTreeWillExpandListener(new TreeWillExpandListener()	{
+			public void treeWillExpand(TreeExpansionEvent e)  throws ExpandVetoException { 
+				
+			}
+			public void treeWillCollapse(TreeExpansionEvent e)	{
+				
+			}
+		});
+
+	          
+		TreeNodeCellRenderer1 renderer1 = new TreeNodeCellRenderer1();
+    	tree.setCellRenderer(renderer1); 
+        tree.putClientProperty("JTree.lineStyle", "Angled");
+
+ //       tree.addMouseListener(new NodeSelectionListener1(tree));
+
+
+        tree.setCellEditor(new CheckNodeEditor(tree));
+        tree.setEditable(true);
+
+        
+    	JFrame fr = new JFrame();
+		
+		fr.add(tree);
+		fr.setSize(400,450);
+		fr.setVisible(true);
+		
+    }
+	
+	public static void main(String arg[]) {
+		
+		new TestTreeCheckBox();
+		
+	}
+}
+/*class NodeSelectionListener1 extends MouseAdapter {
+    JTree tree;
+    
+    NodeSelectionListener1(JTree tree) {
+      this.tree = tree;
+    }
+    
+    public void mouseClicked(MouseEvent e) {
+      int x = e.getX();
+      int y = e.getY();
+      int row = tree.getRowForLocation(x, y);
+      System.out.println(row);
+      
+      TreePath  path = tree.getPathForRow(row);
+      //TreePath  path = tree.getSelectionPath();
+      System.out.println(path.toString());
+    		  
+      if (path != null) {
+    	System.out.println(row+1);
+    	Object node = (Object)path.getLastPathComponent();
+    	
+    	
+    	
+    	boolean isSelected = ! (node.isSelected());
+        node.setSelected(isSelected);
+        if ( isSelected) {
+        	tree.expandPath(path);
+	    } else {
+	        tree.collapsePath(path);
+	    }
+        System.out.println(node.getJLabel().getText());
+        
+        // I need revalidate if node is root.  but why?
+        if (row == 0) {
+          tree.revalidate();
+          tree.repaint();
+        }
+      }
+    }
+  }
+*/
+
+
+
+class TreeNodeCellRenderer1 implements TreeCellRenderer {
+	TreeNode pTreeNode; int i = 0;
+    JLabel label;
+    JCheckBox checkBox;
+    boolean boo;
+    Color selectionBorderColor, selectionForeground, selectionBackground,
+    textForeground, textBackground;
+    
+	public TreeNodeCellRenderer1(){
+		 pTreeNode = new TreeNode();
+		 pTreeNode.setLayout(new FlowLayout());
+		 selectionBorderColor = UIManager.getColor("Tree.selectionBorderColor");
+		    selectionForeground = UIManager.getColor("Tree.selectionForeground");
+		    selectionBackground = UIManager.getColor("Tree.selectionBackground");
+		    textForeground = UIManager.getColor("Tree.textForeground");
+		    textBackground = UIManager.getColor("Tree.textBackground");
+	}
+	 protected TreeNode getLeafRenderer() {
+		    return pTreeNode;
+		  }
+	public Component getTreeCellRendererComponent(JTree tree,
+										            Object value,
+										            boolean selected,
+										            boolean expanded,
+										            boolean leaf,
+										            int row,
+										            boolean hasFocus) 
+	{
+		
+		System.out.println("getTreeCellRendererComponent");
+		pTreeNode.removeAll();
+		pTreeNode.setBackground(null);
+		//pTreeNode.setSelected(false);
+		pTreeNode.setEnabled(tree.isEditable());
+		if(selected){
+			pTreeNode.setBackground(selectionBackground);
+			//pTreeNode.setForeground(selectionForeground);
+			
+		}
+		/*DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
+		TreeNode icondata1 = (TreeNode)node.getUserObject();
+		
+		if (icondata1.getjCheckBox() != null) {
+			
+			icondata1.getjCheckBox().setSelected(icondata1.getSelected());
+			panel.setSelected(icondata1.getSelected());
+			
+			panel.add(icondata1.getjCheckBox());
+			panel.setjCheckBox(icondata1.getjCheckBox());
+		}*/
+		   
+		/*panel.add(icondata1.getjLabel());
+		panel.setjLabel(icondata1.getjLabel());*/
+		
+		if ((value != null) && (value instanceof DefaultMutableTreeNode)) {
+	        Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
+	        if (userObject instanceof TreeNode) {
+	        	TreeNode node1 = (TreeNode) userObject;
+	        	if (node1.getjCheckBox() != null) {
+	        		checkBox = node1.getjCheckBox();
+	        		
+	        		checkBox.setSelected(node1.getSelected());
+					pTreeNode.setSelected(node1.getSelected());
+					
+					
+		        	pTreeNode.add(checkBox);
+		        	pTreeNode.setjCheckBox(checkBox);
+	        	}
+	        	pTreeNode.add(node1.getjLabel());
+	    		pTreeNode.setjLabel(node1.getjLabel());
+	        }
+	        
+		}
+		
+		
+		return (TreeNode)pTreeNode;
+			
+	}
+	
+}
+class CheckNodeEditor extends AbstractCellEditor implements TreeCellEditor{
+	TreeNodeCellRenderer1 renderer = new TreeNodeCellRenderer1();
+	ChangeEvent changEvent =  null;
+	JTree tree;
+	TreeNode pn ;
+	public CheckNodeEditor(JTree tree) {
+		// TODO Auto-generated constructor stub
+		this.tree = tree;
+	}
+	@Override
+	public Object getCellEditorValue() {
+		// TODO Auto-generated method stub
+		pn= renderer.getLeafRenderer();
+		TreeNode ic = new TreeNode(pn.getjLabel(),pn.getjCheckBox(),pn.getSelected());
+	    System.out.println("getCellEditorValue");
+
+		return ic;
+	}
+	public boolean isCellEditable(EventObject event) {
+	    boolean returnValue = false;
+	    if (event instanceof MouseEvent) {
+	        MouseEvent mouseEvent = (MouseEvent) event;
+	        TreePath path = tree.getPathForLocation(mouseEvent.getX(), mouseEvent.getY());
+	        if (path != null) {
+	          Object node = path.getLastPathComponent();
+	          if ((node != null) && (node instanceof DefaultMutableTreeNode)) {
+	            DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
+	            Object userObject = treeNode.getUserObject();
+	            returnValue = ((treeNode.isLeaf()) && (userObject instanceof TreeNode));
+	          }
+	        }
+	      }
+
+	      return returnValue;
+	}
+
+	@Override
+	public Component getTreeCellEditorComponent(JTree tree, Object value,
+			boolean isSelected, boolean expanded, boolean leaf, int row) {
+		// TODO Auto-generated method stub
+		Component editor = (TreeNode)renderer.getTreeCellRendererComponent(tree, value,
+		        true, expanded, leaf, row, true);
+			
+		ItemListener itemListener = new ItemListener() {
+		        public void itemStateChanged(ItemEvent itemEvent) {
+		          
+		        	System.out.println("Chon");
+		        	//System.out.println(pn.getjLabel().getText()+"Item");
+		       //   if (pn.getSelected() == false)
+		        	  pn.setSelected(true);
+		        //  else pn.setSelected(false);
+		        	System.out.println(pn.getjLabel().getText());
+		        }
+		     };
+		    if (editor instanceof JPanel) {
+		    	(((TreeNode) editor).getjCheckBox()).addItemListener(itemListener);
+		      
+		    	((JPanel) editor).revalidate();
+		    }
+		    
+		    return editor;
+		 
+	}
+	
+}
+class TreeNode extends JPanel {
+	JLabel   jLabel;
+	JCheckBox jCheckBox;
+	boolean selected;
+	
+	public TreeNode(){
+		
+	}
+	public TreeNode(JLabel jLabel, JCheckBox jCheckBox, boolean selected)	{
+	
+		this.jLabel = jLabel;
+		this.jCheckBox = jCheckBox;
+		this.selected = selected;
+		
+	}
+	
+		
+	public JLabel getjLabel() {
+		return jLabel;
+	}
+
+	public void setjLabel(JLabel jLabel) {
+		this.jLabel = jLabel;
+	}
+
+	public JCheckBox getjCheckBox() {
+		return jCheckBox;
+	}
+
+	public void setjCheckBox(JCheckBox jCheckBox) {
+		this.jCheckBox = jCheckBox;
+	}
+
+	
+	public boolean getSelected() {
+		return selected;
+	}
+	public void setSelected(boolean select) {
+		selected = select;
+	}
+	 public boolean isSelected() {
+		    return selected;
+	}
+	
+}
+
+
+==============
+package graphic;
+
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.util.Enumeration;
+import java.util.EventObject;
+import java.util.Vector;
+
+import javax.swing.AbstractCellEditor;
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTree;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeWillExpandListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.ExpandVetoException;
+import javax.swing.tree.TreeCellEditor;
+import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+
+import model.ReadModel;
+
+import org.eclipse.emf.common.util.EList;
+import javax.swing.tree.TreePath;
+
+
+
+import eu.telecombretagne.variability.Association;
+import eu.telecombretagne.variability.Variability;
+import eu.telecombretagne.variability.Variant;
+import eu.telecombretagne.variability.VariationPoint;
+
+public class FeaturesTree {
+	public JTree tree;
+	JSplitPane splitPane;
+	JLabel label;
+	JCheckBox jchBox = new JCheckBox();
+	public FeaturesTree(Variability variability){
+		
+		EList <VariationPoint> variationPoints = variability.getVariationPoint();
+		int i = 0;
+		
+		Vector v_variationPoints = new NamedVector("Variability Model");
+		for (VariationPoint vp : variationPoints){
+			
+			EList <Association> associations = vp.getAssociationType();
+
+			// get association type name
+			String vpType = associations.get(0).eClass().getName();
+			
+			Vector v_variants = new Vector();
+			for (Association ass : associations) {
+				// get variant of variation point
+				EList <Variant> variants = ass.getVariant();
+				
+				int i_v = 0;
+				for (Variant v : variants) {
+					System.out.println("in Main --"+v.getName());
+					CheckBoxNode chk = new CheckBoxNode(v.getName(), false);
+					v_variants.addElement(chk);
+					
+					i_v++;
+					
+				}				
+			}
+			Vector va = new NamedVector(vp.getName()+":"+vpType,v_variants.toArray());
+			System.out.println("in Main --"+vp.getName());
+
+			v_variationPoints.addElement(va);
+			i++;
+		}
+		Object root[] = {v_variationPoints};
+		tree = new JTree(root);
+				
+		// action to expand and collapse
+		tree.addTreeWillExpandListener(new TreeWillExpandListener()	{
+			public void treeWillExpand(TreeExpansionEvent e)  throws ExpandVetoException { 
+				
+			}
+			public void treeWillCollapse(TreeExpansionEvent e)	{
+				
+			}
+		});
+
+		
+		tree.putClientProperty("JTree.lineStyle", "Angled");
+		CheckBoxNodeRenderer renderer = new CheckBoxNodeRenderer();
+		tree.setCellRenderer(renderer); 
+    	//tree.setShowsRootHandles(true);
+        tree.setCellEditor(new CheckBoxNodeEditor(tree));
+        tree.setEditable(true);
+    	for (int j = 0; j < tree.getRowCount(); j++) {
+            tree.expandRow(j);
+    	}
+    	
+        JScrollPane scrollPane = new JScrollPane(tree);
+
+    	JFrame fr = new JFrame();
+    	fr.getContentPane().add(scrollPane, BorderLayout.CENTER);
+		
+		
+		
+		
+		JPanel jPanel = new JPanel();
+		JButton jButton = new JButton("Refine models");
+		jButton.addActionListener(new ActionListener() {
+			
+		    @Override
+		    public void actionPerformed(ActionEvent arg0) {
+		        DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+
+
+		        DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+		        System.out.println(root.getChildAt(0).getChildAt(1));
+		        CheckBoxNode vty = (CheckBoxNode)root.getChildAt(0);
+		       
+		       // CheckBoxNode trNode =  (CheckBoxNode)root.getChildAt(0);
+		        
+		      // Enumeration e = trNode.breadthFirstEnumeration();
+		      /* while (e.hasMoreElements()) {
+		    	   CheckBoxNode node = (CheckBoxNode) e.nextElement();
+		       //System.out.println("Test");
+		       /*if (node.isSelected()) {
+		           TreeNode[] nodes = node.getPath();
+		            
+		           String str;
+		           str = "\n" + nodes[0].toString();
+		           for (int i = 1; i < nodes.length; i++) {
+		           System.out.println("/" + nodes[i].toString());
+		           }
+		              
+		        }*/
+		       // }
+		      }
+		});
+		jPanel.add(jButton);
+		
+		fr.getContentPane().add(jButton, BorderLayout.SOUTH);
+		
+		fr.setSize(400,450);
+		fr.setVisible(true);
+    	
+
+    	
+	}
+	
+	public static void main(String arg[]) {
+		
+		
+		ReadModel rd = new ReadModel();
+		new FeaturesTree(rd.variability);
+		
+		
+	}
+}
+
+
+class CheckBoxNodeRenderer implements TreeCellRenderer {
+	private JCheckBox leafRenderer = new JCheckBox();
+	private JLabel label = new JLabel();
+	
+
+  private DefaultTreeCellRenderer nonLeafRenderer = new DefaultTreeCellRenderer();
+
+  Color selectionBorderColor, selectionForeground, selectionBackground,
+      textForeground, textBackground;
+
+  protected JCheckBox getLeafRenderer() {
+    return leafRenderer;
+  }
+
+  public CheckBoxNodeRenderer() {
+	  
+    Font fontValue;
+    fontValue = UIManager.getFont("Tree.font");
+    if (fontValue != null) {
+      leafRenderer.setFont(fontValue);
+    }
+
+    selectionBorderColor = UIManager.getColor("Tree.selectionBorderColor");
+    selectionForeground = UIManager.getColor("Tree.selectionForeground");
+    selectionBackground = UIManager.getColor("Tree.selectionBackground");
+    textForeground = UIManager.getColor("Tree.textForeground");
+    textBackground = UIManager.getColor("Tree.textBackground");
+  }
+
+  public Component getTreeCellRendererComponent(JTree tree, Object value,
+      boolean selected, boolean expanded, boolean leaf, int row,
+      boolean hasFocus) {
+
+    Component returnValue;
+    String stringValue = tree.convertValueToText(value, selected,
+	          expanded, leaf, row, false);
+    
+    if (leaf) {
+
+	      
+	      //leafRenderer.setLayout(new FlowLayout());
+	     // leafRenderer.setIcon(new ImageIcon(CheckBoxNodeTreeSample.class.getResource("..\\graphic\\icon\\group.gif")));
+	      leafRenderer.setText(stringValue);
+	      leafRenderer.setSelected(false);
+	
+	      leafRenderer.setEnabled(tree.isEnabled());
+	
+	      if (selected) {
+	        leafRenderer.setForeground(selectionForeground);
+	        leafRenderer.setBackground(selectionBackground);
+	      } else {
+	        leafRenderer.setForeground(textForeground);
+	        leafRenderer.setBackground(textBackground);
+	      }
+	
+	      if ((value != null) && (value instanceof DefaultMutableTreeNode)) {
+	        Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
+	        if (userObject instanceof CheckBoxNode) {
+	          CheckBoxNode node = (CheckBoxNode) userObject;
+	          leafRenderer.setText(node.getText());
+	          leafRenderer.setSelected(node.isSelected());
+	        }
+	      }
+	      returnValue = leafRenderer;
+    } else {
+    	label.setText(stringValue);
+    	if (row == 0){
+    		//System.out.println(FeaturesTree.class.getResource(name).toString());
+    		//System.out.println(FeaturesTree.class.getResource(".\\icon\\computer.gif").toString());
+    	    	label.setIcon(new ImageIcon(FeaturesTree.class.getResource("..\\icons\\computer.gif")));
+    	}  else   	label.setIcon(new ImageIcon(FeaturesTree.class.getResource("..\\icons\\group.gif")));
+    	returnValue = label;      
+    }
+    return returnValue;
+  }
+}
+
+class CheckBoxNodeEditor extends AbstractCellEditor implements TreeCellEditor {
+
+  CheckBoxNodeRenderer renderer = new CheckBoxNodeRenderer();
+
+  ChangeEvent changeEvent = null;
+
+  JTree tree;
+
+  public CheckBoxNodeEditor(JTree tree) {
+    this.tree = tree;
+  }
+
+  public Object getCellEditorValue() {
+    JCheckBox checkbox = renderer.getLeafRenderer();
+    CheckBoxNode checkBoxNode = new CheckBoxNode(checkbox.getText(),checkbox.isSelected());
+    System.out.println(checkBoxNode.getText());
+
+    return checkBoxNode;
+  }
+
+  public boolean isCellEditable(EventObject event) {
+    boolean returnValue = false;
+    if (event instanceof MouseEvent) {
+      MouseEvent mouseEvent = (MouseEvent) event;
+      TreePath path = tree.getPathForLocation(mouseEvent.getX(), mouseEvent.getY());
+      if (path != null) {
+        Object node = path.getLastPathComponent();
+        if ((node != null) && (node instanceof DefaultMutableTreeNode)) {
+          DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
+          Object userObject = treeNode.getUserObject();
+          returnValue = ((treeNode.isLeaf()) && (userObject instanceof CheckBoxNode));
+        }
+      }
+    }
+
+    return returnValue;
+  }
+ 
+  public Component getTreeCellEditorComponent(JTree tree, Object value,
+      boolean selected, boolean expanded, boolean leaf, int row) {
+
+    Component editor = renderer.getTreeCellRendererComponent(tree, value,
+        true, expanded, leaf, row, true);
+
+    // editor always selected / focused
+    ItemListener itemListener = new ItemListener() {
+      public void itemStateChanged(ItemEvent itemEvent) {
+        if (stopCellEditing()) {
+          fireEditingStopped();
+        }
+      }
+    };
+    if (editor instanceof JCheckBox) {
+      ((JCheckBox) editor).addItemListener(itemListener);
+    }
+    return editor;
+  }
+}
+
+class CheckBoxNode extends DefaultMutableTreeNode{
+  String text;
+
+  boolean selected;
+
+  public CheckBoxNode(String text, boolean selected) {
+    this.text = text;
+    this.selected = selected;
+  }
+
+  public boolean isSelected() {
+    return selected;
+  }
+
+  public void setSelected(boolean newValue) {
+    selected = newValue;
+  }
+
+  public String getText() {
+    return text;
+  }
+
+  public void setText(String newValue) {
+    text = newValue;
+  }
+
+  public String toString() {
+    return getClass().getName() + "[" + text + "/" + selected + "]";
+  }
+}
+
+class NamedVector extends Vector {
+  String name;
+
+  public NamedVector(String name) {
+    this.name = name;
+  }
+
+  public NamedVector(String name, Object elements[]) {
+    this.name = name;
+    for (int i = 0, n = elements.length; i < n; i++) {
+      add(elements[i]);
+    }
+  }
+
+  public String toString() {
+    return "[" + name + "]";
+  }
+}
+
+=========package graphic;
+
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.util.Enumeration;
+import java.util.EventObject;
+import java.util.Vector;
+
+import javax.swing.AbstractCellEditor;
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextField;
+import javax.swing.JTree;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeWillExpandListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.ExpandVetoException;
+import javax.swing.tree.TreeCellEditor;
+import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+
+import model.ReadModel;
+
+import org.eclipse.emf.common.util.EList;
+import javax.swing.tree.TreePath;
+
+
+
+import eu.telecombretagne.variability.Association;
+import eu.telecombretagne.variability.Variability;
+import eu.telecombretagne.variability.Variant;
+import eu.telecombretagne.variability.VariationPoint;
+
+public class FeaturesTree {
+	public JTree tree;
+	JSplitPane splitPane;
+	JLabel label;
+	JCheckBox jchBox = new JCheckBox();
+	public FeaturesTree(Variability variability){
+		
+		EList <VariationPoint> variationPoints = variability.getVariationPoint();
+		int i = 0;
+		
+		Vector v_variationPoints = new NamedVector("Variability Model");
+		//CheckBoxNode [] v_variationPoints = new CheckBoxNode[100];
+		v_variationPoints[i] = new CheckBoxNode("variability model", false);
+		for (VariationPoint vp : variationPoints){
+			
+			EList <Association> associations = vp.getAssociationType();
+
+			// get association type name
+			String vpType = associations.get(0).eClass().getName();
+			
+			Vector v_variants = new Vector();
+			
+			for (Association ass : associations) {
+				// get variant of variation point
+				EList <Variant> variants = ass.getVariant();
+				
+				int i_v = 0;
+				for (Variant v : variants) {
+					System.out.println("in Main --"+v.getName());
+					CheckBoxNode chk = new CheckBoxNode(v.getName(), false);
+					v_variants.addElement(chk);
+					
+					i_v++;
+					
+				}				
+			}
+			Vector va = new NamedVector(vp.getName()+":"+vpType,v_variants.toArray());
+			System.out.println("in Main --"+vp.getName());
+
+			v_variationPoints.addElement(va);
+			i++;
+		}
+		Object root[] = {v_variationPoints};
+		tree = new JTree(root);
+				
+		// action to expand and collapse
+		tree.addTreeWillExpandListener(new TreeWillExpandListener()	{
+			public void treeWillExpand(TreeExpansionEvent e)  throws ExpandVetoException { 
+				
+			}
+			public void treeWillCollapse(TreeExpansionEvent e)	{
+				
+			}
+		});
+
+		
+		tree.putClientProperty("JTree.lineStyle", "Angled");
+		CheckBoxNodeRenderer renderer = new CheckBoxNodeRenderer();
+		tree.setCellRenderer(renderer); 
+    	//tree.setShowsRootHandles(true);
+        tree.setCellEditor(new CheckBoxNodeEditor(tree));
+        tree.setEditable(true);
+    	for (int j = 0; j < tree.getRowCount(); j++) {
+            tree.expandRow(j);
+    	}
+    	
+        JScrollPane scrollPane = new JScrollPane(tree);
+
+    	JFrame fr = new JFrame();
+    	// add panel which contains tree to frame
+    	fr.getContentPane().add(scrollPane, BorderLayout.CENTER);
+		
+		// panel load model
+    	JPanel  loadPanel = new JPanel();
+		loadPanel.setLayout(new BorderLayout());
+		JLabel jlbLoad = new JLabel("Varibility Model ");
+		loadPanel.add(jlbLoad,BorderLayout.WEST);
+		JTextField  loadTextField = new JTextField("../My.variability");
+		loadPanel.add(loadTextField, BorderLayout.CENTER);
+		JButton btLoadModel = new JButton("Load");
+		loadPanel.add(btLoadModel, BorderLayout.EAST);
+		
+		
+		fr.getContentPane().add(loadPanel, BorderLayout.NORTH);
+		
+		JPanel jPanel = new JPanel();
+		JButton jButton = new JButton("Refine models");
+		jButton.addActionListener(new ActionListener() {
+			
+		    @Override
+		    public void actionPerformed(ActionEvent arg0) {
+		        DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+
+
+		        DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+		        
+		        System.out.println(((CheckBoxNode)root.getChildAt(0).getChildAt(1)).getText());
+		      //  CheckBoxNode vty = (CheckBoxNode)root.getChildAt(0);
+		       
+		       // CheckBoxNode trNode =  (CheckBoxNode)root.getChildAt(0);
+		        
+		      // Enumeration e = trNode.breadthFirstEnumeration();
+		      /* while (e.hasMoreElements()) {
+		    	   CheckBoxNode node = (CheckBoxNode) e.nextElement();
+		       //System.out.println("Test");
+		       /*if (node.isSelected()) {
+		           TreeNode[] nodes = node.getPath();
+		            
+		           String str;
+		           str = "\n" + nodes[0].toString();
+		           for (int i = 1; i < nodes.length; i++) {
+		           System.out.println("/" + nodes[i].toString());
+		           }
+		              
+		        }*/
+		       // }
+		      }
+		});
+		jPanel.add(jButton);
+		
+		fr.getContentPane().add(jButton, BorderLayout.SOUTH);
+		
+		fr.setSize(400,450);
+		fr.setVisible(true);
+    	
+
+    	
+	}
+	
+	public static void main(String arg[]) {
+		
+		
+		ReadModel rd = new ReadModel();
+		new FeaturesTree(rd.variability);
+		
+		
+	}
+}
+
+
+class CheckBoxNodeRenderer implements TreeCellRenderer {
+	private JCheckBox leafRenderer = new JCheckBox();
+	private JLabel label = new JLabel();
+	
+
+  private DefaultTreeCellRenderer nonLeafRenderer = new DefaultTreeCellRenderer();
+
+  Color selectionBorderColor, selectionForeground, selectionBackground,
+      textForeground, textBackground;
+
+  protected JCheckBox getLeafRenderer() {
+    return leafRenderer;
+  }
+
+  public CheckBoxNodeRenderer() {
+	  
+    Font fontValue;
+    fontValue = UIManager.getFont("Tree.font");
+    if (fontValue != null) {
+      leafRenderer.setFont(fontValue);
+    }
+
+    selectionBorderColor = UIManager.getColor("Tree.selectionBorderColor");
+    selectionForeground = UIManager.getColor("Tree.selectionForeground");
+    selectionBackground = UIManager.getColor("Tree.selectionBackground");
+    textForeground = UIManager.getColor("Tree.textForeground");
+    textBackground = UIManager.getColor("Tree.textBackground");
+  }
+
+  public Component getTreeCellRendererComponent(JTree tree, Object value,
+      boolean selected, boolean expanded, boolean leaf, int row,
+      boolean hasFocus) {
+
+    Component returnValue;
+    String stringValue = tree.convertValueToText(value, selected,
+	          expanded, leaf, row, false);
+    
+    if (leaf) {
+
+	      leafRenderer.setText(stringValue);
+	      leafRenderer.setSelected(false);
+	
+	      leafRenderer.setEnabled(tree.isEnabled());
+	
+	      if (selected) {
+	        leafRenderer.setForeground(selectionForeground);
+	        leafRenderer.setBackground(selectionBackground);
+	      } else {
+	        leafRenderer.setForeground(textForeground);
+	        leafRenderer.setBackground(textBackground);
+	      }
+	
+	      if ((value != null) && (value instanceof DefaultMutableTreeNode)) {
+	        Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
+	        if (userObject instanceof CheckBoxNode) {
+	          CheckBoxNode node = (CheckBoxNode) userObject;
+	          leafRenderer.setText(node.getText());
+	          leafRenderer.setSelected(node.isSelected());
+	        }
+	      }
+	      returnValue = leafRenderer;
+    } else {
+    	label.setText(stringValue);
+    	if (row == 0){
+    		//System.out.println(FeaturesTree.class.getResource(name).toString());
+    		//System.out.println(FeaturesTree.class.getResource(".\\icon\\computer.gif").toString());
+    	    label.setIcon(new ImageIcon(FeaturesTree.class.getResource("..\\icons\\computer.gif")));
+    	}  else   	label.setIcon(new ImageIcon(FeaturesTree.class.getResource("..\\icons\\group.gif")));
+    	returnValue = label;      
+    }
+    return returnValue;
+  }
+}
+
+class CheckBoxNodeEditor extends AbstractCellEditor implements TreeCellEditor {
+
+  CheckBoxNodeRenderer renderer = new CheckBoxNodeRenderer();
+
+  ChangeEvent changeEvent = null;
+
+  JTree tree;
+
+  public CheckBoxNodeEditor(JTree tree) {
+    this.tree = tree;
+  }
+
+  public Object getCellEditorValue() {
+    JCheckBox checkbox = renderer.getLeafRenderer();
+    CheckBoxNode checkBoxNode = new CheckBoxNode(checkbox.getText(),checkbox.isSelected());
+    System.out.println(checkBoxNode.getText());
+
+    return checkBoxNode;
+  }
+
+  public boolean isCellEditable(EventObject event) {
+    boolean returnValue = false;
+    if (event instanceof MouseEvent) {
+      MouseEvent mouseEvent = (MouseEvent) event;
+      TreePath path = tree.getPathForLocation(mouseEvent.getX(), mouseEvent.getY());
+      if (path != null) {
+        Object node = path.getLastPathComponent();
+        if ((node != null) && (node instanceof DefaultMutableTreeNode)) {
+          DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) node;
+          Object userObject = treeNode.getUserObject();
+          returnValue = ((treeNode.isLeaf()) && (userObject instanceof CheckBoxNode));
+        }
+      }
+    }
+
+    return returnValue;
+  }
+ 
+  public Component getTreeCellEditorComponent(JTree tree, Object value,
+      boolean selected, boolean expanded, boolean leaf, int row) {
+
+    Component editor = renderer.getTreeCellRendererComponent(tree, value,
+        true, expanded, leaf, row, true);
+
+    // editor always selected / focused
+    ItemListener itemListener = new ItemListener() {
+      public void itemStateChanged(ItemEvent itemEvent) {
+        if (stopCellEditing()) {
+          fireEditingStopped();
+        }
+      }
+    };
+    if (editor instanceof JCheckBox) {
+      ((JCheckBox) editor).addItemListener(itemListener);
+    }
+    return editor;
+  }
+}
+
+class CheckBoxNode extends DefaultMutableTreeNode{
+  String text;
+
+  boolean selected;
+
+  public CheckBoxNode(String text, boolean selected) {
+    this.text = text;
+    this.selected = selected;
+  }
+
+  public boolean isSelected() {
+    return selected;
+  }
+
+  public void setSelected(boolean newValue) {
+    selected = newValue;
+  }
+
+  public String getText() {
+    return text;
+  }
+
+  public void setText(String newValue) {
+    text = newValue;
+  }
+
+  public String toString() {
+    return getClass().getName() + "[" + text + "/" + selected + "]";
+  }
+}
+
+class NamedVector extends Vector {
+  String name;
+
+  public NamedVector(String name) {
+    this.name = name;
+  }
+
+  public NamedVector(String name, Object elements[]) {
+    this.name = name;
+    for (int i = 0, n = elements.length; i < n; i++) {
+      add(elements[i]);
+    }
+  }
+
+  public String toString() {
+    return "[" + name + "]";
+  }
+}
+
+
+========================SAVE MODEL=====================
+package model;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EFactory;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.EcoreFactory;
+import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMLResourceFactoryImpl;
+
+import eu.telecombretagne.variability.Association;
+import eu.telecombretagne.variability.Variability;
+import eu.telecombretagne.variability.VariabilityFactory;
+import eu.telecombretagne.variability.VariabilityPackage;
+import eu.telecombretagne.variability.Variant;
+import eu.telecombretagne.variability.VariationPoint;
+import eu.telecombretagne.variability.impl.VariabilityFactoryImpl;
+import eu.telecombretagne.variability.impl.VariationPointImpl;
+import eu.telecombretagne.variability.provider.VariationPointItemProvider;
+import eu.telecombretagne.variability.util.VariabilityAdapterFactory;
+
+public class DeleteModelObject {
+	public Resource resource;
+	public Variability variability;
+
+	public DeleteModelObject(String [] selectedVariants){
+	
+		VariabilityPackage.eINSTANCE.eClass();
+		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+		try {
+			//registry extent part of model file ex: *.variability
+			reg.getExtensionToFactoryMap().put("variability", new XMIResourceFactoryImpl());
+		} catch (Exception e){		
+		}
+		ResourceSet resourceSet = new ResourceSetImpl();
+		URI uri = URI.createFileURI("My.variability");
+		resource = resourceSet.getResource(uri, true);
+		
+		variability = (Variability) resource.getContents().get(0);
+		
+		
+		// get list variation points
+		EList <VariationPoint> variationPoints = variability.getVariationPoints();
+		
+		/*System.out.println("in ReadModel.java");
+		for (VariationPoint vp : variationPoints) {
+			
+			System.out.println(vp.getName());
+			EList <Association> associations = vp.getAssociationType();
+			for (Association ass : associations) {
+				// get variant of variation point
+				EList <Variant> variants = ass.getVariants();
+				for (Variant v : variants) {
+					System.out.println("--"+v.getName());
+					
+				}
+			}
+		}*/
+		
+		/*
+		* Instantiate EcoreFactory
+		*/
+		
+		VariabilityFactory variabilityCoreFactory = VariabilityFactory.eINSTANCE;
+		/*
+		* Create EClass instance to model BookStore class
+		*/
+		
+		
+		VariabilityPackage variabilityEPackage = variabilityCoreFactory.getVariabilityPackage();
+		VariabilityFactory variabilityFactoryInstance = variabilityEPackage.getVariabilityFactory();
+		
+		/*
+		* Create EClass instance to model Book class
+		*/
+		Variability variabilityEClass = variabilityCoreFactory.createVariability();
+		EObject variabilityObject = variabilityFactoryInstance.create(variabilityEClass.eClass());
+		EReference refVariability =  variabilityEPackage.getVariability_VariationPoints();
+		
+		
+		VariationPoint variationPointEClass = variabilityCoreFactory.createVariationPoint();
+		EObject variationPointObject = variabilityFactoryInstance.create(variationPointEClass.eClass());
+		EReference refVariationPoint = variabilityEPackage.getVariationPoint_AssociationType();
+		
+		
+		
+		Association associationEClass = variabilityCoreFactory.createAssociation();
+		EObject associationObject = variabilityFactoryInstance.create(associationEClass.eClass());
+		EReference refAssociation = variabilityEPackage.getAssociation_Variants();
+		
+		Variant variantEClass = variabilityCoreFactory.createVariant();
+		EObject variantObject = variabilityFactoryInstance.create(variantEClass.eClass());
+		
+		List lnkLst = new LinkedList();
+		
+		
+		for (VariationPoint vp : variationPoints) {
+			boolean isAdded = false;
+			variationPointEClass = vp;
+			/*variationPointEClass.setName(vp.getName());
+			variationPointEClass.setIsMandatory(vp.isIsMandatory());
+			variationPointEClass.setRationale(vp.getRationale());
+			variationPointEClass.setState(vp.isState());
+			*/
+			
+			System.out.println(vp.getName());
+			EList <Association> associations = vp.getAssociationType();
+			for (Association ass : associations) {
+				//variationPointObject.eSet(variationPointEClass., "abv");				
+				
+				associationEClass = ass;
+				EList <Variant> variants = ass.getVariants();
+				for (Variant v : variants) {
+					if (checkStringInArray(v.getName(), selectedVariants)){
+						variantEClass = v;
+						System.out.println("--"+v.getName());
+						isAdded = true;
+						((List) associationEClass.eGet(variantEClass.eContainmentFeature())).add(variantEClass);
+					}
+					
+				}
+				((List) variationPointEClass.eGet(associationEClass.eContainmentFeature())).add(associationEClass);
+			}
+			if (isAdded) lnkLst.add(variationPointEClass);
+			
+		}
+		
+		
+		((List) variabilityObject.eGet(variationPointEClass.eContainmentFeature())).addAll(lnkLst);
+		
+		
+		/*
+		* Read/Get the values of bookObject attributes
+		*/
+		ResourceSet newResourceSet = new ResourceSetImpl();
+		newResourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(
+		    "*", new  XMLResourceFactoryImpl());
+
+		Resource newResource = newResourceSet.createResource(URI.createURI("library.xml"));
+		newResource.getContents().add(variabilityObject);
+
+		/*
+		* Save the resource using OPTION_SCHEMA_LOCATION save option toproduce 
+		* xsi:schemaLocation attribute in the document
+		*/
+		Map options = new HashMap();
+		options.put(XMLResource.OPTION_SCHEMA_LOCATION, Boolean.TRUE);
+		if (newResource.getURI() != null) {
+			System.out.println("test");
+		}
+		
+		try{
+		     newResource.save(options);
+		     
+		   }catch (IOException e) {
+		     e.printStackTrace();
+		   }
+		
+		
+		
+		
+	}
+	
+	boolean checkStringInArray(String str, String [] strArray) {
+		boolean contains = false; 
+		for (int i = 0; i < strArray.length; i++) {
+
+	        if (strArray[i].equals(str)) {
+	            contains = true;
+	            break;
+	        }
+		}
+		return contains;
+	}
+	public static void main (String arg[]){
+		String [] strArray = {"RMI", "Files"};
+		DeleteModelObject tb = new DeleteModelObject(strArray);
+	}
+
+}
+
+================
+
+		/*
+		* Instantiate EcoreFactory
+		*/
+		
+		VariabilityFactory variabilityCoreFactory = VariabilityFactory.eINSTANCE;
+		/*
+		* Create EClass instance to model BookStore class
+		*/
+		
+		
+		VariabilityPackage variabilityEPackage = variabilityCoreFactory.getVariabilityPackage();
+		VariabilityFactory variabilityFactoryInstance = variabilityEPackage.getVariabilityFactory();
+		
+		/*
+		* Create EClass instance to model Book class
+		*/
+		Variability variabilityEClass = variabilityCoreFactory.createVariability();
+		
+		EObject variabilityObject = variabilityFactoryInstance.create(variabilityEClass.eClass());
+		
+		EReference refVariability =  variabilityEPackage.getVariability_VariationPoints();
+		
+		
+		VariationPoint variationPointEClass = variabilityCoreFactory.createVariationPoint();
+		
+		
+		EReference refVariationPoint = variabilityEPackage.getVariationPoint_AssociationType();
+		
+		
+		
+		Association associationEClass = variabilityCoreFactory.createAssociation();
+		
+		EReference refAssociation = variabilityEPackage.getAssociation_Variants();
+		
+		
+		
+		
+		//List lstVariationPoint = new LinkedList();
+		
+		//boolean check;
+		for (VariationPoint vp : variationPoints) {
+			EObject variationPointObject = variabilityFactoryInstance.create(variationPointEClass.eClass());
+			//check = false;
+			//System.out.println(vp.getName());
+			
+			EList <Association> associations = vp.getAssociationType();
+			
+			//List lstAssociation = new LinkedList();
+			variationPointEClass = vp;
+			
+			for (Association ass : associations) {
+				EObject associationObject = variabilityFactoryInstance.create(associationEClass.eClass());	
+				
+				EList <Variant> variants = ass.getVariants();
+				List lstSelectedVariantEClass = new LinkedList();
+				List lstSelectedVariantEObject = new LinkedList();
+				
+				associationEClass = ass;
+				
+				for (Variant v : variants) {
+					
+					Variant variantEClass = variabilityCoreFactory.createVariant();
+					EObject variantObject = variabilityFactoryInstance.create(variantEClass.eClass());
+					//((List)associationEClass.eGet(variantEClass.eContainmentFeature())).add(variantEClass);
+					variantObject = v;
+					variantEClass = v;
+					//System.out.println(v.getName());
+					
+					if (checkStringInArray(v.getName(),selectedVariants)) { 
+						lstSelectedVariantEClass.add(v);
+						lstSelectedVariantEObject.add(v);
+						System.out.println(v.getName());
+					}
+					((List)associationEClass.eGet(variantEClass.eContainmentFeature())).add(variantEClass);
+				}
+				((List)associationObject.eGet(refAssociation)).addAll(lstSelectedVariantEObject);
+					
+				
+				((List)variationPointEClass.eGet(associationEClass.eContainmentFeature())).add(associationEClass);
+				((List)variationPointObject.eGet(refVariationPoint)).add(associationObject);
+					
+					
+					
+					//lstVariationPoint.add(lstAssociation);				
+				
+			}
+			
+			//
+			((List)variabilityObject.eGet(refVariability)).add(variationPointObject);
+			//((List)variabilityEClass.eGet(variationPointEClass.eContainmentFeature())).add(variationPointEClass);
+		}
+		
+		=====================
+		OPEN DIALOG
+		
+		/*JFileChooser entriesChooser = new JFileChooser();
+		    	entriesChooser.setCurrentDirectory(entriesChooser.getCurrentDirectory());
+		    	entriesChooser.setDialogType(JFileChooser.OPEN_DIALOG);
+		    	entriesChooser.setDialogTitle("Select Model file");
+		    	entriesChooser.setMultiSelectionEnabled(true);
+		    	entriesChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		    	
+		    	if (entriesChooser.showDialog(null, "Select") == JFileChooser.APPROVE_OPTION) {
+		    		String str_file = entriesChooser.getSelectedFile().toPath().toString();
+		    		System.out.println("chon file:"+str_file);
+		    		loadTextField.setText(str_file);
+		    	}*/
+	=============================================
