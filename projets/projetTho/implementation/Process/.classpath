@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="org.eclipse.emf.ecore_2.7.0.v20120127-1122.jar"/>
 	<classpathentry kind="lib" path="org.eclipse.emf.edit_2.7.2.v20120130-0943.jar"/>
 	<classpathentry kind="lib" path="org.eclipse.emf.ecore.xmi_2.7.0.v20120127-1122.jar"/>
+	<classpathentry kind="lib" path="cvl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,10 +1,9 @@
 package test.checkBoxTree;
 
-import graphic.FeaturesTree;
-
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
+import test.FeaturesTree;
 import model.ReadModel;
 
 public class TestTreeLoadModel {
