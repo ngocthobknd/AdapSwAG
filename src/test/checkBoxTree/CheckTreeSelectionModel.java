@@ -132,7 +132,6 @@ public class CheckTreeSelectionModel extends DefaultTreeSelectionModel{
                 toggleRemoveSelection(path); 
         } 
     } 
- 
     // if any ancestor node of given path is selected then unselect it 
     //  and selection all its descendants except given path and descendants. 
     // otherwise just unselect the given path 

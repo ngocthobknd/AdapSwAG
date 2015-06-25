@@ -166,8 +166,7 @@ class CheckRenderer extends JPanel implements TreeCellRenderer {
   public Component getTreeCellRendererComponent(JTree tree, Object value,
       boolean isSelected, boolean expanded, boolean leaf, int row,
       boolean hasFocus) {
-    String stringValue = tree.convertValueToText(value, isSelected,
-        expanded, leaf, row, hasFocus);
+    String stringValue = tree.convertValueToText(value, isSelected, expanded, leaf, row, hasFocus);
     setEnabled(tree.isEnabled());
     check.setSelected(((CheckNode) value).isSelected());
     label.setFont(tree.getFont());

@@ -11,15 +11,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import tree.VSpecTree;
 import model.ReadModel;
 import graphic.*;
 public class GUI {
-	public TreeContainer frTree;
+	public VSpecTree frTree;
 	public static JFrame fr;
 	String str_file="My.variability";
 	public GUI() {
 		fr = new JFrame();
-		frTree = new TreeContainer();
+		frTree = new VSpecTree();
 		fr.add(frTree);
 		fr.setSize(400,450);
 		fr.setVisible(true);

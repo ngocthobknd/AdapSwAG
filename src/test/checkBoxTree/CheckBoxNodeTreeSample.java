@@ -90,7 +90,7 @@ class CheckBoxNodeRenderer implements TreeCellRenderer {
       boolean hasFocus) {
 
     Component returnValue;
-    if (leaf) {
+  //  if (leaf) {
 
       String stringValue = tree.convertValueToText(value, selected,
           expanded, leaf, row, false);
@@ -117,10 +117,10 @@ class CheckBoxNodeRenderer implements TreeCellRenderer {
         }
       }
       returnValue = leafRenderer;
-    } else {
-      returnValue = nonLeafRenderer.getTreeCellRendererComponent(tree,
-          value, selected, expanded, leaf, row, hasFocus);
-    }
+//    } else {
+//      returnValue = nonLeafRenderer.getTreeCellRendererComponent(tree,
+//          value, selected, expanded, leaf, row, hasFocus);
+//    }
     return returnValue;
   }
 }
