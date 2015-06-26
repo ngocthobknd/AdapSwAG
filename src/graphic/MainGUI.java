@@ -62,33 +62,39 @@ public class MainGUI {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 920, 718);
+		frame.setBounds(100, 100, 1077, 762);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new GridLayout(1, 1, 0, 0));
 		
 		JSplitPane splitPane = new JSplitPane();
-		splitPane.setResizeWeight(0.2);
+		splitPane.setContinuousLayout(true);
+		splitPane.setResizeWeight(0.5);
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		frame.getContentPane().add(splitPane);
 		
-		JPanel pnModel = new JPanel();
-		splitPane.setRightComponent(pnModel);
-		pnModel.setLayout(new BorderLayout(0, 0));
+		JPanel pnBase = new JPanel();
+		splitPane.setRightComponent(pnBase);
+		pnBase.setLayout(new BorderLayout(0, 0));
 		
 		JSplitPane splitPane_2 = new JSplitPane();
-		splitPane_2.setResizeWeight(0.8);
-		pnModel.add(splitPane_2, BorderLayout.CENTER);
+		splitPane_2.setResizeWeight(0.7);
+		pnBase.add(splitPane_2, BorderLayout.CENTER);
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(new TitledBorder(null, "Base model", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		splitPane_2.setLeftComponent(panel_1);
 		panel_1.setLayout(new GridLayout(0, 1, 0, 0));
+		   
+		   
+		   
+	    BaseArchitecture m = new BaseArchitecture();
+	  //  scrollPane.setViewportView(m);
+	    m.setDoubleBuffered(true);
+	    JScrollPane scrollPane = new JScrollPane(m);
+	    panel_1.add(scrollPane);
 		
-		 BaseArchitecture m = new BaseArchitecture();
-		 m.setDoubleBuffered(true);
-		 panel_1.add(m); 
-		
-		JPanel panel_2 = new JPanel();
+	    
+	    JPanel panel_2 = new JPanel();
 		panel_2.setBorder(new TitledBorder(null, "Adaptive architecture", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		splitPane_2.setRightComponent(panel_2);
 		panel_2.setLayout(new GridLayout(0, 1, 0, 0));
@@ -97,13 +103,13 @@ public class MainGUI {
 		
 		
 		
-		JPanel pnBase = new JPanel();
-		splitPane.setLeftComponent(pnBase);
-		pnBase.setLayout(new GridLayout(0, 1, 0, 0));
+		JPanel pnVmodel = new JPanel();
+		splitPane.setLeftComponent(pnVmodel);
+		pnVmodel.setLayout(new GridLayout(0, 1, 0, 0));
 		
 		JSplitPane splitPane_1 = new JSplitPane();
 		splitPane_1.setResizeWeight(0.3);
-		pnBase.add(splitPane_1);
+		pnVmodel.add(splitPane_1);
 		
 		JPanel pnVSpec = new JPanel();
 		pnVSpec.setBorder(new TitledBorder(null, "VSpec tree", TitledBorder.LEADING, TitledBorder.TOP, null, null));

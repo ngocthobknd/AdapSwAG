@@ -35,6 +35,9 @@ public class VSpecTree extends JPanel {
 	JTree tree ;
 	private Resource resource;
 
+	/*
+	 * procedure for getting all nodes in a VSpec
+	 */
 	public Node getNode(VSpec vSpec) {
 		String type = vSpec.getClass().getSimpleName().substring(0, vSpec.getClass().getSimpleName().length()-4);
 		String groupMultiplicity;
@@ -61,7 +64,7 @@ public class VSpecTree extends JPanel {
 		} catch (Exception e){
 		}
 		ResourceSet resourceSet = new ResourceSetImpl();
-		URI uri = URI.createFileURI("model.cvl");
+		URI uri = URI.createFileURI("model//model.cvl");
 		resource = resourceSet.getResource(uri, true);
 		//get root of variability model 
 		VPackage vPackage = (VPackage) resource.getContents().get(0);

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fractal.ecore:Definition xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:fractal.ecore="http://org.ow2.fractal/f4e/fractal.ecore/1.0.0">
+  <subComponents name="Client" definition="">
+    <interfaces name="r" signature=""/>
+    <interfaces name="s" signature=""/>
+    <interfaces name="ss" signature=""/>
+  </subComponents>
+  <subComponents name="Server1">
+  	<interfaces name="r1" signature=""/>
+    <interfaces name="s1" role="server"/>
+  </subComponents>
+  <subComponents name="Server2">
+    
+    <interfaces name="s2" role="server"/>
+  </subComponents>
+  <subComponents name="Reconfigurator">
+    <interfaces name="r" role="client"/>
+  </subComponents>
+  <bindings client="Client" server="Server1" clientInterface="//@subComponents.0/@interfaces.0" serverInterface="//@subComponents.1/@interfaces.0"/>
+  <bindings client="Client" server="Server2" clientInterface="//@subComponents.0/@interfaces.1" serverInterface="//@subComponents.2/@interfaces.0"/>
+  <bindings client="Server1" server="Server2" clientInterface="//@subComponents.1/@interfaces.1" serverInterface="//@subComponents.2/@interfaces.0"/>
+</fractal.ecore:Definition>
