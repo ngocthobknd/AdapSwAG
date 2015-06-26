@@ -67,7 +67,7 @@ public class ResolutionTree extends JPanel {
 		} catch (Exception e){
 		}
 		ResourceSet resourceSet = new ResourceSetImpl();
-		URI uri = URI.createFileURI("resolution.cvl");
+		URI uri = URI.createFileURI("model//resolution.cvl");
 		resource = resourceSet.getResource(uri, true);
 		//get root of variability model 
 		ChoiceResolution vSpec = (ChoiceResolution) resource.getContents().get(0);
