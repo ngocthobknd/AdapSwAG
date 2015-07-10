@@ -11,7 +11,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.ow2.fractal.f4e.fractal.Attribute;
 import org.ow2.fractal.f4e.fractal.Component;
 import org.ow2.fractal.f4e.fractal.Definition;
 import org.ow2.fractal.f4e.fractal.FractalFactory;
@@ -22,7 +21,6 @@ import tree.VSpecTree;
 import cvl.ObjectExistence;
 import cvl.ObjectHandle;
 import cvl.ObjectSubstitution;
-import cvl.ParametricSlotAssignment;
 import cvl.VSpec;
 import cvl.VariationPoint;
 
@@ -107,6 +105,11 @@ public class GenerateProduct {
 			}
 			if (destinationCompnent != null)
 			destinationDefinition.getSubComponents().add(destinationCompnent);
+			
+			
+			/*
+			 * TODO: add connection - binding
+			 */
 		}
 
 		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
@@ -140,10 +143,7 @@ public class GenerateProduct {
 	public VariationPoint returnVP(String vSpec, ArrayList<VariationPoint> VPList) {
 		VariationPoint vp = null;
 		for (int i = 0; i < VPList.size(); i++) {
-			//System.out.println(VPList.get(i).getBindingVSpec().getName()+"+"+vSpec.getName());
-			
 			if (VPList.get(i).getBindingVSpec().getName().equals(vSpec)) {
-				//System.out.println("ok");
 				return VPList.get(i);
 			}
 		}

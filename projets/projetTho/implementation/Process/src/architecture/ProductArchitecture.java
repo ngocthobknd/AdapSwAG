@@ -229,9 +229,11 @@ public class ProductArchitecture extends JPanel {
 	int componentNumber;
 	ArrayList<String> listAttributes = new ArrayList<String>();
 	public ProductArchitecture() {
-		/*
-	     * declare components list
-	     */
+		this.loadModel();
+		addMouseMotionListener(ma);
+		addMouseListener(ma);
+	}
+	public void loadModel() {
 		FractalPackage.eINSTANCE.eClass();
 		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
 		try {
@@ -280,8 +282,6 @@ public class ProductArchitecture extends JPanel {
 				connectionList.add(cs);
 			//} else System.out.println("can not find server interface");
 		}
-		addMouseMotionListener(ma);
-		addMouseListener(ma);
 	}
 	Component getComponent(EList<Component> compponentList, String componentName) {
 		Component component = null;

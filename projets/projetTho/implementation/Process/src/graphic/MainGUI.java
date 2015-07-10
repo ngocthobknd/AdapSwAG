@@ -72,7 +72,7 @@ public class MainGUI {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 1077, 762);
+		frame.setBounds(0, 0, 1920, 1080);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new GridLayout(1, 1, 0, 0));
 		
@@ -111,7 +111,7 @@ public class MainGUI {
 		
 		//final ProductArchitecture pa = new ProductArchitecture();
 		
-		ProductArchitecture prA = new ProductArchitecture();
+		final ProductArchitecture prA = new ProductArchitecture();
 		final JScrollPane scrollPane_2 = new JScrollPane(prA);
 		panel_2.add(scrollPane_2);
 	
@@ -207,8 +207,8 @@ public class MainGUI {
 			public void actionPerformed(ActionEvent paramActionEvent) {
 				GenerateProduct generateProduct = new GenerateProduct();
 				generateProduct.createFractalModel(generateProduct.readArchitecture(""));
-				ProductArchitecture prA = new ProductArchitecture();
-				scrollPane_2.add(prA);
+				prA.loadModel();
+				prA.revalidate();
 				scrollPane_2.revalidate();
 				
 				

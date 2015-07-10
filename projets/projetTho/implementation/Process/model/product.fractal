@@ -11,5 +11,4 @@
   <subComponents name="Server2">
     <interfaces name="s2" role="server"/>
   </subComponents>
-  <subComponents name="Temp"/>
 </fractal.ecore:Definition>
