@@ -1,12 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<fractal.ecore:Definition xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:fractal.ecore="http://org.ow2.fractal/f4e/fractal.ecore/1.0.0" name="Architecture">
+<?xml version="1.0" encoding="ASCII"?>
+<fractal.ecore:Definition xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:fractal.ecore="http://org.ow2.fractal/f4e/fractal.ecore/1.0.0" name="productArchitecture">
   <subComponents name="Client" definition="">
     <interfaces name="r" signature=""/>
     <interfaces name="s" signature="" role="server"/>
     <attribute name="synchrone" value="null"/>
-  </subComponents>
-  <subComponents name="Server">
-    <interfaces name="s" role="server"/>
   </subComponents>
   <subComponents name="Server1">
     <interfaces name="s1" signature="" role="server"/>
@@ -15,5 +12,4 @@
     <interfaces name="s2" role="server"/>
   </subComponents>
   <subComponents name="Temp"/>
-  <bindings client="Client" server="Server" clientInterface="//@subComponents.0/@interfaces.0" serverInterface="//@subComponents.1/@interfaces.0"/>
 </fractal.ecore:Definition>

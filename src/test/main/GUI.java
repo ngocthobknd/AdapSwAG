@@ -11,8 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import test.model.ReadModel;
 import tree.VSpecTree;
-import model.ReadModel;
 import graphic.*;
 public class GUI {
 	public VSpecTree frTree;

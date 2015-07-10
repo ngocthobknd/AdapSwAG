@@ -4,7 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 import test.FeaturesTree;
-import model.ReadModel;
+import test.model.ReadModel;
 
 public class TestTreeLoadModel {
 

@@ -1,6 +1,6 @@
 package test;
 
-import model.Temps;
+import test.model.Temps;
 
 public class Demo {
 

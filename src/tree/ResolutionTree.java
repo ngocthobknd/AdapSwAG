@@ -37,7 +37,7 @@ public class ResolutionTree extends JPanel {
 	private static final long serialVersionUID = 1L;
 	JTree tree ;
 	private Resource resource;
-	static ArrayList<String> decisionList = new ArrayList<String>();
+	public ArrayList<String> decisionList = new ArrayList<String>(); //list of decision
 
 	public ResolutionNode getNode(VSpecResolution vSpec) {
 		String type = vSpec.getClass().getSimpleName().substring(0, vSpec.getClass().getSimpleName().length()-4);
@@ -108,7 +108,7 @@ public class ResolutionTree extends JPanel {
 		//fr.setLayout(null);
 		// add panel which contains tree to frame
 		ResolutionTree frTree = new ResolutionTree();
-		for (String str : decisionList) System.out.println(str);
+		//for (String str : decisionList) System.out.println(str);
 		fr.add(frTree);
 		fr.setSize(400,450);
 		fr.setVisible(true);
