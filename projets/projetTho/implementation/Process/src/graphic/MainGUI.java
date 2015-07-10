@@ -22,7 +22,7 @@ import javax.swing.JButton;
 import javax.swing.JTree;
 import javax.swing.JScrollPane;
 
-import transformation.GenerateProduct;
+import transformation.GeneratingProductArchitecture;
 import tree.ResolutionTree;
 import tree.VSpecTree;
 
@@ -204,7 +204,7 @@ public class MainGUI {
 		JButton btnNewButton_2 = new JButton("Generate adaptative architecture");
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent paramActionEvent) {
-				GenerateProduct generateProduct = new GenerateProduct();
+				GeneratingProductArchitecture generateProduct = new GeneratingProductArchitecture();
 				generateProduct.createFractalModel(generateProduct.readArchitecture(""));
 				prA.loadModel();
 				prA.revalidate();

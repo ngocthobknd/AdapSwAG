@@ -24,7 +24,7 @@ import cvl.ObjectSubstitution;
 import cvl.VSpec;
 import cvl.VariationPoint;
 
-public class GenerateProduct {
+public class GeneratingProductArchitecture {
 	 
 	
 	public static Definition readArchitecture(String file) {
@@ -108,7 +108,7 @@ public class GenerateProduct {
 			
 			
 			/*
-			 * TODO: add connection - binding
+			 * TODO: add connection between components - binding
 			 */
 		}
 
@@ -162,7 +162,7 @@ public class GenerateProduct {
 		return indexofvSpec;
 	}
 	public static void main(String [] args) {
-		new GenerateProduct().createFractalModel(readArchitecture(""));
+		new GeneratingProductArchitecture().createFractalModel(readArchitecture(""));
 	}
 
 }
