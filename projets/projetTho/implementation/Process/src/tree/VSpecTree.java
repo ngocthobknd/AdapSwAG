@@ -46,7 +46,9 @@ public class VSpecTree extends JPanel {
 	private static final long serialVersionUID = 1L;
 	JTree tree ;
 	private Resource resource;
-	public ArrayList<VariationPoint> VPList = new ArrayList<>();
+	public ArrayList<VSpec> vSpecList = new ArrayList<VSpec>(); //list of VSpec 
+	
+	public ArrayList<VariationPoint> VPList = new ArrayList<VariationPoint>();
 	public DefaultListModel listModel = new DefaultListModel(); //variation points in JList 
 	/*
 	 * procedure for getting all nodes in a VSpec
@@ -54,9 +56,13 @@ public class VSpecTree extends JPanel {
 	public Node getNode(VSpec vSpec) {
 		String type = vSpec.getClass().getSimpleName().substring(0, vSpec.getClass().getSimpleName().length()-4);
 		String groupMultiplicity;
+		
+		//System.out.println(vSpec.getName());
+		vSpecList.add(vSpec);
+		
 		if (vSpec.getGroupMultiplicity() != null) {
 			groupMultiplicity = "[" + vSpec.getGroupMultiplicity().getLower() +","+vSpec.getGroupMultiplicity().getUpper() + "]" ;
-			System.out.println(groupMultiplicity);
+			//System.out.println(groupMultiplicity);
 		} else groupMultiplicity = ""; 
 		Node node = new Node(vSpec.getName(),type, groupMultiplicity, "","",true);
 		
@@ -103,6 +109,7 @@ public class VSpecTree extends JPanel {
 		
 		//list variation points
 		for (int i = 1; i < packageElement.size(); i++) {
+			//System.out.println(packageElement.size());
 			VariationPoint vp = (VariationPoint)packageElement.get(i);
 			VPList.add(vp);
 			if (vp instanceof ObjectExistence) {
@@ -137,6 +144,7 @@ public class VSpecTree extends JPanel {
 		//fr.setLayout(null);
 		// add panel which contains tree to frame
 		VSpecTree frTree = new VSpecTree();
+		//for (VSpec str : vSpecList) System.out.println(str.getName());
 		fr.add(frTree);
 		fr.setSize(400,450);
 		fr.setVisible(true);
@@ -164,7 +172,6 @@ class NodeSelectionListener extends MouseAdapter {
 		    
       }
       TreePath  path1 = tree.getSelectionPath();
-      System.out.println(path1.toString());
     }
   }
 
@@ -179,12 +186,6 @@ class NodeRenderer extends JPanel implements TreeCellRenderer {
 	protected JCheckBox getChkBoxRenderer() {
 		return chk_leafRenderer;
 	}
-//	protected JTextField getTxtRenderer() {
-//		return txt_leafRenderer;
-//	}
-//	protected JPanel getJPanel(){
-//		return this;
-//	}
 	protected int getTypeRenderer() {
 		return 0;
 	}

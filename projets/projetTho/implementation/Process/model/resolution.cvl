@@ -20,4 +20,8 @@
     </child>
     <resolvedChoice href="model.cvl#//@packageElement.0/@child.1"/>
   </child>
+  <child xsi:type="cvl:ChoiceResolution" name="Temp" decision="false">
+    <resolvedVSpec xsi:type="cvl:Choice" href="model.cvl#//@packageElement.0/@child.2"/>
+    <resolvedChoice href="model.cvl#//@packageElement.0/@child.2"/>
+  </child>
 </cvl:ChoiceResolution>

@@ -1,4 +1,4 @@
-package model;
+package test.model;
 
 public class Temps {
 	 	public Temps() {

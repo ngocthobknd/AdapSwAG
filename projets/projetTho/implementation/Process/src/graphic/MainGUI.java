@@ -30,11 +30,17 @@ import javax.swing.JTextField;
 import javax.swing.JEditorPane;
 
 import architecture.BaseArchitecture;
+import architecture.ProductArchitecture;
 
 import java.awt.Canvas;
 
 import javax.swing.JList;
 import javax.swing.AbstractListModel;
+
+import model.GenerateProduct;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class MainGUI {
 
@@ -70,17 +76,17 @@ public class MainGUI {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new GridLayout(1, 1, 0, 0));
 		
-		JSplitPane splitPane = new JSplitPane();
+		final JSplitPane splitPane = new JSplitPane();
 		splitPane.setContinuousLayout(true);
 		splitPane.setResizeWeight(0.5);
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		frame.getContentPane().add(splitPane);
 		
-		JPanel pnBase = new JPanel();
+		final JPanel pnBase = new JPanel();
 		splitPane.setRightComponent(pnBase);
 		pnBase.setLayout(new BorderLayout(0, 0));
 		
-		JSplitPane splitPane_2 = new JSplitPane();
+		final JSplitPane splitPane_2 = new JSplitPane();
 		splitPane_2.setResizeWeight(0.7);
 		pnBase.add(splitPane_2, BorderLayout.CENTER);
 		
@@ -98,14 +104,17 @@ public class MainGUI {
 	    panel_1.add(scrollPane);
 		
 	    
-	    JPanel panel_2 = new JPanel();
+	    final JPanel panel_2 = new JPanel();
 		panel_2.setBorder(new TitledBorder(null, "Adaptive architecture", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		splitPane_2.setRightComponent(panel_2);
 		panel_2.setLayout(new GridLayout(0, 1, 0, 0));
 		
+		//final ProductArchitecture pa = new ProductArchitecture();
 		
-		
-		
+		ProductArchitecture prA = new ProductArchitecture();
+		final JScrollPane scrollPane_2 = new JScrollPane(prA);
+		panel_2.add(scrollPane_2);
+	
 		
 		JPanel pnVmodel = new JPanel();
 		splitPane.setLeftComponent(pnVmodel);
@@ -194,6 +203,25 @@ public class MainGUI {
 		pnCtrl.add(btnVerifyConsistency);
 		
 		JButton btnNewButton_2 = new JButton("Generate adaptative architecture");
+		btnNewButton_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent paramActionEvent) {
+				GenerateProduct generateProduct = new GenerateProduct();
+				generateProduct.createFractalModel(generateProduct.readArchitecture(""));
+				ProductArchitecture prA = new ProductArchitecture();
+				scrollPane_2.add(prA);
+				scrollPane_2.revalidate();
+				
+				
+				panel_2.revalidate();
+				splitPane_2.revalidate();
+				pnBase.revalidate();
+				splitPane.revalidate();
+				frame.dispose();
+				MainGUI window = new MainGUI();
+				window.frame.setVisible(true);
+				
+			}
+		});
 		pnCtrl.add(btnNewButton_2);
 		
 		JMenuBar menuBar = new JMenuBar();

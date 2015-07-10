@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.AbstractCellEditor;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -42,14 +41,12 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import model.ReadModel;
-import model.WriteModel;
-
 import org.eclipse.emf.common.util.EList;
 
 import test.main.GUI;
+import test.model.ReadModel;
+import test.model.WriteModel;
 import utils.StringHandle;
-
 import eu.telecombretagne.variability.Association;
 import eu.telecombretagne.variability.DynamicVariationPoint;
 import eu.telecombretagne.variability.StaticVariationPoint;
