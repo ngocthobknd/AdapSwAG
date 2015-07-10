@@ -22,6 +22,7 @@ import javax.swing.JButton;
 import javax.swing.JTree;
 import javax.swing.JScrollPane;
 
+import transformation.GenerateProduct;
 import tree.ResolutionTree;
 import tree.VSpecTree;
 
@@ -36,8 +37,6 @@ import java.awt.Canvas;
 
 import javax.swing.JList;
 import javax.swing.AbstractListModel;
-
-import model.GenerateProduct;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
