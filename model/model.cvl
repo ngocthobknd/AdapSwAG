@@ -11,7 +11,7 @@
       <child xsi:type="cvl:Choice" name="server1" resolutionTime="" availabilityTime="runtime" defaultResolution="true"/>
       <child xsi:type="cvl:Choice" name="server2" resolutionTime="" availabilityTime="runtime"/>
     </child>
-    <child xsi:type="cvl:Choice" name="Temp" availabilityTime="runtime"/>
+    <child xsi:type="cvl:Choice" name="Temp" availabilityTime="design"/>
   </packageElement>
   <packageElement xsi:type="cvl:ObjectExistence" name="ClientVP" bindingVSpec="//@packageElement.0/@child.0" bindingChoice="//@packageElement.0/@child.0">
     <optionalObject MOFRef="Architecture.Client"/>
