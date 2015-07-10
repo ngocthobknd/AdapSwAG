@@ -27,6 +27,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.ow2.fractal.f4e.fractal.Attribute;
 import org.ow2.fractal.f4e.fractal.Binding;
 import org.ow2.fractal.f4e.fractal.Component;
 import org.ow2.fractal.f4e.fractal.Definition;
@@ -46,7 +47,8 @@ class ComponentShape extends Rectangle {
 	public int x, y;
 	int width, height;
 	String name;
-	public ComponentShape(int x, int y, int width, int height, int requestNumber, int offerNumber, String name) {
+	EList<Attribute> attributes;
+	public ComponentShape(int x, int y, int width, int height, int requestNumber, int offerNumber, String name, EList<Attribute> attributes) {
 		/*
 		 * x,y are position of component
 		 * arcNumber is request number of component
@@ -63,6 +65,7 @@ class ComponentShape extends Rectangle {
 		this.requestNumber = requestNumber;
 		this.offerNumber = offerNumber;
 		this.name = name;
+		this.attributes = attributes;
 		rect = new Rectangle(x+35, y, width, height);
 		for (int i = 0; i < requestNumber; i++) {
 			Arc2D.Float arc = new Arc2D.Float(x+width+55, y + (height/(requestNumber+1))*(i+1)-7,15, 15,90, 180, 0);
@@ -150,6 +153,15 @@ class ComponentShape extends Rectangle {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+	public EList<Attribute> getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(EList<Attribute> attributes) {
+		this.attributes = attributes;
+	}
+	
 }
 class ConnectionShape {
 	String client;
@@ -215,6 +227,7 @@ public class BaseArchitecture extends JPanel {
 	ComponentShape cp;
 	int x=100,y=100;
 	int componentNumber;
+	ArrayList<String> listAttributes = new ArrayList<String>();
 	public BaseArchitecture() {
 		/*
 	     * declare components list
@@ -231,7 +244,6 @@ public class BaseArchitecture extends JPanel {
 		Resource resource = resourceSet.getResource(uri, true);
 		//get root of variability model 
 		Definition definition = (Definition) resource.getContents().get(0);
-		//System.out.println(definition.toString());
 		EList<Component> compponentList = definition.getSubComponents();
 		this.componentNumber = compponentList.size();
 		for (int i = 0; i < compponentList.size(); i++) {
@@ -242,8 +254,11 @@ public class BaseArchitecture extends JPanel {
 				if (interfaces.get(j).getRole().name().equals("CLIENT") || interfaces.get(j).getRole().name() == null) requestNumber += 1;
 				if (interfaces.get(j).getRole().name().equals("SERVER")) offerNumber += 1;
 			}
+			
+			EList<Attribute> attributeList = compponentList.get(i).getAttribute();
+		
 			//System.out.println(requestNumber +","+offerNumber);
-			cp = new ComponentShape(x + i*150, y+i*80, 100, 60, requestNumber, offerNumber, compponentList.get(i).getName());
+			cp = new ComponentShape(x + i*150, y+i*80, 100, 60, requestNumber, offerNumber, compponentList.get(i).getName(), attributeList);
 			rectList.add(cp);
 		}
 		
@@ -260,9 +275,10 @@ public class BaseArchitecture extends JPanel {
 			String server = bindingList.get(i).getServer();
 			Interface serverInterface =  bindingList.get(i).getServerInterface();
 			int serverInterfaceOrder = offerInterfaceOrder(compponentList, server, serverInterface .getName());
-			
-			ConnectionShape cs = new ConnectionShape(client, clientInterface, clientInterfaceOrder, server, serverInterface, serverInterfaceOrder);
-			connectionList.add(cs);
+			//if (serverInterfaceOrder > 0) {
+				ConnectionShape cs = new ConnectionShape(client, clientInterface, clientInterfaceOrder, server, serverInterface, serverInterfaceOrder);
+				connectionList.add(cs);
+			//} else System.out.println("can not find server interface");
 		}
 		addMouseMotionListener(ma);
 		addMouseListener(ma);
@@ -314,12 +330,25 @@ public class BaseArchitecture extends JPanel {
 		 * read components list and paint them in graphic 
 		 */
 		for (int j = 0; j < componentNumber; j++) {
+			//draw rect
 			g2d.draw(rectList.get(j).getRect());
-			g2d.drawString(rectList.get(j).getName(), rectList.get(j).getRect().x + 10, rectList.get(j).getRect().y + 10);
-		    for (int i = 0; i < rectList.get(j).getRequestList().size(); i++) {
+			
+			
+			g2d.drawString(rectList.get(j).getName(), rectList.get(j).getRect().x + 30, rectList.get(j).getRect().y + 10);
+		    
+			for (int i = 0; i < rectList.get(j).getAttributes().size(); i++) {
+				g2d.drawString(rectList.get(j).getAttributes().get(i).getName() + "=" + rectList.get(j).getAttributes().get(i).getValue(), rectList.get(j).getRect().x , rectList.get(j).getRect().y + 10*(i+2));
+			}
+			
+			
+		    
+			
+			//draw arc
+			for (int i = 0; i < rectList.get(j).getRequestList().size(); i++) {
 		    	g2d.draw(rectList.get(j).getRequestList().get(i));
 		    	g2d.draw(rectList.get(j).getLineArcList().get(i));
 		    }
+			//draw interface -circle
 		    for (int i = 0; i < rectList.get(j).getCircleList().size(); i++) {
 		        g2d.draw(rectList.get(j).getCircleList().get(i));
 		    	g2d.draw(rectList.get(j).getLineCircleList().get(i));
@@ -333,7 +362,7 @@ public class BaseArchitecture extends JPanel {
 			ConnectionShape cs = connectionList.get(i);
 			String client = cs.getClient();
 			String server = cs.getServer();
-			System.out.println(client+":"+server);
+			//System.out.println(client+":"+server);
 			int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 			
 			for (int j = 0; j < componentNumber; j++) {
@@ -348,18 +377,6 @@ public class BaseArchitecture extends JPanel {
 			}
 			g2d.drawLine(x1, y1, x2, y2);
 		}
-		
-//		//connect from 1 to 2
-//		int y1 = (int) rectList.get(0).getRequestList().get(0).y + 7;
-//		int x2 = (int) rectList.get(1).getCircleList().get(0).x;
-//		int y2 = (int) rectList.get(1).getCircleList().get(0).y + 7;
-//		g2d.drawLine(x1, y1, x2, y2);
-//		//connect from 2 to 3
-//		x1 = (int) rectList.get(1).getRequestList().get(0).x;
-//		y1 = (int) rectList.get(1).getRequestList().get(0).y + 7;
-//		x2 = (int) rectList.get(2).getCircleList().get(0).x;
-//		y2 = (int) rectList.get(2).getCircleList().get(0).y + 7;
-//		g2d.drawLine(x1, y1, x2, y2);
   }
   public Dimension getPreferredSize() {
       return new Dimension(3000, 1000);

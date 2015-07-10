@@ -3,6 +3,7 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -36,11 +37,12 @@ public class ResolutionTree extends JPanel {
 	private static final long serialVersionUID = 1L;
 	JTree tree ;
 	private Resource resource;
+	static ArrayList<String> decisionList = new ArrayList<String>();
 
 	public ResolutionNode getNode(VSpecResolution vSpec) {
 		String type = vSpec.getClass().getSimpleName().substring(0, vSpec.getClass().getSimpleName().length()-4);
 		String resolved = null;
-		System.out.println(type);
+		//System.out.println(type);
 		if (type.equals("ChoiceResolution")) {
 			resolved = ""+((ChoiceResolution) vSpec).isDecision();
 		}else if (type.equals("VariableValueAssignment")) {
@@ -48,16 +50,18 @@ public class ResolutionTree extends JPanel {
 		} else {
 			resolved = ""+((VInstance)vSpec).getNumber();
 		}
-		
 
 		ResolutionNode node = new ResolutionNode(vSpec.getName(),type, resolved,true);
+		decisionList.add(node.getResolved());
 		if (vSpec.getChild().size() > 0)
 			for (int i=0; i<vSpec.getChild().size(); i++) {
 				VSpecResolution vSpecChild = vSpec.getChild().get(i); 
 				node.add(getNode(vSpecChild));
+				//listNode.add(getNode(vSpecChild).getResolved());
 			}
 		return node;
 	}
+	
 	public ResolutionTree() {
 		cvlPackage.eINSTANCE.eClass();
 		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
@@ -79,10 +83,10 @@ public class ResolutionTree extends JPanel {
 	    tree = new JTree(root);
 		tree.putClientProperty("JTree.lineStyle", "Angled");
 
-		NodeRenderer1 renderer = new NodeRenderer1();
+		ResolutionNodeRenderer renderer = new ResolutionNodeRenderer();
 		tree.setCellRenderer(renderer); 
 		expandAllNodes(tree, 0, tree.getRowCount());
-		tree.addMouseListener(new NodeSelectionListener1(tree));
+		tree.addMouseListener(new ResolutionNodeSelectionListener(tree));
 		
 		JScrollPane scrollPane = new JScrollPane(tree);
 		//scrollPane.setViewportView(tree);
@@ -104,16 +108,17 @@ public class ResolutionTree extends JPanel {
 		//fr.setLayout(null);
 		// add panel which contains tree to frame
 		ResolutionTree frTree = new ResolutionTree();
+		for (String str : decisionList) System.out.println(str);
 		fr.add(frTree);
 		fr.setSize(400,450);
 		fr.setVisible(true);
 	}
 }
 
-class NodeSelectionListener1 extends MouseAdapter {
+class ResolutionNodeSelectionListener extends MouseAdapter {
     JTree tree;
     
-    NodeSelectionListener1(JTree tree) {
+    ResolutionNodeSelectionListener(JTree tree) {
       this.tree = tree;
     }
     
@@ -131,16 +136,16 @@ class NodeSelectionListener1 extends MouseAdapter {
 		    
       }
       TreePath  path1 = tree.getSelectionPath();
-      System.out.println(path1.toString());
+      //System.out.println(path1.toString());
     }
   }
 
-class NodeRenderer1 extends JPanel implements TreeCellRenderer {
+class ResolutionNodeRenderer extends JPanel implements TreeCellRenderer {
 	private JCheckBox chk_leafRenderer = new JCheckBox();
 	private JTextField txt_leafRenderer = new JTextField("       ");
 	private JLabel lbl_Node = new JLabel();
 
-	public NodeRenderer1() {
+	public ResolutionNodeRenderer() {
 		add(lbl_Node);
 	}
 	protected JCheckBox getChkBoxRenderer() {
@@ -168,8 +173,9 @@ class NodeRenderer1 extends JPanel implements TreeCellRenderer {
 			
 		}
 	}
-}
 
+}
+@SuppressWarnings("serial")
 class ResolutionNode extends DefaultMutableTreeNode {
 	String name;
 	String type;

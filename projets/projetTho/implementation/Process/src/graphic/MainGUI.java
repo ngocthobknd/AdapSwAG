@@ -13,6 +13,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
@@ -31,6 +32,9 @@ import javax.swing.JEditorPane;
 import architecture.BaseArchitecture;
 
 import java.awt.Canvas;
+
+import javax.swing.JList;
+import javax.swing.AbstractListModel;
 
 public class MainGUI {
 
@@ -114,10 +118,10 @@ public class MainGUI {
 		JPanel pnVSpec = new JPanel();
 		pnVSpec.setBorder(new TitledBorder(null, "VSpec tree", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		splitPane_1.setLeftComponent(pnVSpec);
-		pnVSpec.setLayout(new BorderLayout(0, 0));
+		pnVSpec.setLayout(new GridLayout(0, 1, 0, 0));
 		
 		JPanel pnTree = new JPanel();
-		pnVSpec.add(pnTree, BorderLayout.CENTER);
+		pnVSpec.add(pnTree);
 		pnTree.setLayout(new BorderLayout(0, 0));
 	
 	//	JTree tree = new JTree();
@@ -140,12 +144,17 @@ public class MainGUI {
 		pnLoad.add(btnNewButton_1);
 		
 		JPanel pnControl = new JPanel();
-		pnControl.setBorder(new TitledBorder(null, "Control", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		pnVSpec.add(pnControl, BorderLayout.SOUTH);
+		pnControl.setBorder(new TitledBorder(null, "Variation Points", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		pnVSpec.add(pnControl);
 		pnControl.setLayout(new BorderLayout(0, 0));
 		
-		JButton btnNewButton = new JButton("Deduce a base model");
-		pnControl.add(btnNewButton);
+		JScrollPane scrollPane_1 = new JScrollPane();
+		pnControl.add(scrollPane_1, BorderLayout.CENTER);
+		DefaultListModel model = tree.listModel;
+		JList list = new JList(model);
+		
+		
+		scrollPane_1.setViewportView(list);
 		
 		JPanel pnResolutionTree = new JPanel();
 		pnResolutionTree.setBorder(new TitledBorder(null, "Resolution tree", TitledBorder.LEADING, TitledBorder.TOP, null, null));

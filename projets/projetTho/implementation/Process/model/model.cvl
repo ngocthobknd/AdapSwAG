@@ -1,53 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cvl:VPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cvl="http:///cvl.ecore" name="variability">
   <packageElement xsi:type="cvl:Choice" name="Service" resolutionTime="" isImpliedByParent="true">
-    <child xsi:type="cvl:Choice" name="Server" resolutionTime="" availabilityTime="runtime" isImpliedByParent="true">
-      <groupMultiplicity upper="1" lower="1"/>
-      <child xsi:type="cvl:Choice" name="server1" availabilityTime="runtime" defaultResolution="true">
-        <child xsi:type="cvl:Choice" name="Server1.1">
-          <child xsi:type="cvl:Choice" name="Server1.1.1"/>
-        </child>
-      </child>
-      <child xsi:type="cvl:Choice" name="server2" resolutionTime=""/>
-    </child>
     <child xsi:type="cvl:Choice" name="Client" resolutionTime="" isImpliedByParent="true">
       <child xsi:type="cvl:Variable" name="synchrone" resolutionTime="">
         <type href="type.cvl#/"/>
       </child>
     </child>
-    <child xsi:type="cvl:VClassifier" name="Secirity">
-      <groupMultiplicity upper="5" lower="1"/>
-      <child xsi:type="cvl:Choice" name="MD5"/>
+    <child xsi:type="cvl:Choice" name="Server" resolutionTime="" availabilityTime="runtime" isImpliedByParent="true">
+      <groupMultiplicity upper="1" lower="1"/>
+      <child xsi:type="cvl:Choice" name="server1" resolutionTime="" availabilityTime="runtime" defaultResolution="true"/>
+      <child xsi:type="cvl:Choice" name="server2" resolutionTime=""/>
     </child>
   </packageElement>
-  <packageElement xsi:type="cvl:ParametricSlotAssignment" name="VPClient" bindingVSpec="//@packageElement.0/@child.1/@child.0" bindingVariable="//@packageElement.0/@child.1/@child.0" slotIdentifier="">
-    <slotOwner MOFRef="base.baseModel.Client"/>
+  <packageElement xsi:type="cvl:ObjectExistence" name="ClientVP" bindingVSpec="//@packageElement.0/@child.0" bindingChoice="//@packageElement.0/@child.0">
+    <optionalObject MOFRef="Architecture.Client"/>
   </packageElement>
-  <packageElement xsi:type="cvl:ObjectSubstitution" name="VPServer1" bindingVSpec="//@packageElement.0/@child.0/@child.0" bindingChoice="//@packageElement.0/@child.0/@child.0">
-    <placementObject MOFRef="base.baseModel.Server"/>
-    <replacementObject MOFRef="base.baseModel.Server1"/>
+  <packageElement xsi:type="cvl:ParametricSlotAssignment" name="setValue" bindingVSpec="//@packageElement.0/@child.0/@child.0" bindingVariable="//@packageElement.0/@child.0/@child.0" slotIdentifier="">
+    <slotOwner MOFRef="Architecture.Client.synchrone"/>
   </packageElement>
-  <packageElement xsi:type="cvl:AdaptorVariationPoint" name="CreateRelayServer" bindingVSpec="//@packageElement.0/@child.0/@child.1" bindingChoice="//@packageElement.0/@child.0/@child.1">
-    <replacementObject MOFRef="base.baseModel.Server2"/>
-    <placementObject MOFRef="base.baseModel.Server"/>
+  <packageElement xsi:type="cvl:ObjectSubstitution" name="Server1VP" bindingVSpec="//@packageElement.0/@child.1/@child.0" bindingChoice="//@packageElement.0/@child.1/@child.0">
+    <placementObject MOFRef="Architecture.Server"/>
+    <replacementObject MOFRef="Architecture.Server1"/>
   </packageElement>
-  <packageElement xsi:type="cvl:BCLConstraint" name="constraint1" context="//@packageElement.0">
-    <expression xsi:type="cvl:OperationCallExp" operation="logImplies">
-      <argument xsi:type="cvl:VSpecRef" vSpec="//@packageElement.0/@child.0/@child.1"/>
-      <argument xsi:type="cvl:OperationCallExp" operation="eq">
-        <argument xsi:type="cvl:VSpecRef" vSpec="//@packageElement.0/@child.1/@child.0"/>
-        <argument xsi:type="cvl:BooleanLiteralExp" bool="true"/>
-      </argument>
-    </expression>
-    <expression xsi:type="cvl:OperationCallExp" operation="eq">
-      <argument xsi:type="cvl:VSpecRef" vSpec="//@packageElement.0/@child.1/@child.0"/>
-      <argument xsi:type="cvl:OperationCallExp" operation="lte">
-        <argument xsi:type="cvl:IntegerLiteralExp" integer="10"/>
-        <argument xsi:type="cvl:OperationCallExp">
-          <argument xsi:type="cvl:StringLiteralExp" string="tstr"/>
-          <argument xsi:type="cvl:RealLiteralExp" real="0.05"/>
-        </argument>
-      </argument>
-    </expression>
+  <packageElement xsi:type="cvl:ObjectSubstitution" name="Server2VP" bindingVSpec="//@packageElement.0/@child.1/@child.1" bindingChoice="//@packageElement.0/@child.1/@child.1">
+    <placementObject MOFRef="Architecture.Server"/>
+    <replacementObject MOFRef="Architecture.Server2"/>
   </packageElement>
 </cvl:VPackage>
