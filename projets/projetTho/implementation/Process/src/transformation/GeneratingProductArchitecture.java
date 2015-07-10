@@ -109,6 +109,7 @@ public class GeneratingProductArchitecture {
 			
 			/*
 			 * TODO: add connection between components - binding
+			 * 
 			 */
 		}
 
