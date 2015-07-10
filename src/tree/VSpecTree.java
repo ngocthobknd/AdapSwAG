@@ -4,8 +4,11 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Vector;
 
+import javax.lang.model.element.PackageElement;
+import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -13,19 +16,28 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.ListModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
+import cvl.ObjectExistence;
+import cvl.ObjectHandle;
+import cvl.ObjectSubstitution;
+import cvl.ParametricSlotAssignment;
 import cvl.VPackage;
+import cvl.VPackageable;
 import cvl.VSpec;
+import cvl.Variable;
+import cvl.VariationPoint;
 import cvl.cvlPackage;
 public class VSpecTree extends JPanel {
 	/**
@@ -34,7 +46,8 @@ public class VSpecTree extends JPanel {
 	private static final long serialVersionUID = 1L;
 	JTree tree ;
 	private Resource resource;
-
+	public ArrayList<VariationPoint> VPList = new ArrayList<>();
+	public DefaultListModel listModel = new DefaultListModel(); //variation points in JList 
 	/*
 	 * procedure for getting all nodes in a VSpec
 	 */
@@ -68,22 +81,13 @@ public class VSpecTree extends JPanel {
 		resource = resourceSet.getResource(uri, true);
 		//get root of variability model 
 		VPackage vPackage = (VPackage) resource.getContents().get(0);
-		VSpec vSpec = (VSpec) vPackage.getPackageElement().get(0);
+		EList<VPackageable> packageElement = vPackage.getPackageElement();
+		
+		VSpec vSpec = (VSpec) packageElement.get(0);
 		//System.out.println(vSpec.toString());
-		
 		Node root = getNode(vSpec); 
-		//create nodes data
-//		int j = 1, k =  1;
-//		Node root = new Node("root", true, 0);
-//		for (int i=0; i<5; i++) {
-//			Node node = new Node("node"+i,false, j);
-//			j = Math.abs(j - k);
-//			root.add(node);
-//		}
-		
 	    tree = new JTree(root);
 		tree.putClientProperty("JTree.lineStyle", "Angled");
-
 		NodeRenderer renderer = new NodeRenderer();
 		tree.setCellRenderer(renderer); 
 		expandAllNodes(tree, 0, tree.getRowCount());
@@ -96,6 +100,27 @@ public class VSpecTree extends JPanel {
 		//scrollPane.setViewportView(tree);
 		setLayout(new GridLayout(1, 1, 0, 0));
 		add(scrollPane);
+		
+		//list variation points
+		for (int i = 1; i < packageElement.size(); i++) {
+			VariationPoint vp = (VariationPoint)packageElement.get(i);
+			VPList.add(vp);
+			if (vp instanceof ObjectExistence) {
+				ObjectHandle oObject = ((ObjectExistence) vp).getOptionalObject();
+				listModel.addElement(vp.getName()+":ObjectExistence ("+vp.getBindingVSpec().getName()+" -> "+oObject.getMOFRef()+")");
+			} 
+			else if (vp instanceof ParametricSlotAssignment) {
+				ObjectHandle oObject = ((ParametricSlotAssignment) vp).getSlotOwner();
+				listModel.addElement(vp.getName()+":ParametricSlotAssignment ("+vp.getBindingVSpec().getName()+" -> "+oObject.getMOFRef()+")");
+			}
+			else if (vp instanceof ObjectSubstitution) {
+				ObjectHandle oPlacementObject = ((ObjectSubstitution) vp).getPlacementObject();
+				ObjectHandle oReplacementObject = ((ObjectSubstitution) vp).getReplacementObject();
+				listModel.addElement(vp.getName()+":ObjectSubstitution ("+vp.getBindingVSpec().getName()+" -> "+oPlacementObject.getMOFRef()+
+						","+oReplacementObject.getMOFRef()+")");
+		
+			}
+		}
 	}
 	private void expandAllNodes(JTree tree, int startingIndex, int rowCount){
 	    for(int i=startingIndex;i<rowCount;++i){
@@ -183,7 +208,53 @@ class NodeRenderer extends JPanel implements TreeCellRenderer {
 		}
 	}
 }
-
+class VariationPointClass {
+	String name;
+	String type;
+	String vSpec;
+	String refMOF1;
+	String refMOF2;
+	public VariationPointClass(String name, String type, String vSpec,
+			String refMOF1, String refMOF2) {
+		super();
+		this.name = name;
+		this.type = type;
+		this.vSpec = vSpec;
+		this.refMOF1 = refMOF1;
+		this.refMOF2 = refMOF2;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getvSpec() {
+		return vSpec;
+	}
+	public void setvSpec(String vSpec) {
+		this.vSpec = vSpec;
+	}
+	public String getRefMOF1() {
+		return refMOF1;
+	}
+	public void setRefMOF1(String refMOF1) {
+		this.refMOF1 = refMOF1;
+	}
+	public String getRefMOF2() {
+		return refMOF2;
+	}
+	public void setRefMOF2(String refMOF2) {
+		this.refMOF2 = refMOF2;
+	}
+	
+}
 class Node extends DefaultMutableTreeNode {
 	String name;
 	String type;
