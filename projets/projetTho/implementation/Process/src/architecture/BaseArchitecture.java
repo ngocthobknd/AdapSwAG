@@ -16,6 +16,7 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -33,7 +34,9 @@ import org.ow2.fractal.f4e.fractal.Component;
 import org.ow2.fractal.f4e.fractal.Definition;
 import org.ow2.fractal.f4e.fractal.FractalPackage;
 import org.ow2.fractal.f4e.fractal.Interface;
-
+/*
+ * This class presents component architecture in GUI
+ */
 class ComponentShape extends Rectangle {
 	/*
 	 * define a component 
@@ -225,7 +228,7 @@ public class BaseArchitecture extends JPanel {
 	ArrayList<ConnectionShape> connectionList = new ArrayList<ConnectionShape>();
 	MovingAdapter ma = new MovingAdapter();
 	ComponentShape cp;
-	int x=100,y=100;
+	int x,y;
 	int componentNumber;
 	ArrayList<String> listAttributes = new ArrayList<String>();
 	public BaseArchitecture() {
@@ -242,7 +245,7 @@ public class BaseArchitecture extends JPanel {
 		ResourceSet resourceSet = new ResourceSetImpl();
 		URI uri = URI.createFileURI("model//architecture.fractal");
 		Resource resource = resourceSet.getResource(uri, true);
-		//get root of variability model 
+		//get root of base model 
 		Definition definition = (Definition) resource.getContents().get(0);
 		EList<Component> compponentList = definition.getSubComponents();
 		this.componentNumber = compponentList.size();
@@ -256,12 +259,15 @@ public class BaseArchitecture extends JPanel {
 			}
 			
 			EList<Attribute> attributeList = compponentList.get(i).getAttribute();
-		
+			Random randomGenerator = new Random(); 
+			x = randomGenerator.nextInt(500);
+			y = randomGenerator.nextInt(300);
 			//System.out.println(requestNumber +","+offerNumber);
-			cp = new ComponentShape(x + i*150, y+i*80, 100, 60, requestNumber, offerNumber, compponentList.get(i).getName(), attributeList);
+			cp = new ComponentShape(x, y, 100, 60, requestNumber, offerNumber, compponentList.get(i).getName(), attributeList);
 			rectList.add(cp);
 		}
 		
+		//draw connection
 		EList<Binding> bindingList = definition.getBindings();
 		for (int i = 0; i < bindingList.size(); i++) {
 			String client = bindingList.get(i).getClient();
@@ -270,14 +276,14 @@ public class BaseArchitecture extends JPanel {
 			//get order of interface in component
 			int clientInterfaceOrder = requestInterfaceOrder(compponentList, client, clientInterface .getName());
 			
-			System.out.println(clientInterfaceOrder + clientInterface .getName());
+			//System.out.println(clientInterfaceOrder + clientInterface .getName());
 			
 			String server = bindingList.get(i).getServer();
 			Interface serverInterface =  bindingList.get(i).getServerInterface();
 			int serverInterfaceOrder = offerInterfaceOrder(compponentList, server, serverInterface .getName());
 			//if (serverInterfaceOrder > 0) {
-				ConnectionShape cs = new ConnectionShape(client, clientInterface, clientInterfaceOrder, server, serverInterface, serverInterfaceOrder);
-				connectionList.add(cs);
+			ConnectionShape cs = new ConnectionShape(client, clientInterface, clientInterfaceOrder-1, server, serverInterface, serverInterfaceOrder-1);
+			connectionList.add(cs);
 			//} else System.out.println("can not find server interface");
 		}
 		addMouseMotionListener(ma);
@@ -297,8 +303,9 @@ public class BaseArchitecture extends JPanel {
 		for (int j = 0; j < listInterface.size(); j++) {
 			if ((listInterface.get(j).getRole().name().equals("CLIENT") ) && 
 					listInterface.get(j).getName().equals(requestInterface)) {
-				i = j;
-				System.out.println(i);
+				//i = j;
+				i++;
+				//System.out.println(i);
 				return i;
 			}
 		}
@@ -311,8 +318,9 @@ public class BaseArchitecture extends JPanel {
 		for (int j = 0; j < listInterface.size(); j++) {
 			if ((listInterface.get(j).getRole().name().equals("SERVER")) &&
 					listInterface.get(j).getName().equals(offerInterface)) {
-				i = j;
-				System.out.println(i);
+				//i = j;
+				i++;
+				//System.out.println(i);
 				return i;
 			}
 		}
@@ -332,11 +340,8 @@ public class BaseArchitecture extends JPanel {
 		for (int j = 0; j < componentNumber; j++) {
 			//draw rect
 			g2d.draw(rectList.get(j).getRect());
-			
-			
 			g2d.drawString(rectList.get(j).getName(), rectList.get(j).getRect().x + 30, rectList.get(j).getRect().y + 10);
-		    
-			for (int i = 0; i < rectList.get(j).getAttributes().size(); i++) {
+		    for (int i = 0; i < rectList.get(j).getAttributes().size(); i++) {
 				g2d.drawString(rectList.get(j).getAttributes().get(i).getName() + "=" + rectList.get(j).getAttributes().get(i).getValue(), rectList.get(j).getRect().x , rectList.get(j).getRect().y + 10*(i+2));
 			}
 			

@@ -16,6 +16,7 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -258,9 +259,11 @@ public class ProductArchitecture extends JPanel {
 			}
 			
 			EList<Attribute> attributeList = compponentList.get(i).getAttribute();
-		
+			Random randomGenerator = new Random(); 
+			x = randomGenerator.nextInt(500);
+			y = randomGenerator.nextInt(300);
 			//System.out.println(requestNumber +","+offerNumber);
-			cp = new ComponentShape(x + i*150, y+i*80, 100, 60, requestNumber, offerNumber, compponentList.get(i).getName(), attributeList);
+			cp = new ComponentShape(x, y, 100, 60, requestNumber, offerNumber, compponentList.get(i).getName(), attributeList);
 			rectList.add(cp);
 		}
 		
@@ -278,7 +281,7 @@ public class ProductArchitecture extends JPanel {
 			Interface serverInterface =  bindingList.get(i).getServerInterface();
 			int serverInterfaceOrder = offerInterfaceOrder(compponentList, server, serverInterface .getName());
 			//if (serverInterfaceOrder > 0) {
-				ConnectionShape cs = new ConnectionShape(client, clientInterface, clientInterfaceOrder, server, serverInterface, serverInterfaceOrder);
+				ConnectionShape cs = new ConnectionShape(client, clientInterface, clientInterfaceOrder-1, server, serverInterface, serverInterfaceOrder-1);
 				connectionList.add(cs);
 			//} else System.out.println("can not find server interface");
 		}
@@ -297,8 +300,7 @@ public class ProductArchitecture extends JPanel {
 		for (int j = 0; j < listInterface.size(); j++) {
 			if ((listInterface.get(j).getRole().name().equals("CLIENT") ) && 
 					listInterface.get(j).getName().equals(requestInterface)) {
-				i = j;
-				System.out.println(i);
+				i++;
 				return i;
 			}
 		}
@@ -311,8 +313,7 @@ public class ProductArchitecture extends JPanel {
 		for (int j = 0; j < listInterface.size(); j++) {
 			if ((listInterface.get(j).getRole().name().equals("SERVER")) &&
 					listInterface.get(j).getName().equals(offerInterface)) {
-				i = j;
-				System.out.println(i);
+				i++;
 				return i;
 			}
 		}

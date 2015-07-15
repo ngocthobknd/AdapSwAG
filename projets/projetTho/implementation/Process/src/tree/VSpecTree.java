@@ -1,4 +1,5 @@
 package tree;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -28,6 +29,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.ow2.fractal.f4e.fractal.Binding;
 
 import cvl.ObjectExistence;
 import cvl.ObjectHandle;
@@ -47,24 +49,31 @@ public class VSpecTree extends JPanel {
 	JTree tree ;
 	private Resource resource;
 	public ArrayList<VSpec> vSpecList = new ArrayList<VSpec>(); //list of VSpec 
-	
 	public ArrayList<VariationPoint> VPList = new ArrayList<VariationPoint>();
-	public DefaultListModel listModel = new DefaultListModel(); //variation points in JList 
+
+	
+	
+	@SuppressWarnings("rawtypes")
+	public DefaultListModel vpInJList = new DefaultListModel(); //variation points in JList 
 	/*
 	 * procedure for getting all nodes in a VSpec
 	 */
 	public Node getNode(VSpec vSpec) {
 		String type = vSpec.getClass().getSimpleName().substring(0, vSpec.getClass().getSimpleName().length()-4);
 		String groupMultiplicity;
-		
-		//System.out.println(vSpec.getName());
+		String availabilityTime;
 		vSpecList.add(vSpec);
+		
+		if (vSpec.getAvailabilityTime().getName().equals("default")) {
+			availabilityTime = "runtime";
+		} else availabilityTime = vSpec.getAvailabilityTime().getName(); 
 		
 		if (vSpec.getGroupMultiplicity() != null) {
 			groupMultiplicity = "[" + vSpec.getGroupMultiplicity().getLower() +","+vSpec.getGroupMultiplicity().getUpper() + "]" ;
 			//System.out.println(groupMultiplicity);
 		} else groupMultiplicity = ""; 
-		Node node = new Node(vSpec.getName(),type, groupMultiplicity, "","",true);
+		
+		Node node = new Node(vSpec.getName(),type, groupMultiplicity, "", availabilityTime, true);
 		
 		if (vSpec.getChild().size() > 0)
 			for (int i=0; i<vSpec.getChild().size(); i++) {
@@ -74,7 +83,13 @@ public class VSpecTree extends JPanel {
 			}
 		return node;
 	}
+
 	public VSpecTree() {
+		//this.setBackground(Color.WHITE);
+		this.loadModel();
+	}
+	@SuppressWarnings("unchecked")
+	public void loadModel() {
 		cvlPackage.eINSTANCE.eClass();
 		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
 		try {
@@ -114,17 +129,17 @@ public class VSpecTree extends JPanel {
 			VPList.add(vp);
 			if (vp instanceof ObjectExistence) {
 				ObjectHandle oObject = ((ObjectExistence) vp).getOptionalObject();
-				listModel.addElement(vp.getName()+":ObjectExistence ("+vp.getBindingVSpec().getName()+" -> "+oObject.getMOFRef()+")");
+				vpInJList.addElement(vp.getName() + ":ObjectExistence (" + vp.getBindingVSpec().getName()+" -> " + oObject.getMOFRef()+")");
 			} 
 			else if (vp instanceof ParametricSlotAssignment) {
 				ObjectHandle oObject = ((ParametricSlotAssignment) vp).getSlotOwner();
-				listModel.addElement(vp.getName()+":ParametricSlotAssignment ("+vp.getBindingVSpec().getName()+" -> "+oObject.getMOFRef()+")");
+				vpInJList.addElement(vp.getName() + ":ParametricSlotAssignment (" + vp.getBindingVSpec().getName() + " -> "+oObject.getMOFRef() + ")");
 			}
 			else if (vp instanceof ObjectSubstitution) {
 				ObjectHandle oPlacementObject = ((ObjectSubstitution) vp).getPlacementObject();
 				ObjectHandle oReplacementObject = ((ObjectSubstitution) vp).getReplacementObject();
-				listModel.addElement(vp.getName()+":ObjectSubstitution ("+vp.getBindingVSpec().getName()+" -> "+oPlacementObject.getMOFRef()+
-						","+oReplacementObject.getMOFRef()+")");
+				vpInJList.addElement(vp.getName()+":ObjectSubstitution (" + vp.getBindingVSpec().getName()+" -> " + oPlacementObject.getMOFRef() +
+						"," + oReplacementObject.getMOFRef() + ")");
 		
 			}
 		}
@@ -193,20 +208,23 @@ class NodeRenderer extends JPanel implements TreeCellRenderer {
 			boolean expanded, boolean leaf, int row, boolean hasFocus) {
 		Node node = (Node)value;
 		if (leaf) {
-				lbl_Node.setText(node.getName()+":"+node.type + node.getGroupMultiplicity());
+				this.setBackground(Color.WHITE);
+				lbl_Node.setText(node.getName()+":"+node.type + node.getGroupMultiplicity() + ":" + node.availabilityTime);
 				chk_leafRenderer.setSelected(node.selected);
 				chk_leafRenderer.setEnabled(true);
 				//this.add(chk_leafRenderer);
 				return this;
-		} else {
-				
-				lbl_Node.setText(node.getName()+":"+node.type+ node.getGroupMultiplicity());
+		} 
+		else {
+				this.setBackground(Color.WHITE);
+				lbl_Node.setText(node.getName()+":"+node.type+ node.getGroupMultiplicity()+ ":" + node.availabilityTime);
 				chk_leafRenderer.setSelected(node.selected);
 				chk_leafRenderer.setEnabled(true);
 				//this.add(chk_leafRenderer);
 				return this;
 			
 		}
+		//return null;
 	}
 }
 class VariationPointClass {

@@ -9,11 +9,21 @@
     <interfaces name="s" role="server"/>
   </subComponents>
   <subComponents name="Server1">
-    <interfaces name="s1" signature="" role="server"/>
+    <interfaces name="b" role="client"/>
+
+    <interfaces name="s" signature="" role="server"/>
+    <interfaces name="c" role="client"/>
+
+    <attribute name="id"/>
   </subComponents>
   <subComponents name="Server2">
-    <interfaces name="s2" role="server"/>
+    <interfaces name="s" role="server"/>
   </subComponents>
-  <subComponents name="Temp"/>
+  <subComponents name="Temp">
+    <interfaces name="s" role="server"/>
+  </subComponents>
   <bindings client="Client" server="Server" clientInterface="//@subComponents.0/@interfaces.0" serverInterface="//@subComponents.1/@interfaces.0"/>
+  <bindings client="Client" server="Temp" clientInterface="//@subComponents.0/@interfaces.0" serverInterface="//@subComponents.4/@interfaces.0"/>
+  <bindings client="Server1" server="Temp" clientInterface="//@subComponents.2/@interfaces.2" serverInterface="//@subComponents.4/@interfaces.0"/>
+
 </fractal.ecore:Definition>
