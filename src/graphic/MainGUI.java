@@ -69,6 +69,7 @@ public class MainGUI {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(0, 0, 1920, 1080);
@@ -158,7 +159,7 @@ public class MainGUI {
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		pnControl.add(scrollPane_1, BorderLayout.CENTER);
-		DefaultListModel model = tree.listModel;
+		DefaultListModel model = tree.vpInJList;
 		JList list = new JList(model);
 		
 		
@@ -205,7 +206,8 @@ public class MainGUI {
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent paramActionEvent) {
 				GeneratingProductArchitecture generateProduct = new GeneratingProductArchitecture();
-				generateProduct.createFractalModel(generateProduct.readArchitecture(""));
+				generateProduct.createProductModel(generateProduct.readArchitecture(""));
+				
 				prA.loadModel();
 				prA.revalidate();
 				scrollPane_2.revalidate();

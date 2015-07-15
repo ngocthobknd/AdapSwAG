@@ -1,4 +1,5 @@
 package tree;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
@@ -158,13 +159,16 @@ class ResolutionNodeRenderer extends JPanel implements TreeCellRenderer {
 			boolean expanded, boolean leaf, int row, boolean hasFocus) {
 		ResolutionNode node = (ResolutionNode)value;
 		if (leaf) {
+				this.setBackground(Color.WHITE);
+
 				lbl_Node.setText(node.getName()+":"+node.type + ":" +node.getResolved());
 				chk_leafRenderer.setSelected(node.selected);
 				chk_leafRenderer.setEnabled(true);
 				//this.add(chk_leafRenderer);
 				return this;
 		} else {
-				
+				this.setBackground(Color.WHITE);
+
 				lbl_Node.setText(node.getName()+":"+node.type+ ":" +node.getResolved());
 				chk_leafRenderer.setSelected(node.selected);
 				chk_leafRenderer.setEnabled(true);
