@@ -24,10 +24,12 @@ import org.ow2.fractal.f4e.fractal.Interface;
 
 import tree.ResolutionTree;
 import tree.VSpecTree;
+import verification.ResolutionModelVerification;
 import cvl.ObjectExistence;
 import cvl.ObjectHandle;
 import cvl.ObjectSubstitution;
 import cvl.VSpec;
+import cvl.VSpecResolution;
 import cvl.VariationPoint;
 
 public class GeneratingProductArchitecture {
@@ -44,7 +46,8 @@ public class GeneratingProductArchitecture {
 	 * 		if (VM(i).availabilityTime != runtime) and (RM(i).decision = false) reducing VSpecList and DecisionList by remove VM(i) and RM(i)
 	 * 		else 
 	 * 			search VP that maps to VM(i) 
-	 * 				if VP is ObjectExistence or ObjectSubstitution 
+	 * 				if VP is ObjectExistence  ....
+	 * 				if ObjectSubstitution 
 	 * 					VP -> MOFRef (component name)
 	 * 					Search MOFRef in BM -> component C
 	 * 					if C contains attributes
@@ -89,147 +92,151 @@ public class GeneratingProductArchitecture {
 		ArrayList<VSpec> vSpecList = vSpec.vSpecList;
 		ArrayList<VariationPoint> vpList = vSpec.VPList;
 
-		List<Component> sourceComponentList = new ArrayList(sourceDefinitionFractal.getSubComponents());
-		Component destinationCompnent = fractalFractory.createComponent();
-		
-		for (int i = 0; i < decisionList.size(); i++) {
-			if ((decisionList.get(i)).equals("false") && (! vSpecList.get(i).getAvailabilityTime().getName().equals("runtime"))) {
-				decisionList.remove(i);
-				vSpecList.remove(i);
-				//vpList.remove(returnVP(vSpecList.get(i), vpList));
-			} else {
-				VariationPoint vp = returnVP(vSpecList.get(i).getName(), vpList);
-				
-				String componentName = "";
-				//if (vp != null) System.out.println(vp.getName());
-				if (vp instanceof ObjectExistence) {
+		ArrayList<VSpecResolution> resolutionList = rs.resolutionList; 
+		ResolutionModelVerification RMverification = new ResolutionModelVerification(vSpecList, resolutionList);
+		if (RMverification.verifyRM()) {
+			List<Component> sourceComponentList = new ArrayList(sourceDefinitionFractal.getSubComponents());
+			Component destinationCompnent = fractalFractory.createComponent();
+			
+			for (int i = 0; i < decisionList.size(); i++) {
+				if ((decisionList.get(i)).equals("false") && (! vSpecList.get(i).getAvailabilityTime().getName().equals("runtime"))) {
+					decisionList.remove(i);
+					vSpecList.remove(i);
+					//vpList.remove(returnVP(vSpecList.get(i), vpList));
+				} else {
+					VariationPoint vp = returnVP(vSpecList.get(i).getName(), vpList);
 					
-					ObjectHandle oObject = ((ObjectExistence) vp).getOptionalObject();
-					componentName = oObject.getMOFRef().split("\\.")[1];
-				} 
-		
-				else if (vp instanceof ObjectSubstitution) {
-					ObjectHandle oPlacementObject = ((ObjectSubstitution) vp).getPlacementObject();
-					ObjectHandle oReplacementObject = ((ObjectSubstitution) vp).getReplacementObject();
-					componentName = oReplacementObject.getMOFRef().split("\\.")[1];
-				}
-				//System.out.println(sourceComponentList.size());
-				destinationCompnent = returnComponent(componentName, sourceComponentList);
-				
-				/*
-				 * set value of attribute in component
-				 */
-				try {
-					if (!destinationCompnent.getAttribute().isEmpty()) {
-						//System.out.println(destinationCompnent.getAttribute() .get(0));
-						//destinationCompnent.getAttribute() .get(0).setValue("123");
+					String componentName = "";
+					//if (vp != null) System.out.println(vp.getName());
+					if (vp instanceof ObjectExistence) {
 						
-						//if it has more one attributes, use a for to get attributes
-						for (int j = 0; j < destinationCompnent.getAttribute().size(); j++) {
-							VariationPoint vpVariable = returnVP(destinationCompnent.getAttribute().get(j).getName(), vpList);
-							int indexOfVSpec = returnIndexofVSpec(vpVariable, vSpecList);
-							destinationCompnent.getAttribute().get(j).setValue(decisionList.get(indexOfVSpec));
-						}
+						ObjectHandle oObject = ((ObjectExistence) vp).getOptionalObject();
+						componentName = oObject.getMOFRef().split("\\.")[1];
+					} 
+			
+					else if (vp instanceof ObjectSubstitution) { 
+						ObjectHandle oPlacementObject = ((ObjectSubstitution) vp).getPlacementObject();
+						ObjectHandle oReplacementObject = ((ObjectSubstitution) vp).getReplacementObject();
+						componentName = oReplacementObject.getMOFRef().split("\\.")[1];
 					}
-				} catch(Exception e) {
-				}
-				if (destinationCompnent != null)
-				destinationDefinition.getSubComponents().add(destinationCompnent);
-			}
-		}
-		/*
-		 * TODO: add connection between components - binding
-		 * 
-		 */
-		List<Binding> bindingList = new ArrayList(sourceDefinitionFractal.getBindings());
-		Binding destinationBinding = fractalFractory.createBinding();
-
-		for (int i = 0; i < vpList.size(); i++) {
-			
-			VariationPoint vp = vpList.get(i);
-			if ((vp instanceof ObjectSubstitution) && 
-					(decisionList.get(returnIndexofVSpec(vp, vSpecList)).equals("true"))) {
-			
-				String oldServer, newServer;
-				oldServer = ((ObjectSubstitution) vp).getPlacementObject().getMOFRef().split("\\.")[1];
-				newServer = ((ObjectSubstitution) vp).getReplacementObject().getMOFRef().split("\\.")[1];
-				
-				ArrayList<Binding> bindList = returnBinding(bindingList, oldServer);
-				Component newComponentServer = returnComponent(newServer, sourceComponentList);
-				//if (newComponentServer  == null) System.out.println("null"+":"+sourceComponentList.size());
-				
-				for (int j = 0; j < bindList.size(); j++ ) {
-					destinationBinding = bindList.get(j);
-					destinationBinding.setServer(newServer);
+					//System.out.println(sourceComponentList.size());
+					destinationCompnent = returnComponent(componentName, sourceComponentList);
 					
-					String oldInterface = destinationBinding.getServerInterface().getName(); 
-					for (int k = 0; k < newComponentServer.getInterfaces().size(); k++) {
-						if (newComponentServer.getInterfaces().get(k).getName().equals(oldInterface)) {
-							destinationBinding.setServerInterface(newComponentServer.getInterfaces().get(k));
-							break;
-						}
-					}
-					String client = destinationBinding.getClient();
-					VariationPoint vpClient = returnVP(client, vpList);
+					/*
+					 * set value of attribute in component
+					 */
 					try {
-						if (decisionList.get(returnIndexofVSpec(vpClient, vSpecList)).equals("true")) {
-								destinationDefinition.getBindings().add(destinationBinding);
+						if (!destinationCompnent.getAttribute().isEmpty()) {
+							//System.out.println(destinationCompnent.getAttribute() .get(0));
+							//destinationCompnent.getAttribute() .get(0).setValue("123");
+							
+							//if it has more one attributes, use a for to get attributes
+							for (int j = 0; j < destinationCompnent.getAttribute().size(); j++) {
+								VariationPoint vpVariable = returnVP(destinationCompnent.getAttribute().get(j).getName(), vpList);
+								int indexOfVSpec = returnIndexofVSpec(vpVariable, vSpecList);
+								destinationCompnent.getAttribute().get(j).setValue(decisionList.get(indexOfVSpec));
 							}
-					}catch (Exception e){}
+						}
+					} catch(Exception e) {
+					}
+					if (destinationCompnent != null)
+					destinationDefinition.getSubComponents().add(destinationCompnent);
 				}
 			}
-			
-			if ((vp instanceof ObjectExistence) && 
-					(decisionList.get(returnIndexofVSpec(vp, vSpecList)).equals("true"))) {
-				String serverName = ((ObjectExistence) vp).getOptionalObject().getMOFRef().split("\\.")[1];
-				ArrayList<Binding> destinationBindingList = returnBinding(bindingList, serverName); 
-				//TODO: can be returned a list of binds ????
-				for (int j = 0; j < destinationBindingList.size(); j++) {
-					destinationBinding = destinationBindingList.get(j);
-					
-					System.out.println("ss"+j);
-					
-					if (destinationBindingList !=null) {
-						String client = destinationBinding.getClient();
-						System.out.println(client+"::"+vpList.size());
-
-						VariationPoint vpClient = returnVP(client, vpList);
-						System.out.println(vpClient.getName());
-
-						try{
-							if (decisionList.get(returnIndexofVSpec(vpClient, vSpecList)).equals("true")) {
+			/*
+			 * TODO: add connection between components - binding
+			 * 
+			 */
+			List<Binding> bindingList = new ArrayList(sourceDefinitionFractal.getBindings());
+			Binding destinationBinding = fractalFractory.createBinding();
 	
-								destinationDefinition.getBindings().add(destinationBinding);
+			for (int i = 0; i < vpList.size(); i++) {
+				
+				VariationPoint vp = vpList.get(i);
+				if ((vp instanceof ObjectSubstitution) && 
+						(decisionList.get(returnIndexofVSpec(vp, vSpecList)).equals("true"))) {
+				
+					String oldServer, newServer;
+					oldServer = ((ObjectSubstitution) vp).getPlacementObject().getMOFRef().split("\\.")[1];
+					newServer = ((ObjectSubstitution) vp).getReplacementObject().getMOFRef().split("\\.")[1];
+					
+					ArrayList<Binding> bindList = returnBinding(bindingList, oldServer);
+					Component newComponentServer = returnComponent(newServer, sourceComponentList);
+					//if (newComponentServer  == null) System.out.println("null"+":"+sourceComponentList.size());
+					
+					for (int j = 0; j < bindList.size(); j++ ) {
+						destinationBinding = bindList.get(j);
+						destinationBinding.setServer(newServer);
+						
+						String oldInterface = destinationBinding.getServerInterface().getName(); 
+						for (int k = 0; k < newComponentServer.getInterfaces().size(); k++) {
+							if (newComponentServer.getInterfaces().get(k).getName().equals(oldInterface)) {
+								destinationBinding.setServerInterface(newComponentServer.getInterfaces().get(k));
+								break;
 							}
-						}catch (Exception e1){}
+						}
+						String client = destinationBinding.getClient();
+						VariationPoint vpClient = returnVP(client, vpList);
+						try {
+							if (decisionList.get(returnIndexofVSpec(vpClient, vSpecList)).equals("true")) {
+									destinationDefinition.getBindings().add(destinationBinding);
+								}
+						}catch (Exception e){}
 					}
 				}
-						
 				
-			}	
-		}
-		/*
-		 * write to file
-		 */
-		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
-		Map<String, Object> m = reg.getExtensionToFactoryMap();
-	    m.put("fractal", new XMIResourceFactoryImpl());
-	    // Obtain a new resource set
-	    ResourceSet resSet = new ResourceSetImpl();
-	    // create a resource
-	    Resource resource = resSet.createResource(URI.createURI("model//product.fractal"));
-	    
-	    // Get the first model element and cast it to the right type, in my
-	    // example everything is hierarchical included in this first node
-	    resource.getContents().add(destinationDefinition);
-
-	    // now save the content.
-	    try {
-	      resource.save(Collections.EMPTY_MAP);
-	    } catch (IOException e) {
-	      // TODO Auto-generated catch block
-	      e.printStackTrace();
-	    }
+				if ((vp instanceof ObjectExistence) && 
+						(decisionList.get(returnIndexofVSpec(vp, vSpecList)).equals("true"))) {
+					String serverName = ((ObjectExistence) vp).getOptionalObject().getMOFRef().split("\\.")[1];
+					ArrayList<Binding> destinationBindingList = returnBinding(bindingList, serverName); 
+					//TODO: can be returned a list of binds ????
+					for (int j = 0; j < destinationBindingList.size(); j++) {
+						destinationBinding = destinationBindingList.get(j);
+						
+						System.out.println("ss"+j);
+						
+						if (destinationBindingList !=null) {
+							String client = destinationBinding.getClient();
+							System.out.println(client+"::"+vpList.size());
+	
+							VariationPoint vpClient = returnVP(client, vpList);
+							System.out.println(vpClient.getName());
+	
+							try{
+								if (decisionList.get(returnIndexofVSpec(vpClient, vSpecList)).equals("true")) {
+		
+									destinationDefinition.getBindings().add(destinationBinding);
+								}
+							}catch (Exception e1){}
+						}
+					}
+							
+					
+				}	
+			}
+			/*
+			 * write to file
+			 */
+			Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+			Map<String, Object> m = reg.getExtensionToFactoryMap();
+		    m.put("fractal", new XMIResourceFactoryImpl());
+		    // Obtain a new resource set
+		    ResourceSet resSet = new ResourceSetImpl();
+		    // create a resource
+		    Resource resource = resSet.createResource(URI.createURI("model//product.fractal"));
+		    
+		    // Get the first model element and cast it to the right type, in my
+		    // example everything is hierarchical included in this first node
+		    resource.getContents().add(destinationDefinition);
+	
+		    // now save the content.
+		    try {
+		      resource.save(Collections.EMPTY_MAP);
+		    } catch (IOException e) {
+		      // TODO Auto-generated catch block
+		      e.printStackTrace();
+		    }
+		} else System.out.println("Resolution model is not comportable");
 	} 
 	public String returnClient(Binding bd, String serverName) {
 		String str = "";
