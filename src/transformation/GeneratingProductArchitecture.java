@@ -70,8 +70,16 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 	 */
 	
 	Definition destinationDefinition;
+	FractalFactory fractalFractory;
+	ResolutionTree rs;
+	VSpecTree vSpec;
+	
 	public GeneratingProductArchitecture() {
-		
+		FractalPackage.eINSTANCE.eClass();
+		fractalFractory = FractalFactory.eINSTANCE;
+		destinationDefinition = fractalFractory.createDefinition();
+		rs = new ResolutionTree();
+		vSpec = new VSpecTree();
 		
 	}
 		
@@ -93,47 +101,57 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void createProductModel(Definition sourceDefinitionFractal) {
-	
-		FractalPackage.eINSTANCE.eClass();
-		FractalFactory fractalFractory = FractalFactory.eINSTANCE;
-		destinationDefinition = fractalFractory.createDefinition();
-		destinationDefinition.setName("product"+sourceDefinitionFractal.getName());
-
-		ResolutionTree rs = new ResolutionTree();
-		VSpecTree vSpec = new VSpecTree();
 		
+		destinationDefinition.setName("product"+sourceDefinitionFractal.getName());
 		ArrayList<VSpec> vSpecList = vSpec.vSpecList;
 		ArrayList<VariationPoint> vpList = vSpec.VPList;
 		ArrayList<VSpecResolution> resolutionList = rs.resolutionList; 
 		
-
-		//verify resolution model
-		
-		//ResolutionModelVerification RMverification = new ResolutionModelVerification(vSpecList, resolutionList);
-		//if ok
-		
 		List<Component> sourceComponentList = new ArrayList(sourceDefinitionFractal.getSubComponents());
 		List<RealizationComponent> realizationComponentList = new ArrayList(sourceDefinitionFractal.getRealizationComponents());
-		Component destinationCompnent;
+		List<Binding> bindingList = new ArrayList(sourceDefinitionFractal.getBindings());
+		//Component destinationCompnent;
 		
-		//add component to destination model if it has not relation with VP
+		
+		
+		addComponents1(destinationDefinition, sourceComponentList, realizationComponentList, vSpecList, vpList, resolutionList);
 		/*
-		for (int i = 0; i < sourceComponentList.size(); i++) {
-			boolean chk = true;
-			for (int j = 0; j < vpList.size(); j++) {
-				VariationPoint vp = vpList.get(j);
-				if (vp instanceof ObjectExistence) {
-					ObjectHandle oObject = ((ObjectExistence) vp).getOptionalObject();
-					String componentName = oObject.getMOFRef().split("\\.")[1];
-					if (componentName.equals(sourceComponentList.get(i).getName())) {
-						chk = false;
-						break;
-					}
-				}
-			}
-			if (chk) destinationDefinition.getSubComponents().add(sourceComponentList.get(i));
-		}*/
+		 * set value of attribute in component
+		 */
+		setAttribute(destinationDefinition, vpList, resolutionList);
 		
+		addBinding(destinationDefinition, bindingList);
+
+		/*
+		 * write to file
+		 */
+		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+		Map<String, Object> m = reg.getExtensionToFactoryMap();
+	    m.put("fractal", new XMIResourceFactoryImpl());
+	    // Obtain a new resource set
+	    ResourceSet resSet = new ResourceSetImpl();
+	    // create a resource
+	    Resource resource = resSet.createResource(URI.createURI("model//product.fractal"));
+	    
+	    // Get the first model element and cast it to the right type, in my
+	    // example everything is hierarchical included in this first node
+	    resource.getContents().add(destinationDefinition);
+
+	    // now save the content.
+	    try {
+	    	resource.save(Collections.EMPTY_MAP);
+	    } catch (IOException e) {
+	      // TODO Auto-generated catch block
+	    	e.printStackTrace();
+	    }
+		
+	} 
+	//add components to product for the first case
+	public boolean addComponents1(Definition destinationDefinition, List<Component> sourceComponentList, 
+			List<RealizationComponent> realizationComponentList, ArrayList<VSpec> vSpecList,	
+			ArrayList<VariationPoint> vpList, ArrayList<VSpecResolution> resolutionList) {
+		
+		Component destinationCompnent;
 		for (Iterator<VSpecResolution> iter = resolutionList.listIterator(); iter.hasNext();) {
 			int cas = 0;	// cas = 0 : ChoiceResolution
 							// cas = 1 : VariableValueAssignment
@@ -188,69 +206,10 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 				System.out.println();
 			}
 		}
-		
-		/*
-		 * set value of attribute in component
-		 */
-		setAttribute(destinationDefinition, vpList, resolutionList);
-		
-		/*
-		 * TODO: add connection between components - binding
-		 * 
-		 */
-		List<Binding> bindingList = new ArrayList(sourceDefinitionFractal.getBindings());
-		addBinding(bindingList, destinationDefinition);
-		/*List<Binding> bindingList = new ArrayList(sourceDefinitionFractal.getBindings());
-		Binding destinationBinding;
-		for (int i = 0; i < bindingList.size(); i++) {
-			destinationBinding = bindingList.get(i);
-			String client = destinationBinding.getClient();
-			String server = destinationBinding.getServer();
-			boolean chk1 = false, chk2 = false;
-			System.out.println(client+server);
-			for (int j = 0; j < destinationDefinition.getSubComponents().size(); j ++) {
-				System.out.println(destinationDefinition.getSubComponents().get(j).getName());
-				
-				if (client.equals(destinationDefinition.getSubComponents().get(j).getName())) chk1 = true;
-				if (server.equals(destinationDefinition.getSubComponents().get(j).getName())) chk2 = true;
-			}
-			if (chk1 && chk2) destinationDefinition.getBindings().add(destinationBinding);
-			
-		}*/
-		
-		
-		/*
-		 * write to file
-		 */
-		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
-		Map<String, Object> m = reg.getExtensionToFactoryMap();
-	    m.put("fractal", new XMIResourceFactoryImpl());
-	    // Obtain a new resource set
-	    ResourceSet resSet = new ResourceSetImpl();
-	    // create a resource
-	    Resource resource = resSet.createResource(URI.createURI("model//product.fractal"));
-	    
-	    // Get the first model element and cast it to the right type, in my
-	    // example everything is hierarchical included in this first node
-	    resource.getContents().add(destinationDefinition);
-
-	    // now save the content.
-	    try {
-	    	resource.save(Collections.EMPTY_MAP);
-	    } catch (IOException e) {
-	      // TODO Auto-generated catch block
-	    	e.printStackTrace();
-	    }
-		
-	} 
-	//for changing implementation of component 
-	public boolean addComponents1(Definition def, List<Component> sourceComponentList, 
-			List<RealizationComponent> realizationComponentList, ArrayList<VSpec> vSpecList,	
-			ArrayList<VariationPoint> vpList, ArrayList<VSpecResolution> resolutionList) {
 		return true;
 	}
 	
-	//for composite component
+	//for the first case
 	public void setAttribute(Definition destinationDefinition, ArrayList<VariationPoint> vpList, ArrayList<VSpecResolution> resolutionList ) {
 		/*
 		 * set value of attribute in component
@@ -272,10 +231,35 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 		}
 	}
 	
+	//for second case
 	public boolean addComponents2() {
 		return true;
 	}
-	public boolean addBinding(List<Binding> bindingList, Definition destinationDefinition) {
+	
+	/*
+	public void addDisconnectedComponent(Definition destinationDefinition, List<Component> sourceComponentList, 
+			List<RealizationComponent> realizationComponentList, ArrayList<VSpec> vSpecList,	
+			ArrayList<VariationPoint> vpList, ArrayList<VSpecResolution> resolutionList) {
+		//add component to destination model if it has not relation with VP
+		
+		for (int i = 0; i < sourceComponentList.size(); i++) {
+			boolean chk = true;
+			for (int j = 0; j < vpList.size(); j++) {
+				VariationPoint vp = vpList.get(j);
+				if (vp instanceof ObjectExistence) {
+					ObjectHandle oObject = ((ObjectExistence) vp).getOptionalObject();
+					String componentName = oObject.getMOFRef().split("\\.")[1];
+					if (componentName.equals(sourceComponentList.get(i).getName())) {
+						chk = false;
+						break;
+					}
+				}
+			}
+			if (chk) destinationDefinition.getSubComponents().add(sourceComponentList.get(i));
+		}
+	}
+	*/
+	public boolean addBinding(Definition destinationDefinition, List<Binding> bindingList) {
 		//List<Binding> bindingList = new ArrayList(sourceDefinitionFractal.getBindings());
 		Binding destinationBinding;// = fractalFractory.createBinding();
 		for (int i = 0; i < bindingList.size(); i++) {
@@ -306,10 +290,7 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 		}
 		    
 	}
-	public String returnClient(Binding bd, String serverName) {
-		String str = "";
-		return str; 
-	}
+
 
 	public RealizationComponent returnRealizationComponents(String name, List<RealizationComponent> realizationComponentList) {
 		RealizationComponent realizationComponent = null;

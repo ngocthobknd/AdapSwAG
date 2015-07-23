@@ -30,7 +30,7 @@ public class ResolutionModelVerification {
 	
 	ArrayList<VSpec> vSpecList;
 	ArrayList<VSpecResolution> resolutionList;
-
+	public String messageAlert = "";
 	public ResolutionModelVerification(ArrayList<VSpec> vSpecList, ArrayList<VSpecResolution> resolutionList) {
 		this.vSpecList = vSpecList;
 		this.resolutionList = resolutionList;
@@ -40,7 +40,7 @@ public class ResolutionModelVerification {
 		boolean result = true;
 		if (resolutionList.size() != vSpecList.size()) return false;
 		else {
-			for (int i = 0; i < resolutionList.size(); i++) {
+			for (int i = 0; i < vSpecList.size(); i++) {
 				if (vSpecList.get(i) instanceof Choice) {
 					VSpec vSpec = vSpecList.get(i);
 					VSpecResolution vSpecResolution = resolutionList.get(i);
@@ -69,6 +69,7 @@ public class ResolutionModelVerification {
 								
 								if (((Choice)vSpecChilds.get(j)).isIsImpliedByParent()) {
 									if (!((ChoiceResolution)resolvedChilds.get(j)).isDecision()) {
+										messageAlert = "error by contraint of isImpliedByparent";
 										System.out.println("error by contraint of isImpliedByparent");
 										return false;
 									}
@@ -78,12 +79,17 @@ public class ResolutionModelVerification {
 								}
 							}
 							//VClassifier
-							else if (((VInstance)resolvedChilds.get(j)).getNumber() > 0) {
+							else 
+								try {
+								if (((VInstance)resolvedChilds.get(j)).getNumber() > 0) {
 									count += ((VInstance)resolvedChilds.get(j)).getNumber();
-							}
+								}
+								}catch (Exception e) {}
+							
 						}
-						System.out.println(vSpec.getName() +""+upper+":"+count);
+						//System.out.println(vSpec.getName() +""+upper+":"+count);
 						if ((count < lower) || (count > upper)) {
+							messageAlert = "error by constraint of Multiplicity";
 							System.out.println("error by constraint of Multiplicity");
 							return false; 
 						}
@@ -95,6 +101,7 @@ public class ResolutionModelVerification {
 							if (vSpecChilds.get(j) instanceof Choice) {
 								if (((Choice)vSpecChilds.get(j)).isIsImpliedByParent()) {
 									if (!((ChoiceResolution)resolvedChilds.get(j)).isDecision()) {
+										messageAlert = "error by contraint of isImpliedByparent";
 										System.out.println("error by contraint of isImpliedByparent");
 										return false;
 									}

@@ -1,10 +1,12 @@
 package architecture;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -34,6 +36,7 @@ import org.ow2.fractal.f4e.fractal.Component;
 import org.ow2.fractal.f4e.fractal.Definition;
 import org.ow2.fractal.f4e.fractal.FractalPackage;
 import org.ow2.fractal.f4e.fractal.Interface;
+import org.ow2.fractal.f4e.fractal.RealizationComponent;
 /*
  * This class presents component architecture in GUI
  */
@@ -51,7 +54,8 @@ class ComponentShape extends Rectangle {
 	int width, height;
 	String name;
 	EList<Attribute> attributes;
-	public ComponentShape(int x, int y, int width, int height, int requestNumber, int offerNumber, String name, EList<Attribute> attributes) {
+	String content;
+	public ComponentShape(int x, int y, int width, int height, int requestNumber, int offerNumber, String name, EList<Attribute> attributes, String content) {
 		/*
 		 * x,y are position of component
 		 * arcNumber is request number of component
@@ -60,6 +64,7 @@ class ComponentShape extends Rectangle {
 		 */
 		this.x = x;
 		this.y = y;
+		this.content = content;
 		
 		width = 100;
 		height = 60 ;
@@ -83,6 +88,14 @@ class ComponentShape extends Rectangle {
 			Line2D.Float line = new Line2D.Float(x+15, y + (height/(offerNumber+1))*(j+1), x+35,y + (height/(offerNumber+1))*(j+1));
 			lineCircleList.add(line);
 		}
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
 	}
 
 	public void setX(int x) {
@@ -219,7 +232,10 @@ class ConnectionShape {
 	public void setInterfaceServerOrder(int interfaceServerOrder) {
 		this.interfaceServerOrder = interfaceServerOrder;
 	}
-	
+}
+class ExtendLine {
+	String client;
+	String server;
 	
 }
 
@@ -231,6 +247,7 @@ public class BaseArchitecture extends JPanel {
 	int x,y;
 	int componentNumber;
 	ArrayList<String> listAttributes = new ArrayList<String>();
+	EList<RealizationComponent> realizationCompponentList;
 	public BaseArchitecture() {
 		/*
 	     * declare components list
@@ -248,7 +265,7 @@ public class BaseArchitecture extends JPanel {
 		//get root of base model 
 		Definition definition = (Definition) resource.getContents().get(0);
 		EList<Component> compponentList = definition.getSubComponents();
-		this.componentNumber = compponentList.size();
+		
 		for (int i = 0; i < compponentList.size(); i++) {
 			EList<Interface> interfaces = compponentList.get(i).getInterfaces();
 			int requestNumber = 0 , offerNumber = 0;
@@ -263,10 +280,31 @@ public class BaseArchitecture extends JPanel {
 			x = randomGenerator.nextInt(500);
 			y = randomGenerator.nextInt(300);
 			//System.out.println(requestNumber +","+offerNumber);
-			cp = new ComponentShape(x, y, 100, 60, requestNumber, offerNumber, compponentList.get(i).getName(), attributeList);
+			String cnt = "";
+			try {
+				if (compponentList.get(i).getContent().getClass_() != null) cnt = compponentList.get(i).getContent().getClass_();
+			} catch (Exception e) {
+				
+			}
+		
+			cp = new ComponentShape(x, y, 100, 60, requestNumber, offerNumber, compponentList.get(i).getName(), attributeList,cnt);
 			rectList.add(cp);
 		}
 		
+		realizationCompponentList = definition.getRealizationComponents();
+		
+		for (int i = 0; i < realizationCompponentList.size(); i++){
+			
+			Random randomGenerator = new Random(); 
+			x = randomGenerator.nextInt(500);
+			y = randomGenerator.nextInt(300);
+			
+			cp = new ComponentShape(x, y, 100, 60, 0, 0, realizationCompponentList.get(i).getName(), null, "");
+			//System.out.println("s");
+			rectList.add(cp);
+		}
+		
+		this.componentNumber = compponentList.size();
 		//draw connection
 		EList<Binding> bindingList = definition.getBindings();
 		for (int i = 0; i < bindingList.size(); i++) {
@@ -318,9 +356,7 @@ public class BaseArchitecture extends JPanel {
 		for (int j = 0; j < listInterface.size(); j++) {
 			if ((listInterface.get(j).getRole().name().equals("SERVER")) &&
 					listInterface.get(j).getName().equals(offerInterface)) {
-				//i = j;
 				i++;
-				//System.out.println(i);
 				return i;
 			}
 		}
@@ -337,14 +373,18 @@ public class BaseArchitecture extends JPanel {
 		/*
 		 * read components list and paint them in graphic 
 		 */
-		for (int j = 0; j < componentNumber; j++) {
+		//System.out.println(rectList.size());
+		for (int j = 0; j < rectList.size(); j++) {
 			//draw rect
 			g2d.draw(rectList.get(j).getRect());
 			g2d.drawString(rectList.get(j).getName(), rectList.get(j).getRect().x + 30, rectList.get(j).getRect().y + 10);
-		    for (int i = 0; i < rectList.get(j).getAttributes().size(); i++) {
-				g2d.drawString(rectList.get(j).getAttributes().get(i).getName() + "=" + rectList.get(j).getAttributes().get(i).getValue(), rectList.get(j).getRect().x , rectList.get(j).getRect().y + 10*(i+2));
+			if (rectList.get(j).getContent() != "") 
+			g2d.drawString("Content= "+rectList.get(j).getContent(), rectList.get(j).getRect().x, rectList.get(j).getRect().y + 20);
+		    
+			if (rectList.get(j).getAttributes() != null) 
+			for (int i = 0; i < rectList.get(j).getAttributes().size(); i++) {
+				g2d.drawString(rectList.get(j).getAttributes().get(i).getName() + "=" + rectList.get(j).getAttributes().get(i).getValue(), rectList.get(j).getRect().x , rectList.get(j).getRect().y + 10 + 10*(i+2));
 			}
-			
 			
 		    
 			
@@ -370,7 +410,7 @@ public class BaseArchitecture extends JPanel {
 			//System.out.println(client+":"+server);
 			int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 			
-			for (int j = 0; j < componentNumber; j++) {
+			for (int j = 0; j < rectList.size(); j++) {
 				if (rectList.get(j).getName().equals(client)) {
 					x1 = (int) rectList.get(j).getRequestList().get(cs.getInterfaceClientOrder()).x;
 					y1 = (int) rectList.get(j).getRequestList().get(cs.getInterfaceClientOrder()).y + 7;
@@ -382,55 +422,80 @@ public class BaseArchitecture extends JPanel {
 			}
 			g2d.drawLine(x1, y1, x2, y2);
 		}
-  }
-  public Dimension getPreferredSize() {
+		
+		/*
+		 * read realization component and draw extend line
+		 * 
+		 */
+		for (int i = 0; i < realizationCompponentList.size(); i++) {
+			
+			int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+			String component = realizationCompponentList.get(i).getRealizes().getName();
+			String realizationComponentName = realizationCompponentList.get(i).getName();
+			for (int j = 0; j < rectList.size(); j++) {
+				if (rectList.get(j).getName().equals(realizationComponentName)) {
+					x1 = (int) rectList.get(j).getRect().x + 50;
+					y1 = (int) rectList.get(j).getRect().y + 0;
+				}
+				if (rectList.get(j).getName().equals(component)) {
+					x2 = (int) rectList.get(j).getRect().x + 50;
+					y2 = (int) rectList.get(j).getRect().y + 60;
+				}
+			}
+			Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+			g2d.setStroke(dashed);
+			g2d.drawLine(x1, y1, x2, y2);
+			
+		}
+	}
+	public Dimension getPreferredSize() {
       return new Dimension(3000, 1000);
-  }
+	}
   
-  	class MovingAdapter extends MouseAdapter {
-  		private int x;
-  		private int y;
-  		public void mousePressed(MouseEvent e) {
-  			x = e.getX();
-  			y = e.getY();
-  	}
-    public void mouseDragged(MouseEvent e) {
-    	int dx = e.getX() - x;
-    	int dy = e.getY() - y;
-    	/*
-    	 * set new points for components and 
-    	 * repaint them
-    	 */
-    	for (int j = 0; j < rectList.size(); j++) {
-    		if (rectList.get(j).getRect().getBounds2D().contains(x, y)) {
-    			rectList.get(j).getRect().x += dx;
-    			rectList.get(j).getRect().y += dy;
-    			for (int i = 0; i < rectList.get(j).getRequestList().size(); i++) {
-    				//set new point to arcs
-    				rectList.get(j).getRequestList().get(i).x += dx;
-    				rectList.get(j).getRequestList().get(i).y += dy;
-    				// set new line between arc and rect
-    				rectList.get(j).getLineArcList().get(i).x1 +=dx;
-    				rectList.get(j).getLineArcList().get(i).x2 +=dx;
-    				rectList.get(j).getLineArcList().get(i).y1 +=dy;
-    				rectList.get(j).getLineArcList().get(i).y2 +=dy;
-    			}
-    			for (int i = 0; i < rectList.get(j).getCircleList().size(); i++) {
-    				//set new circle
-    				rectList.get(j).getCircleList().get(i).x +=dx;
-    				rectList.get(j).getCircleList().get(i).y +=dy;
-    				// set new line between circle and rect
-    				rectList.get(j).getLineCircleList().get(i).x1 +=dx;
-    				rectList.get(j).getLineCircleList().get(i).x2 +=dx;
-    				rectList.get(j).getLineCircleList().get(i).y1 +=dy;
-    				rectList.get(j).getLineCircleList().get(i).y2 +=dy;
-    			}
-    			repaint();
-				}  
-    	}
-    	x += dx;
-    	y += dy;
-    }
+	class MovingAdapter extends MouseAdapter {
+		private int x;
+		private int y;
+		public void mousePressed(MouseEvent e) {
+			x = e.getX();
+			y = e.getY();
+	}
+	public void mouseDragged(MouseEvent e) {
+		int dx = e.getX() - x;
+		int dy = e.getY() - y;
+		/*
+	 * set new points for components and 
+	 * repaint them
+	 */
+		for (int j = 0; j < rectList.size(); j++) {
+			if (rectList.get(j).getRect().getBounds2D().contains(x, y)) {
+				rectList.get(j).getRect().x += dx;
+				rectList.get(j).getRect().y += dy;
+				for (int i = 0; i < rectList.get(j).getRequestList().size(); i++) {
+					//set new point to arcs
+					rectList.get(j).getRequestList().get(i).x += dx;
+					rectList.get(j).getRequestList().get(i).y += dy;
+					// set new line between arc and rect
+					rectList.get(j).getLineArcList().get(i).x1 +=dx;
+					rectList.get(j).getLineArcList().get(i).x2 +=dx;
+					rectList.get(j).getLineArcList().get(i).y1 +=dy;
+					rectList.get(j).getLineArcList().get(i).y2 +=dy;
+				}
+				for (int i = 0; i < rectList.get(j).getCircleList().size(); i++) {
+					//set new circle
+					rectList.get(j).getCircleList().get(i).x +=dx;
+					rectList.get(j).getCircleList().get(i).y +=dy;
+					// set new line between circle and rect
+						rectList.get(j).getLineCircleList().get(i).x1 +=dx;
+						rectList.get(j).getLineCircleList().get(i).x2 +=dx;
+						rectList.get(j).getLineCircleList().get(i).y1 +=dy;
+						rectList.get(j).getLineCircleList().get(i).y2 +=dy;
+					}
+					repaint();
+					}  
+			}
+			x += dx;
+			y += dy;
+		}
   }
   public static void main(String[] args) {
     JFrame frame = new JFrame("Moving");
