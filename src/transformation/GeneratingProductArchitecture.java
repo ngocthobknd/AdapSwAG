@@ -15,24 +15,30 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.ow2.fractal.f4e.fractal.AbstractComponent;
 import org.ow2.fractal.f4e.fractal.Binding;
 import org.ow2.fractal.f4e.fractal.Component;
+import org.ow2.fractal.f4e.fractal.Content;
 import org.ow2.fractal.f4e.fractal.Definition;
 import org.ow2.fractal.f4e.fractal.FractalFactory;
 import org.ow2.fractal.f4e.fractal.FractalPackage;
 import org.ow2.fractal.f4e.fractal.Interface;
+import org.ow2.fractal.f4e.fractal.RealizationComponent;
 
 import tree.ResolutionTree;
 import tree.VSpecTree;
 import verification.ResolutionModelVerification;
+import cvl.ChoiceResolution;
 import cvl.ObjectExistence;
 import cvl.ObjectHandle;
 import cvl.ObjectSubstitution;
+import cvl.VInstance;
 import cvl.VSpec;
 import cvl.VSpecResolution;
+import cvl.VariableValueAssignment;
 import cvl.VariationPoint;
 
-public class GeneratingProductArchitecture {
+public class GeneratingProductArchitecture implements ProductGenerationService {
 	
 	/*
 	 * algorithm for generating product architecture
@@ -58,6 +64,10 @@ public class GeneratingProductArchitecture {
 	 * 						   
 	 *			 
 	 */
+	
+	public GeneratingProductArchitecture() {
+		
+	}
 		
 	public static Definition readArchitecture(String file) {
 		FractalPackage.eINSTANCE.eClass();
@@ -75,11 +85,8 @@ public class GeneratingProductArchitecture {
 		return definition;
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void createProductModel(Definition sourceDefinitionFractal) {
-		/*
-		 * 
-		 * 
-		 */
 		FractalPackage.eINSTANCE.eClass();
 		FractalFactory fractalFractory = FractalFactory.eINSTANCE;
 		Definition destinationDefinition = fractalFractory.createDefinition();
@@ -88,25 +95,58 @@ public class GeneratingProductArchitecture {
 		ResolutionTree rs = new ResolutionTree();
 		VSpecTree vSpec = new VSpecTree();
 		
-		ArrayList<String> decisionList = rs.decisionList;
+		//ArrayList<String> decisionList = rs.decisionList;
 		ArrayList<VSpec> vSpecList = vSpec.vSpecList;
 		ArrayList<VariationPoint> vpList = vSpec.VPList;
-
 		ArrayList<VSpecResolution> resolutionList = rs.resolutionList; 
-		ResolutionModelVerification RMverification = new ResolutionModelVerification(vSpecList, resolutionList);
-		if (RMverification.verifyRM()) {
-			List<Component> sourceComponentList = new ArrayList(sourceDefinitionFractal.getSubComponents());
-			Component destinationCompnent = fractalFractory.createComponent();
-			
-			for (int i = 0; i < decisionList.size(); i++) {
-				if ((decisionList.get(i)).equals("false") && (! vSpecList.get(i).getAvailabilityTime().getName().equals("runtime"))) {
-					decisionList.remove(i);
+		
+		//verify resolution model
+		
+		//ResolutionModelVerification RMverification = new ResolutionModelVerification(vSpecList, resolutionList);
+		//if ok
+		
+		List<Component> sourceComponentList = new ArrayList(sourceDefinitionFractal.getSubComponents());
+		List<RealizationComponent> realizationComponentList = new ArrayList(sourceDefinitionFractal.getRealizationComponents());
+		Component destinationCompnent = fractalFractory.createComponent();
+		
+		//add component to destination model if it has not relation with VP
+		/*
+		for (int i = 0; i < sourceComponentList.size(); i++) {
+			boolean chk = true;
+			for (int j = 0; j < vpList.size(); j++) {
+				VariationPoint vp = vpList.get(j);
+				if (vp instanceof ObjectExistence) {
+					ObjectHandle oObject = ((ObjectExistence) vp).getOptionalObject();
+					String componentName = oObject.getMOFRef().split("\\.")[1];
+					if (componentName.equals(sourceComponentList.get(i).getName())) {
+						chk = false;
+						break;
+					}
+				}
+			}
+			if (chk) destinationDefinition.getSubComponents().add(sourceComponentList.get(i));
+		}*/
+		
+		for (int i = 0; i < resolutionList.size(); i++) {
+			int cas = 0;	// cas = 0 : ChoiceResolution
+							// cas = 1 : VariableValueAssignment
+							
+			VSpecResolution vSpecresolution = resolutionList.get(i);
+			if (vSpecresolution instanceof ChoiceResolution) cas = 0;
+			else if (vSpecresolution instanceof VariableValueAssignment) cas = 1;
+			else if (vSpecresolution instanceof VInstance) cas = 2;
+		
+			if (cas == 0)
+				if ((!((ChoiceResolution)vSpecresolution).isDecision()) && (! vSpecList.get(i).getAvailabilityTime().getName().equals("runtime"))) {
+					resolutionList.remove(i);
 					vSpecList.remove(i);
 					//vpList.remove(returnVP(vSpecList.get(i), vpList));
 				} else {
 					VariationPoint vp = returnVP(vSpecList.get(i).getName(), vpList);
 					
 					String componentName = "";
+					String realizationComponentName = "";
+					RealizationComponent realizationComponent = null;
 					//if (vp != null) System.out.println(vp.getName());
 					if (vp instanceof ObjectExistence) {
 						
@@ -117,133 +157,161 @@ public class GeneratingProductArchitecture {
 					else if (vp instanceof ObjectSubstitution) { 
 						ObjectHandle oPlacementObject = ((ObjectSubstitution) vp).getPlacementObject();
 						ObjectHandle oReplacementObject = ((ObjectSubstitution) vp).getReplacementObject();
-						componentName = oReplacementObject.getMOFRef().split("\\.")[1];
+						
+						componentName = oPlacementObject.getMOFRef().split("\\.")[1];
+						realizationComponentName = oReplacementObject.getMOFRef().split("\\.")[1];
+						
+						realizationComponent = returnRealizationComponents(realizationComponentName, realizationComponentList);
+						System.out.println(realizationComponent.getName());
+						//add realization component 
+						
+						destinationDefinition.getRealizationComponents().add(realizationComponent);
 					}
-					//System.out.println(sourceComponentList.size());
 					destinationCompnent = returnComponent(componentName, sourceComponentList);
+					
+					try {
+						if ((realizationComponent != null) && (resolutionList.get(i).equals("true"))) {
+							Content content = fractalFractory.createContent();
+							content.setClass(realizationComponent.getName());
+							destinationCompnent.setContent(content);
+						
+						}
+						
+					} catch (Exception e) {}
 					
 					/*
 					 * set value of attribute in component
 					 */
 					try {
 						if (!destinationCompnent.getAttribute().isEmpty()) {
-							//System.out.println(destinationCompnent.getAttribute() .get(0));
-							//destinationCompnent.getAttribute() .get(0).setValue("123");
-							
 							//if it has more one attributes, use a for to get attributes
 							for (int j = 0; j < destinationCompnent.getAttribute().size(); j++) {
 								VariationPoint vpVariable = returnVP(destinationCompnent.getAttribute().get(j).getName(), vpList);
 								int indexOfVSpec = returnIndexofVSpec(vpVariable, vSpecList);
-								destinationCompnent.getAttribute().get(j).setValue(decisionList.get(indexOfVSpec));
+								destinationCompnent.getAttribute().get(j).setValue(((VariableValueAssignment)resolutionList.get(indexOfVSpec)).getValue());
 							}
 						}
 					} catch(Exception e) {
 					}
+					
 					if (destinationCompnent != null)
-					destinationDefinition.getSubComponents().add(destinationCompnent);
+						destinationDefinition.getSubComponents().add(destinationCompnent);
 				}
 			}
-			/*
-			 * TODO: add connection between components - binding
-			 * 
-			 */
-			List<Binding> bindingList = new ArrayList(sourceDefinitionFractal.getBindings());
-			Binding destinationBinding = fractalFractory.createBinding();
-	
-			for (int i = 0; i < vpList.size(); i++) {
-				
-				VariationPoint vp = vpList.get(i);
-				if ((vp instanceof ObjectSubstitution) && 
-						(decisionList.get(returnIndexofVSpec(vp, vSpecList)).equals("true"))) {
-				
-					String oldServer, newServer;
-					oldServer = ((ObjectSubstitution) vp).getPlacementObject().getMOFRef().split("\\.")[1];
-					newServer = ((ObjectSubstitution) vp).getReplacementObject().getMOFRef().split("\\.")[1];
-					
-					ArrayList<Binding> bindList = returnBinding(bindingList, oldServer);
-					Component newComponentServer = returnComponent(newServer, sourceComponentList);
-					//if (newComponentServer  == null) System.out.println("null"+":"+sourceComponentList.size());
-					
-					for (int j = 0; j < bindList.size(); j++ ) {
-						destinationBinding = bindList.get(j);
-						destinationBinding.setServer(newServer);
-						
-						String oldInterface = destinationBinding.getServerInterface().getName(); 
-						for (int k = 0; k < newComponentServer.getInterfaces().size(); k++) {
-							if (newComponentServer.getInterfaces().get(k).getName().equals(oldInterface)) {
-								destinationBinding.setServerInterface(newComponentServer.getInterfaces().get(k));
-								break;
-							}
-						}
-						String client = destinationBinding.getClient();
-						VariationPoint vpClient = returnVP(client, vpList);
-						try {
-							if (decisionList.get(returnIndexofVSpec(vpClient, vSpecList)).equals("true")) {
-									destinationDefinition.getBindings().add(destinationBinding);
-								}
-						}catch (Exception e){}
-					}
-				}
-				
-				if ((vp instanceof ObjectExistence) && 
-						(decisionList.get(returnIndexofVSpec(vp, vSpecList)).equals("true"))) {
-					String serverName = ((ObjectExistence) vp).getOptionalObject().getMOFRef().split("\\.")[1];
-					ArrayList<Binding> destinationBindingList = returnBinding(bindingList, serverName); 
-					//TODO: can be returned a list of binds ????
-					for (int j = 0; j < destinationBindingList.size(); j++) {
-						destinationBinding = destinationBindingList.get(j);
-						
-						System.out.println("ss"+j);
-						
-						if (destinationBindingList !=null) {
-							String client = destinationBinding.getClient();
-							System.out.println(client+"::"+vpList.size());
-	
-							VariationPoint vpClient = returnVP(client, vpList);
-							System.out.println(vpClient.getName());
-	
-							try{
-								if (decisionList.get(returnIndexofVSpec(vpClient, vSpecList)).equals("true")) {
+		/*
+		 * TODO: add connection between components - binding
+		 * 
+		 */
 		
-									destinationDefinition.getBindings().add(destinationBinding);
-								}
-							}catch (Exception e1){}
+		
+		List<Binding> bindingList = new ArrayList(sourceDefinitionFractal.getBindings());
+		Binding destinationBinding = fractalFractory.createBinding();
+		for (int i = 0; i < bindingList.size(); i++) {
+			destinationBinding = bindingList.get(i);
+			destinationDefinition.getBindings().add(destinationBinding);
+		}
+		/*
+		for (int i = 0; i < vpList.size(); i++) {
+			
+			VariationPoint vp = vpList.get(i);
+			if ((vp instanceof ObjectSubstitution) && 
+					(decisionList.get(returnIndexofVSpec(vp, vSpecList)).equals("true"))) {
+			
+				String oldServer, newServer;
+				oldServer = ((ObjectSubstitution) vp).getPlacementObject().getMOFRef().split("\\.")[1];
+				newServer = ((ObjectSubstitution) vp).getReplacementObject().getMOFRef().split("\\.")[1];
+				
+				ArrayList<Binding> bindList = returnBinding(bindingList, oldServer);
+				Component newComponentServer = returnComponent(newServer, sourceComponentList);
+				//if (newComponentServer  == null) System.out.println("null"+":"+sourceComponentList.size());
+				
+				for (int j = 0; j < bindList.size(); j++ ) {
+					destinationBinding = bindList.get(j);
+					destinationBinding.setServer(newServer);
+					
+					String oldInterface = destinationBinding.getServerInterface().getName(); 
+					for (int k = 0; k < newComponentServer.getInterfaces().size(); k++) {
+						if (newComponentServer.getInterfaces().get(k).getName().equals(oldInterface)) {
+							destinationBinding.setServerInterface(newComponentServer.getInterfaces().get(k));
+							break;
 						}
 					}
-							
-					
-				}	
+					String client = destinationBinding.getClient();
+					VariationPoint vpClient = returnVP(client, vpList);
+					try {
+						if (decisionList.get(returnIndexofVSpec(vpClient, vSpecList)).equals("true")) {
+								destinationDefinition.getBindings().add(destinationBinding);
+						}
+					}catch (Exception e){}
+				}
 			}
-			/*
-			 * write to file
-			 */
-			Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
-			Map<String, Object> m = reg.getExtensionToFactoryMap();
-		    m.put("fractal", new XMIResourceFactoryImpl());
-		    // Obtain a new resource set
-		    ResourceSet resSet = new ResourceSetImpl();
-		    // create a resource
-		    Resource resource = resSet.createResource(URI.createURI("model//product.fractal"));
-		    
-		    // Get the first model element and cast it to the right type, in my
-		    // example everything is hierarchical included in this first node
-		    resource.getContents().add(destinationDefinition);
+			
+			if ((vp instanceof ObjectExistence) && 
+					(decisionList.get(returnIndexofVSpec(vp, vSpecList)).equals("true"))) {
+				String serverName = ((ObjectExistence) vp).getOptionalObject().getMOFRef().split("\\.")[1];
+				ArrayList<Binding> destinationBindingList = returnBinding(bindingList, serverName); 
+				//TODO: can be returned a list of binds ????
+				for (int j = 0; j < destinationBindingList.size(); j++) {
+					destinationBinding = destinationBindingList.get(j);
+					
+					//System.out.println("ss"+j);
+					
+					if (destinationBindingList !=null) {
+						String client = destinationBinding.getClient();
+						//System.out.println(client+"::"+vpList.size());
+
+						VariationPoint vpClient = returnVP(client, vpList);
+						//System.out.println(vpClient.getName());
+
+						try{
+							if (decisionList.get(returnIndexofVSpec(vpClient, vSpecList)).equals("true")) {
 	
-		    // now save the content.
-		    try {
-		      resource.save(Collections.EMPTY_MAP);
-		    } catch (IOException e) {
-		      // TODO Auto-generated catch block
-		      e.printStackTrace();
-		    }
-		} else System.out.println("Resolution model is not comportable");
+								destinationDefinition.getBindings().add(destinationBinding);
+							}
+						}catch (Exception e1){}
+					}
+				}
+						
+				
+			}	
+		}
+		*/
+		/*
+		 * write to file
+		 */
+		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+		Map<String, Object> m = reg.getExtensionToFactoryMap();
+	    m.put("fractal", new XMIResourceFactoryImpl());
+	    // Obtain a new resource set
+	    ResourceSet resSet = new ResourceSetImpl();
+	    // create a resource
+	    Resource resource = resSet.createResource(URI.createURI("model//product.fractal"));
+	    
+	    // Get the first model element and cast it to the right type, in my
+	    // example everything is hierarchical included in this first node
+	    resource.getContents().add(destinationDefinition);
+
+	    // now save the content.
+	    try {
+	    	resource.save(Collections.EMPTY_MAP);
+	    } catch (IOException e) {
+	      // TODO Auto-generated catch block
+	    	e.printStackTrace();
+	    }
+		
 	} 
 	public String returnClient(Binding bd, String serverName) {
 		String str = "";
 		return str; 
 	}
 
-	@SuppressWarnings("null")
+	public RealizationComponent returnRealizationComponents(String name, List<RealizationComponent> realizationComponentList) {
+		RealizationComponent realizationComponent = null;
+		for (int i = 0; i < realizationComponentList.size(); i++) {
+			if (name.equals(realizationComponentList.get(i).getName())) return realizationComponentList.get(i);
+		}
+		return realizationComponent;
+	}
 	public ArrayList<Binding> returnBinding(List<Binding> bindingList, String serverName) {
 		ArrayList<Binding> bd = new ArrayList<Binding>();
 		if (bindingList != null)
@@ -285,7 +353,6 @@ public class GeneratingProductArchitecture {
 			if (vSpecList.get(i).getName().equals(vp.getBindingVSpec().getName())) {
 				return i;
 			}
-			//System.out.println("aa:"+vSpecList.size());
 		}
 		
 		return indexofvSpec;
