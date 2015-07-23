@@ -18,5 +18,6 @@ public interface ProductGenerationService {
 			List<RealizationComponent> realizationComponentList, ArrayList<VSpec> vSpecList,	
 			ArrayList<VariationPoint> vpList, ArrayList<VSpecResolution> resolutionList);
 	void setAttribute(Definition destinationDefinition, ArrayList<VariationPoint> vpList, ArrayList<VSpecResolution> resolutionList );
-	public boolean addBinding(Definition destinationDefinition, List<Binding> bindingList);
+	public boolean addBinding(Definition destinationDefinition, List<Binding> bindingList, 
+			ArrayList<VariationPoint> vpList, ArrayList<VSpecResolution> resolutionList);
 }

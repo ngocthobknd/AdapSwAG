@@ -1,4 +1,4 @@
-package transformation;
+package transformation.productArchitecture;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +20,7 @@ import org.ow2.fractal.f4e.fractal.FractalFactory;
 import org.ow2.fractal.f4e.fractal.FractalPackage;
 import org.ow2.fractal.f4e.fractal.RealizationComponent;
 
+import transformation.ProductGenerationService;
 import tree.ResolutionTree;
 import tree.VSpecTree;
 import cvl.Choice;
@@ -64,6 +65,7 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 	FractalFactory fractalFractory;
 	ResolutionTree rs;
 	VSpecTree vSpec;
+	
 	
 	public GeneratingProductArchitecture() {
 		FractalPackage.eINSTANCE.eClass();
@@ -112,8 +114,8 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 		setAttribute(destinationDefinition, vpList, resolutionList);
 
 		
-		addBinding(destinationDefinition, bindingList);
-
+		//addBinding(destinationDefinition, bindingList,);
+		addBinding(destinationDefinition, bindingList, vpList, resolutionList);
 		/*
 		 * write to file
 		 */
@@ -159,7 +161,7 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 					iter.remove();
 					deleteVSpecInVSpecList(choice, vSpecList);
 				} else {
-					VariationPoint vp = returnVP(choice.getName(), vpList);
+					VariationPoint vp = returnVPByVSpecName(choice.getName(), vpList);
 					String componentName = "";
 					String realizationComponentName = "";
 					RealizationComponent realizationComponent = null;
@@ -181,7 +183,7 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 						//add realization component 
 						destinationDefinition.getRealizationComponents().add(realizationComponent);
 					}
-					destinationCompnent = returnComponent(componentName, sourceComponentList);				
+					destinationCompnent = returnComponentByName(componentName, sourceComponentList);				
 					try {
 						if ((realizationComponent != null) && (((ChoiceResolution)vSpecresolution).isDecision())) {
 							Content content = fractalFractory.createContent();
@@ -209,8 +211,8 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 			VariationPoint vpVariable = vpList.get(i);
 			if (vpVariable instanceof ParametricSlotAssignment) {
 				VSpec vspec = vpVariable.getBindingVSpec();
-				System.out.println(vspec);		
-				VSpecResolution vspecresolution = returnResolutionVSpec(vspec, resolutionList);
+				//System.out.println(vspec);		
+				VSpecResolution vspecresolution = returnVSpecResolutionByVSpecName(vspec, resolutionList);
 				String value = ((VariableValueAssignment)vspecresolution).getValue();
 				
 				String valueComponentName = ((ParametricSlotAssignment) vpVariable).getSlotOwner().getMOFRef().split("\\.")[1];
@@ -250,7 +252,8 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 		}
 	}
 	
-	public boolean addBinding(Definition destinationDefinition, List<Binding> bindingList) {
+	public boolean addBinding(Definition destinationDefinition, List<Binding> bindingList,
+			ArrayList<VariationPoint> vpList, ArrayList<VSpecResolution> resolutionList) {
 		//List<Binding> bindingList = new ArrayList(sourceDefinitionFractal.getBindings());
 		Binding destinationBinding;// = fractalFractory.createBinding();
 		for (int i = 0; i < bindingList.size(); i++) {
@@ -258,17 +261,60 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 			String client = destinationBinding.getClient();
 			String server = destinationBinding.getServer();
 			boolean chk1 = false, chk2 = false;
-			System.out.println(client+server);
+			//System.out.println(client+server);
 			for (int j = 0; j < destinationDefinition.getSubComponents().size(); j ++) {
-				System.out.println(destinationDefinition.getSubComponents().get(j).getName());
+				//System.out.println(destinationDefinition.getSubComponents().get(j).getName());
 				
 				if (client.equals(destinationDefinition.getSubComponents().get(j).getName())) chk1 = true;
 				if (server.equals(destinationDefinition.getSubComponents().get(j).getName())) chk2 = true;
 			}
-			if (chk1 && chk2) destinationDefinition.getBindings().add(destinationBinding);
+			
+			ChoiceResolution vspr1 = (ChoiceResolution)returnVSpecResolutionByComponentName(client, vpList, resolutionList);
+			ChoiceResolution vspr2 = (ChoiceResolution)returnVSpecResolutionByComponentName(server, vpList, resolutionList);
+			//if ((vspr1 != null) && (vspr2 != null)) System.out.println(chk1 +""+ chk2 +""+ vspr1.isDecision() +""+ vspr2.isDecision());
+			if (chk1 && chk2 && vspr1.isDecision() && vspr2.isDecision()) destinationDefinition.getBindings().add(destinationBinding);
 			
 		}
 		return true;
+	}
+	public VSpecResolution returnVSpecResolutionByComponentName(String componentName,	
+			ArrayList<VariationPoint> vpList, ArrayList<VSpecResolution> resolutionList) {
+		VSpecResolution vspr = null;
+		
+		VariationPoint vp = returnVPByComponent(componentName, vpList);
+		if (vp != null) 
+		if (vp instanceof ObjectExistence) {
+			VSpec vsp = vp.getBindingVSpec();
+			vspr = returnVSpecResolutionByVSpecName(vsp, resolutionList);
+			
+		} else if (vp instanceof ObjectSubstitution) {
+			VSpec vsp = vp.getBindingVSpec();
+			//if vp is objectsubtitution, we need find the parent of a Vspec in Vspec tree  
+			VSpec parent = (VSpec)vsp.eContainer();
+			vspr = returnVSpecResolutionByVSpecName(parent, resolutionList);
+		}
+		
+		return vspr;
+	}
+	public VariationPoint returnVPByComponent (String componentName, ArrayList<VariationPoint> vpList) {
+		VariationPoint vp = null;
+		for (int i = 0; i < vpList.size(); i++) {
+			if (vpList.get(i) instanceof ObjectExistence) {
+				String strcomponentName = ((ObjectExistence)vpList.get(i)).getOptionalObject().getMOFRef().split("\\.")[1];
+				if (strcomponentName.equals(componentName)) {
+					return vpList.get(i); 
+				}
+			} else if (vpList.get(i) instanceof ObjectSubstitution) {
+				String strPlacementName = ((ObjectSubstitution)vpList.get(i)).getPlacementObject().getMOFRef().split("\\.")[1];
+				String strReplacementName = ((ObjectSubstitution)vpList.get(i)).getReplacementObject().getMOFRef().split("\\.")[1];
+				
+				if (strPlacementName.equals(componentName) || strReplacementName.equals(componentName) ) {
+					//System.out.println(vpList.get(i));
+					return vpList.get(i); 
+				}
+			}
+		}
+		return vp;
 	}
 	public void deleteVSpecInVSpecList(VSpec vSpec, ArrayList<VSpec> vSpecList) {
 		for (Iterator<VSpec> vs = vSpecList.listIterator(); vs.hasNext(); ) {
@@ -281,8 +327,6 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 		}
 		    
 	}
-
-
 	public RealizationComponent returnRealizationComponents(String name, List<RealizationComponent> realizationComponentList) {
 		RealizationComponent realizationComponent = null;
 		for (int i = 0; i < realizationComponentList.size(); i++) {
@@ -302,7 +346,7 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 			}
 		return bd;
 	}
-	public VSpecResolution returnResolutionVSpec(VSpec vSpec, ArrayList<VSpecResolution> resolutionList) {
+	public VSpecResolution returnVSpecResolutionByVSpecName(VSpec vSpec, ArrayList<VSpecResolution> resolutionList) {
 		VSpecResolution vSpecresolution = null;
 		for (int i = 0; i < resolutionList.size(); i++) {
 			if (resolutionList.get(i).getResolvedVSpec().getName().equals(vSpec.getName())) {
@@ -311,7 +355,7 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 		}
 		return vSpecresolution;
 	}
-	public Component returnComponent(String name, List<Component> sourceComponents) {
+	public Component returnComponentByName(String name, List<Component> sourceComponents) {
 		List<Component> listTemp = new ArrayList<Component>(sourceComponents);
 		Component component = null;
 		for (int i = 0; i < listTemp.size(); i++) {
@@ -322,7 +366,7 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 		return component;
 	}
 	
-	public VariationPoint returnVP(String vSpec, ArrayList<VariationPoint> vpList) {
+	public VariationPoint returnVPByVSpecName(String vSpec, ArrayList<VariationPoint> vpList) {
 		VariationPoint vp = null;
 		for (int i = 0; i < vpList.size(); i++) {
 			if (vpList.get(i).getBindingVSpec().getName().equals(vSpec)) {
@@ -332,7 +376,7 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 		return vp;
 	}
 
-	public int returnVSpecOfVP(VariationPoint vp, ArrayList<VSpec> vSpecList) {
+	public int returnVSpecByVP(VariationPoint vp, ArrayList<VSpec> vSpecList) {
 		int indexofvSpec = -1;
 		
 		for (int i = 0; i < vSpecList.size(); i++) {
