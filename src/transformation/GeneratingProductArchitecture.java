@@ -2,41 +2,32 @@ package transformation;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.omg.CORBA.ExceptionList;
-import org.ow2.fractal.f4e.fractal.AbstractComponent;
 import org.ow2.fractal.f4e.fractal.Binding;
 import org.ow2.fractal.f4e.fractal.Component;
 import org.ow2.fractal.f4e.fractal.Content;
 import org.ow2.fractal.f4e.fractal.Definition;
 import org.ow2.fractal.f4e.fractal.FractalFactory;
 import org.ow2.fractal.f4e.fractal.FractalPackage;
-import org.ow2.fractal.f4e.fractal.Interface;
 import org.ow2.fractal.f4e.fractal.RealizationComponent;
 
 import tree.ResolutionTree;
 import tree.VSpecTree;
-import verification.ResolutionModelVerification;
 import cvl.Choice;
 import cvl.ChoiceResolution;
 import cvl.ObjectExistence;
 import cvl.ObjectHandle;
 import cvl.ObjectSubstitution;
 import cvl.ParametricSlotAssignment;
-import cvl.VInstance;
 import cvl.VSpec;
 import cvl.VSpecResolution;
 import cvl.VariableValueAssignment;
@@ -119,6 +110,7 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 		 * set value of attribute in component
 		 */
 		setAttribute(destinationDefinition, vpList, resolutionList);
+
 		
 		addBinding(destinationDefinition, bindingList);
 
@@ -158,8 +150,7 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 			VSpecResolution vSpecresolution = iter.next();
 			if (vSpecresolution instanceof ChoiceResolution) cas = 0;
 			else if (vSpecresolution instanceof VariableValueAssignment) cas = 1;
-			else if (vSpecresolution instanceof VInstance) cas = 2;
-			else cas = 3;
+			else cas = 2;
 
 			if (cas == 0) {
 				Choice choice = ((ChoiceResolution)vSpecresolution).getResolvedChoice();
@@ -236,12 +227,12 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 		return true;
 	}
 	
-	/*
+	
 	public void addDisconnectedComponent(Definition destinationDefinition, List<Component> sourceComponentList, 
 			List<RealizationComponent> realizationComponentList, ArrayList<VSpec> vSpecList,	
 			ArrayList<VariationPoint> vpList, ArrayList<VSpecResolution> resolutionList) {
 		//add component to destination model if it has not relation with VP
-		
+		// if search component MOF is not in VPs, add this component to product	
 		for (int i = 0; i < sourceComponentList.size(); i++) {
 			boolean chk = true;
 			for (int j = 0; j < vpList.size(); j++) {
@@ -258,7 +249,7 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 			if (chk) destinationDefinition.getSubComponents().add(sourceComponentList.get(i));
 		}
 	}
-	*/
+	
 	public boolean addBinding(Definition destinationDefinition, List<Binding> bindingList) {
 		//List<Binding> bindingList = new ArrayList(sourceDefinitionFractal.getBindings());
 		Binding destinationBinding;// = fractalFractory.createBinding();
