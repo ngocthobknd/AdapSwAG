@@ -1,10 +1,12 @@
 package architecture;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -34,192 +36,8 @@ import org.ow2.fractal.f4e.fractal.Component;
 import org.ow2.fractal.f4e.fractal.Definition;
 import org.ow2.fractal.f4e.fractal.FractalPackage;
 import org.ow2.fractal.f4e.fractal.Interface;
+import org.ow2.fractal.f4e.fractal.RealizationComponent;
 
-class ComponentShape2 extends Rectangle {
-	/*
-	 * define a component 
-	 */
-	Rectangle rect;
-	ArrayList<Arc2D.Float> requestList = new ArrayList<Arc2D.Float>();
-	ArrayList<Line2D.Float> lineArcList = new ArrayList<Line2D.Float>(); //line connect from request to component
-	ArrayList<Ellipse2D.Float> serviceList = new ArrayList<Ellipse2D.Float>();
-	ArrayList<Line2D.Float> lineCircleList = new ArrayList<Line2D.Float>(); //line connect from service to component
-	int requestNumber=0, offerNumber=0;
-	public int x, y;
-	int width, height;
-	String name;
-	EList<Attribute> attributes;
-	public ComponentShape2(int x, int y, int width, int height, int requestNumber, int offerNumber, String name, EList<Attribute> attributes) {
-		/*
-		 * x,y are position of component
-		 * arcNumber is request number of component
-		 * circleNumber is interface number of component
-		 * name is name of component 
-		 */
-		this.x = x;
-		this.y = y;
-		
-		width = 100;
-		height = 60 ;
-		this.width = width;
-		this.height = height;
-		this.requestNumber = requestNumber;
-		this.offerNumber = offerNumber;
-		this.name = name;
-		this.attributes = attributes;
-		rect = new Rectangle(x+35, y, width, height);
-		for (int i = 0; i < requestNumber; i++) {
-			Arc2D.Float arc = new Arc2D.Float(x+width+55, y + (height/(requestNumber+1))*(i+1)-7,15, 15,90, 180, 0);
-			requestList.add(arc);
-			Line2D.Float line = new Line2D.Float(x+width+35, y + (height/(requestNumber+1))*(i+1), x+width+55,y + (height/(requestNumber+1))*(i+1));
-			lineArcList.add(line);
-		}
-		for (int j = 0; j < offerNumber; j++) {
-			Ellipse2D.Float ellipse = new Ellipse2D.Float(x, y + (height/(offerNumber+1))*(j+1) - 7, 15, 15);
-			serviceList.add(ellipse);
-
-			Line2D.Float line = new Line2D.Float(x+15, y + (height/(offerNumber+1))*(j+1), x+35,y + (height/(offerNumber+1))*(j+1));
-			lineCircleList.add(line);
-		}
-	}
-
-	public void setX(int x) {
-		this.x = x;
-	}
-
-	public void setY(int y) {
-		this.y = y;
-	}
-
-	public Rectangle getRect() {
-		return rect;
-	}
-
-	public void setRect(Rectangle rect) {
-		this.rect = rect;
-	}
-
-	public ArrayList<Arc2D.Float> getRequestList() {
-		return requestList;
-	}
-
-	public void setArcList(ArrayList<Arc2D.Float> requestList) {
-		this.requestList = requestList;
-	}
-
-	public ArrayList<Line2D.Float> getLineArcList() {
-		return lineArcList;
-	}
-
-	public void setLineArcList(ArrayList<Line2D.Float> lineArcList) {
-		this.lineArcList = lineArcList;
-	}
-
-	public ArrayList<Ellipse2D.Float> getCircleList() {
-		return serviceList;
-	}
-
-	public void setCircleList(ArrayList<Ellipse2D.Float> circleList) {
-		this.serviceList = circleList;
-	}
-
-	public ArrayList<Line2D.Float> getLineCircleList() {
-		return lineCircleList;
-	}
-
-	public void setLineCircleList(ArrayList<Line2D.Float> lineCircleList) {
-		this.lineCircleList = lineCircleList;
-	}
-
-	public int getRequestNumber() {
-		return requestNumber;
-	}
-
-	public void setArcNumber(int arcNumber) {
-		this.requestNumber = arcNumber;
-	}
-
-	public int getServiceNumber() {
-		return offerNumber;
-	}
-
-	public void setServiceNumber(int circleNumber) {
-		this.offerNumber = circleNumber;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public EList<Attribute> getAttributes() {
-		return attributes;
-	}
-
-	public void setAttributes(EList<Attribute> attributes) {
-		this.attributes = attributes;
-	}
-	
-}
-class ConnectionShape2 {
-	String client;
-	Interface clientInterface;
-	int interfaceClientOrder;
-	String server;
-	Interface serverInterface;
-	int interfaceServerOrder;
-	public ConnectionShape2(String client, Interface clientInterface, int interfaceClientOrder,
-			String server, Interface serverInterface, int interfaceServerOrder) {
-		super();
-		this.client = client;
-		this.clientInterface = clientInterface;
-		this.interfaceClientOrder = interfaceClientOrder;
-		this.server = server;
-		this.serverInterface = serverInterface;
-		this.interfaceServerOrder = interfaceServerOrder;
-	}
-	public String getClient() {
-		return client;
-	}
-	public void setClient(String client) {
-		this.client = client;
-	}
-	public Interface getClientInterface() {
-		return clientInterface;
-	}
-	public void setClientInterface(Interface clientInterface) {
-		this.clientInterface = clientInterface;
-	}
-	public String getServer() {
-		return server;
-	}
-	public void setServer(String server) {
-		this.server = server;
-	}
-	public Interface getServerInterface() {
-		return serverInterface;
-	}
-	public void setServerInterface(Interface serverInterface) {
-		this.serverInterface = serverInterface;
-	}
-	public int getInterfaceClientOrder() {
-		return interfaceClientOrder;
-	}
-	public void setInterfaceClientOrder(int interfaceClientOrder) {
-		this.interfaceClientOrder = interfaceClientOrder;
-	}
-	public int getInterfaceServerOrder() {
-		return interfaceServerOrder;
-	}
-	public void setInterfaceServerOrder(int interfaceServerOrder) {
-		this.interfaceServerOrder = interfaceServerOrder;
-	}
-	
-	
-}
 
 public class ProductArchitecture extends JPanel {
 	ArrayList<ComponentShape> rectList = new ArrayList<ComponentShape>();
@@ -229,6 +47,8 @@ public class ProductArchitecture extends JPanel {
 	int x=100,y=100;
 	int componentNumber;
 	ArrayList<String> listAttributes = new ArrayList<String>();
+	EList<RealizationComponent> realizationCompponentList;
+
 	public ProductArchitecture() {
 		this.loadModel();
 		addMouseMotionListener(ma);
@@ -244,11 +64,12 @@ public class ProductArchitecture extends JPanel {
 		}
 		ResourceSet resourceSet = new ResourceSetImpl();
 		URI uri = URI.createFileURI("model//product.fractal");
+		
 		Resource resource = resourceSet.getResource(uri, true);
 		//get root of variability model 
 		Definition definition = (Definition) resource.getContents().get(0);
 		EList<Component> compponentList = definition.getSubComponents();
-		this.componentNumber = compponentList.size();
+		
 		for (int i = 0; i < compponentList.size(); i++) {
 			EList<Interface> interfaces = compponentList.get(i).getInterfaces();
 			int requestNumber = 0 , offerNumber = 0;
@@ -263,10 +84,29 @@ public class ProductArchitecture extends JPanel {
 			x = randomGenerator.nextInt(500);
 			y = randomGenerator.nextInt(300);
 			//System.out.println(requestNumber +","+offerNumber);
-			cp = new ComponentShape(x, y, 100, 60, requestNumber, offerNumber, compponentList.get(i).getName(), attributeList);
+			String cnt = "";
+			try {
+				if (compponentList.get(i).getContent().getClass_() != null) cnt = compponentList.get(i).getContent().getClass_();
+			} catch (Exception e) {
+				
+			}
+			cp = new ComponentShape(x, y, 100, 60, requestNumber, offerNumber, compponentList.get(i).getName(), attributeList, cnt);
+			rectList.add(cp);
+		}
+		realizationCompponentList = definition.getRealizationComponents();
+		
+		for (int i = 0; i < realizationCompponentList.size(); i++){
+			
+			Random randomGenerator = new Random(); 
+			x = randomGenerator.nextInt(500);
+			y = randomGenerator.nextInt(300);
+			
+			cp = new ComponentShape(x, y, 100, 60, 0, 0, realizationCompponentList.get(i).getName(), null, "");
+			//System.out.println("s");
 			rectList.add(cp);
 		}
 		
+		this.componentNumber = compponentList.size();
 		EList<Binding> bindingList = definition.getBindings();
 		for (int i = 0; i < bindingList.size(); i++) {
 			String client = bindingList.get(i).getClient();
@@ -275,7 +115,7 @@ public class ProductArchitecture extends JPanel {
 			//get order of interface in component
 			int clientInterfaceOrder = requestInterfaceOrder(compponentList, client, clientInterface .getName());
 			
-			System.out.println(clientInterfaceOrder + clientInterface .getName());
+			//System.out.println(clientInterfaceOrder + clientInterface .getName());
 			
 			String server = bindingList.get(i).getServer();
 			Interface serverInterface =  bindingList.get(i).getServerInterface();
@@ -285,6 +125,7 @@ public class ProductArchitecture extends JPanel {
 				connectionList.add(cs);
 			//} else System.out.println("can not find server interface");
 		}
+		
 	}
 	Component getComponent(EList<Component> compponentList, String componentName) {
 		Component component = null;
@@ -330,15 +171,17 @@ public class ProductArchitecture extends JPanel {
 		/*
 		 * read components list and paint them in graphic 
 		 */
-		for (int j = 0; j < componentNumber; j++) {
+		for (int j = 0; j < rectList.size(); j++) {
 			//draw rect
 			g2d.draw(rectList.get(j).getRect());
 			
 			
 			g2d.drawString(rectList.get(j).getName(), rectList.get(j).getRect().x + 30, rectList.get(j).getRect().y + 10);
-		    
+			if (rectList.get(j).getContent() != "") 
+				g2d.drawString("Content= "+rectList.get(j).getContent(), rectList.get(j).getRect().x, rectList.get(j).getRect().y + 20);
+			if (rectList.get(j).getAttributes() != null)    
 			for (int i = 0; i < rectList.get(j).getAttributes().size(); i++) {
-				g2d.drawString(rectList.get(j).getAttributes().get(i).getName() + "=" + rectList.get(j).getAttributes().get(i).getValue(), rectList.get(j).getRect().x , rectList.get(j).getRect().y + 10*(i+2));
+				g2d.drawString(rectList.get(j).getAttributes().get(i).getName() + "=" + rectList.get(j).getAttributes().get(i).getValue(), rectList.get(j).getRect().x , rectList.get(j).getRect().y + 10 + 10*(i+2));
 			}
 			
 			
@@ -377,6 +220,32 @@ public class ProductArchitecture extends JPanel {
 				}
 			}
 			g2d.drawLine(x1, y1, x2, y2);
+		}
+		
+
+		/*
+		 * read realization component and draw extend line
+		 * 
+		 */
+		for (int i = 0; i < realizationCompponentList.size(); i++) {
+			
+			int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+			String component = realizationCompponentList.get(i).getRealizes().getName();
+			String realizationComponentName = realizationCompponentList.get(i).getName();
+			for (int j = 0; j < rectList.size(); j++) {
+				if (rectList.get(j).getName().equals(realizationComponentName)) {
+					x1 = (int) rectList.get(j).getRect().x + 50;
+					y1 = (int) rectList.get(j).getRect().y + 0;
+				}
+				if (rectList.get(j).getName().equals(component)) {
+					x2 = (int) rectList.get(j).getRect().x + 50;
+					y2 = (int) rectList.get(j).getRect().y + 60;
+				}
+			}
+			Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+			g2d.setStroke(dashed);
+			g2d.drawLine(x1, y1, x2, y2);
+			
 		}
   }
   public Dimension getPreferredSize() {

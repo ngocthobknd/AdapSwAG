@@ -5,6 +5,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -38,6 +39,7 @@ import cvl.ParametricSlotAssignment;
 import cvl.VPackage;
 import cvl.VPackageable;
 import cvl.VSpec;
+import cvl.VSpecDerivation;
 import cvl.Variable;
 import cvl.VariationPoint;
 import cvl.cvlPackage;
@@ -63,7 +65,7 @@ public class VSpecTree extends JPanel {
 		String groupMultiplicity;
 		String availabilityTime;
 		vSpecList.add(vSpec);
-		
+		//System.out.println(vSpec);
 		if (vSpec.getAvailabilityTime().getName().equals("default")) {
 			availabilityTime = "runtime";
 		} else availabilityTime = vSpec.getAvailabilityTime().getName(); 
@@ -98,13 +100,18 @@ public class VSpecTree extends JPanel {
 		} catch (Exception e){
 		}
 		ResourceSet resourceSet = new ResourceSetImpl();
-		URI uri = URI.createFileURI("model//model.cvl");
+		
+		String filename = new File("model//model.cvl").getAbsolutePath();
+		URI uri = URI.createFileURI(filename);
 		resource = resourceSet.getResource(uri, true);
 		//get root of variability model 
 		VPackage vPackage = (VPackage) resource.getContents().get(0);
 		EList<VPackageable> packageElement = vPackage.getPackageElement();
 		
 		VSpec vSpec = (VSpec) packageElement.get(0);
+//		EList<VSpecDerivation> eeList = vSpec.getOwnedVSpecDerivation();
+//		System.out.println(eeList.size());
+//		for (VSpecDerivation d : eeList) System.out.println("123"+d.getName()); 
 		//System.out.println(vSpec.toString());
 		Node root = getNode(vSpec); 
 	    tree = new JTree(root);

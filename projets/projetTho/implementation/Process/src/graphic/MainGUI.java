@@ -1,45 +1,31 @@
 package graphic;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-
-import java.awt.FlowLayout;
-
-import javax.swing.JSplitPane;
-
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.EventQueue;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JPanel;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.border.TitledBorder;
 import javax.swing.JButton;
-import javax.swing.JTree;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
 
 import transformation.GeneratingProductArchitecture;
 import tree.ResolutionTree;
 import tree.VSpecTree;
-
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JEditorPane;
-
+import verification.ResolutionModelVerification;
 import architecture.BaseArchitecture;
 import architecture.ProductArchitecture;
-
-import java.awt.Canvas;
-
-import javax.swing.JList;
-import javax.swing.AbstractListModel;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class MainGUI {
 
@@ -95,14 +81,11 @@ public class MainGUI {
 		splitPane_2.setLeftComponent(panel_1);
 		panel_1.setLayout(new GridLayout(0, 1, 0, 0));
 		   
-		   
-		   
 	    BaseArchitecture m = new BaseArchitecture();
-	  //  scrollPane.setViewportView(m);
+	    //scrollPane.setViewportView(m);
 	    m.setDoubleBuffered(true);
 	    JScrollPane scrollPane = new JScrollPane(m);
 	    panel_1.add(scrollPane);
-		
 	    
 	    final JPanel panel_2 = new JPanel();
 		panel_2.setBorder(new TitledBorder(null, "Adaptive architecture", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -199,11 +182,28 @@ public class MainGUI {
 		pnResolutionTree.add(pnCtrl, BorderLayout.SOUTH);
 		pnCtrl.setLayout(new GridLayout(0, 2, 0, 0));
 		
-		JButton btnVerifyConsistency = new JButton("Verify consistency");
+		JButton btnVerifyConsistency = new JButton("Verify RM");
+		btnVerifyConsistency.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ResolutionTree rs;
+				VSpecTree vSpec;
+				rs = new ResolutionTree();
+				vSpec = new VSpecTree();
+				int mc = JOptionPane.WARNING_MESSAGE;
+				ResolutionModelVerification rmv = new ResolutionModelVerification(vSpec.vSpecList, rs.resolutionList);
+				if (rmv.verifyRM()) {
+					JOptionPane.showMessageDialog (null, "Verification OK",
+							"Verification", mc);
+				} else JOptionPane.showMessageDialog (null, "Errors: "+rmv.messageAlert,
+						"Verification", mc);
+				System.out.println("Result of verification: "+new ResolutionModelVerification(vSpec.vSpecList, rs.resolutionList).verifyRM());
+			}
+		});
 		pnCtrl.add(btnVerifyConsistency);
 		
 		JButton btnNewButton_2 = new JButton("Generate adaptative architecture");
 		btnNewButton_2.addActionListener(new ActionListener() {
+			@SuppressWarnings("static-access")
 			public void actionPerformed(ActionEvent paramActionEvent) {
 				GeneratingProductArchitecture generateProduct = new GeneratingProductArchitecture();
 				generateProduct.createProductModel(generateProduct.readArchitecture(""));

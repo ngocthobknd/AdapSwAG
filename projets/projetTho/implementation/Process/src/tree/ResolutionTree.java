@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.JCheckBox;
@@ -22,8 +23,10 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
+import test.VariabilityRenderer;
 import cvl.ChoiceResolution;
 import cvl.VInstance;
 import cvl.VPackage;
@@ -38,8 +41,8 @@ public class ResolutionTree extends JPanel {
 	private static final long serialVersionUID = 1L;
 	JTree tree ;
 	private Resource resource;
-	public ArrayList<String> decisionList = new ArrayList<String>(); //list of decision
-
+	//public ArrayList<String> decisionList = new ArrayList<String>(); //list of decision
+	public ArrayList<VSpecResolution> resolutionList = new ArrayList<VSpecResolution>();
 	public ResolutionNode getNode(VSpecResolution vSpec) {
 		String type = vSpec.getClass().getSimpleName().substring(0, vSpec.getClass().getSimpleName().length()-4);
 		String resolved = null;
@@ -53,7 +56,8 @@ public class ResolutionTree extends JPanel {
 		}
 
 		ResolutionNode node = new ResolutionNode(vSpec.getName(),type, resolved,true);
-		decisionList.add(node.getResolved());
+		//decisionList.add(node.getResolved());
+		resolutionList.add(vSpec);
 		if (vSpec.getChild().size() > 0)
 			for (int i=0; i<vSpec.getChild().size(); i++) {
 				VSpecResolution vSpecChild = vSpec.getChild().get(i); 
@@ -72,8 +76,10 @@ public class ResolutionTree extends JPanel {
 		} catch (Exception e){
 		}
 		ResourceSet resourceSet = new ResourceSetImpl();
-		URI uri = URI.createFileURI("model//resolution.cvl");
+		String filename = new File("model//resolution.cvl").getAbsolutePath();
+		URI uri = URI.createFileURI(filename);
 		resource = resourceSet.getResource(uri, true);
+		EcoreUtil.resolveAll(resourceSet);
 		//get root of variability model 
 		ChoiceResolution vSpec = (ChoiceResolution) resource.getContents().get(0);
 		VSpecResolution vSpec1 = (VSpecResolution) vSpec;
