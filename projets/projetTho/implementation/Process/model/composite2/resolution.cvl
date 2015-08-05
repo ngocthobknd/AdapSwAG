@@ -27,11 +27,11 @@
   </child>
   <child xsi:type="cvl:ChoiceResolution" name="A" decision="true">
     <resolvedVSpec xsi:type="cvl:Choice" href="model.cvl#//@packageElement.0/@child.2"/>
-    <child xsi:type="cvl:ChoiceResolution" name="A1" decision="true">
+    <child xsi:type="cvl:ChoiceResolution" name="A1" decision="false">
       <resolvedVSpec xsi:type="cvl:Choice" href="model.cvl#//@packageElement.0/@child.2/@child.0"/>
       <resolvedChoice href="model.cvl#//@packageElement.0/@child.2/@child.0"/>
     </child>
-    <child xsi:type="cvl:ChoiceResolution" name="A2">
+    <child xsi:type="cvl:ChoiceResolution" name="A2" decision="false">
       <resolvedVSpec xsi:type="cvl:Choice" href="model.cvl#//@packageElement.0/@child.2/@child.1"/>
       <resolvedChoice href="model.cvl#//@packageElement.0/@child.2/@child.1"/>
     </child>
