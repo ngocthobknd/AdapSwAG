@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fractal.ecore:Definition xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:fractal.ecore="http://org.ow2.fractal/f4e/fractal.ecore/1.0.0" name="productClientServer">
+  <subComponents name="Client">
+    <interfaces name="r"/>
+    <attribute name="synchrone" value="yes"/>
+  </subComponents>
+  <subComponents name="Server">
+    <interfaces name="s"/>
+    <subComponents name="Server1">
+      <interfaces name="s1" role="server"/>
+      <attribute name="id"/>
+    </subComponents>
+    <subComponents name="Server2">
+      <interfaces name="s2" role="server"/>
+    </subComponents>
+  </subComponents>
+  <bindings client="Client" server="Server" clientInterface="//@subComponents.0/@interfaces.0" serverInterface="//@subComponents.1/@interfaces.0"/>
+  <bindings client="Server" server="Server1" clientInterface="//@subComponents.1/@interfaces.0" serverInterface="//@subComponents.1/@subComponents.0/@interfaces.0"/>
+</fractal.ecore:Definition>
