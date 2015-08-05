@@ -8,7 +8,6 @@
   <subComponents name="Server">
     <interfaces name="s" role="server"/>
     <content class=""/>
-    <attribute name="id"/>
   </subComponents>
   <subComponents name="Temp">
     <interfaces name="s" role="server"/>
