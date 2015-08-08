@@ -29,16 +29,19 @@ import tree.ResolutionTree;
 import tree.VSpecTree;
 import cvl.Choice;
 import cvl.ChoiceResolution;
+import cvl.FragmentSubstitution;
 import cvl.ObjectExistence;
 import cvl.ObjectHandle;
 import cvl.ObjectSubstitution;
 import cvl.ParametricSlotAssignment;
+import cvl.VClassifier;
 import cvl.VSpec;
 import cvl.VSpecResolution;
+import cvl.Variable;
 import cvl.VariableValueAssignment;
 import cvl.VariationPoint;
 
-public class GeneratingCompositeArchitecture {
+public class GeneratingProductArchitecture implements ProductGenerationService{
 	
 	/*
 	 * algorithm for generating composite architecture
@@ -72,15 +75,21 @@ public class GeneratingCompositeArchitecture {
 	
 	ArrayList<Component> sourceComponentList = new ArrayList<Component>();
 	ArrayList<Component> destinationComponentList = new ArrayList<Component>();
+	List<Binding> sourcebindingList = new ArrayList<Binding>();
 	List<Binding> bindingList = new ArrayList<Binding>();
 	
-	String variabilityModelFileName = "model//composite2//model.cvl";
-	String resolutionModelFileName = "model//composite2//resolution.cvl";
-	String baseModelFileName = "model//composite2//CompositeArchitecture.fractal";
-	String productModelFileName = "model//composite2//productComposite2.fractal";
+	String variabilityModelFileName;// = "model//composite2//model.cvl";
+	String resolutionModelFileName;// = "model//composite2//resolution.cvl";
+	String baseModelFileName;// = "model//composite2//architecture.fractal";
+	String productModelFileName;// = "model//composite2//product.fractal";
 	
 	
-	public GeneratingCompositeArchitecture() {
+	public GeneratingProductArchitecture(String variabilityModel, String resolutionModel, 
+			String baseModel, String productModel) {
+		this.variabilityModelFileName = variabilityModel;
+		this.resolutionModelFileName = resolutionModel;
+		this.baseModelFileName = baseModel;
+		this.productModelFileName = productModel;
 		FractalPackage.eINSTANCE.eClass();
 		fractalFractory = FractalFactory.eINSTANCE;
 		destinationDefinition = fractalFractory.createDefinition();
@@ -123,6 +132,7 @@ public class GeneratingCompositeArchitecture {
 			readComponent(sourceDefinitionFractal.getSubComponents().get(i));
 		}
 		//List<RealizationComponent> realizationComponentList = new ArrayList(sourceDefinitionFractal.getRealizationComponents());
+		sourcebindingList = new ArrayList(sourceDefinitionFractal.getBindings());
 		bindingList = new ArrayList(sourceDefinitionFractal.getBindings());
 	
 		addComponents1(destinationDefinition, sourceComponentList, vSpecList, vpList, resolutionList);
@@ -152,44 +162,38 @@ public class GeneratingCompositeArchitecture {
 	    }
 		
 	} 
-	//add components to product for the first case
-	public boolean addComponents1(Definition destinationDefinition, List<Component> sourceComponentList, 
+	public boolean addComponents1(Definition destinationDefinition, 
+			List<Component> sourceComponentList, 
 			ArrayList<VSpec> vSpecList,	
 			ArrayList<VariationPoint> vpList, ArrayList<VSpecResolution> resolutionList) {
+		//begin procedure
 		ArrayList<VariationPoint> vpList_temp = new ArrayList<>(vpList);
-		for (Iterator<VSpecResolution> iter = resolutionList.listIterator(); iter.hasNext();) {
+		for (Iterator<VSpec> iter = vSpecList.listIterator(); iter.hasNext();) {
 
 			Component destinationCompnent = null;
-			VSpecResolution vSpecresolution = iter.next();
-			int cas = 2;	// cas = 0 : ChoiceResolution
-			// cas = 1 : VariableValueAssignment
-			if (vSpecresolution instanceof ChoiceResolution) cas = 0;
-			else if (vSpecresolution instanceof VariableValueAssignment) cas = 1;
-			else cas = 2;
-
-			if (cas == 0) {
-				Choice choice = ((ChoiceResolution)vSpecresolution).getResolvedChoice();
-				
-				if ((!((ChoiceResolution)vSpecresolution).isDecision()) && (! choice.getAvailabilityTime().getName().equals("runtime"))) {
-					iter.remove();
-					deleteVSpecInVSpecList(choice, vSpecList);
-					 //System.out.println(choice.getName());
-				} else {
-					VariationPoint vp = returnVPByVSpecName(choice.getName(), vpList_temp);
-					String componentName = "";
-			
+			VSpec vSpec = iter.next();
+			if (vSpec instanceof Choice) {
+				Choice choice = (Choice) vSpec;
+				VSpecResolution vSpecResolution = returnVSpecResolutionByVSpec(vSpec, resolutionList);
+				boolean decision = false;
+				if (vSpecResolution != null) {
+					decision = ((ChoiceResolution)vSpecResolution).isDecision();
+				} else if (choice.isDefaultResolution()) {
+					decision = choice.isDefaultResolution();
+				}
+				if (decision || vSpec.getAvailabilityTime().toString().equals("runtime")) {
+					VariationPoint vp = returnVPByVSpecName(vSpec.getName(), vpList_temp);
+					String componentName;
 					if (vp instanceof ObjectExistence) {
-						ObjectHandle oObject = ((ObjectExistence) vp).getOptionalObject();
-						componentName = oObject.getMOFRef().substring(oObject.getMOFRef().lastIndexOf(".") + 1);;
+						ObjectExistence vpObjE = (ObjectExistence) vp;
+						ObjectHandle objHandle = vpObjE.getOptionalObject();
+						componentName = objHandle.getMOFRef().substring(objHandle.getMOFRef().lastIndexOf(".") + 1);
 						
-						Component tempComponent = returnComponentByName(componentName, sourceComponentList);				
+						Component tempComponent = returnComponentByName(componentName, sourceComponentList);	
 						if (tempComponent.getSubComponents().isEmpty()) {
-							//System.out.println(tempComponent.getName());
 							Component componentA = setAttributeInComponent(tempComponent, vpList_temp, resolutionList);
 							destinationCompnent = componentA;
 						} else {
-							//System.out.println(tempComponent.getName());
-								
 							Component component = fractalFractory.createComponent();
 							component.setName(tempComponent.getName());
 							component.getInterfaces().addAll(tempComponent.getInterfaces());
@@ -209,16 +213,15 @@ public class GeneratingCompositeArchitecture {
 								try {
 									
 									VSpec vSpecTemp = returnVSpecByVP(vpTemp, vSpecList);
-									VSpecResolution vSpecResolutionTemp = returnVSpecResolutionByVSpecName(vSpecTemp, resolutionList);
+									VSpecResolution vSpecResolutionTemp = returnVSpecResolutionByVSpec(vSpecTemp, resolutionList);
 									if (vSpecTemp.getAvailabilityTime().toString().equals("runtime") || ((ChoiceResolution)vSpecResolutionTemp).isDecision()) {
 										if (!compList.get(i).getAttribute().isEmpty()) {
 											Component componentA = setAttributeInComponent(compList.get(i), vpList_temp, resolutionList);
 											component.getSubComponents().add(componentA);
-											System.out.println("add:"+componentA.getName());
 											destinationComponentList.add(componentA);
 										} else {
 											component.getSubComponents().add(compList.get(i));
-											System.out.println("add:"+compList.get(i).getName());
+											//System.out.println("add:"+compList.get(i).getName());
 											destinationComponentList.add(compList.get(i));
 										}
 								}
@@ -227,75 +230,204 @@ public class GeneratingCompositeArchitecture {
 							}
 							destinationCompnent = component;
 						}
-					} 
-			
+					}
 					else if (vp instanceof ObjectSubstitution) { 
-						String mofRefPlacement = ((ObjectSubstitution) vp).getPlacementObject().getMOFRef();
-						String mofRefReplacement = ((ObjectSubstitution) vp).getReplacementObject().getMOFRef();
-					
-						
+						ObjectSubstitution vpSubT = (ObjectSubstitution) vp;
+						String mofRefPlacement = vpSubT.getPlacementObject().getMOFRef();
+						String mofRefReplacement = vpSubT.getReplacementObject().getMOFRef();
 						String srcComponentName = mofRefPlacement.substring(mofRefPlacement.lastIndexOf(".") + 1);
-						Component temp_source = returnComponentByName(srcComponentName, sourceComponentList);
+						//Component temp_source = returnComponentByName(srcComponentName, sourceComponentList);
 						
 						componentName = mofRefReplacement.substring(mofRefReplacement.lastIndexOf(".") + 1);
 						destinationCompnent = returnComponentByName(componentName, sourceComponentList);
 					
-						
-						for (int i = 0; i < bindingList.size(); i++) {
-							String client = bindingList.get(i).getClient();
-							String server = bindingList.get(i).getServer();
-							Interface interfaceClient = bindingList.get(i).getClientInterface();
-							Interface interfaceServer = bindingList.get(i).getServerInterface();
-							if (client.equals(srcComponentName)) {
-								bindingList.get(i).setClient(componentName);
-								for (int j = 0; j < destinationCompnent.getInterfaces().size(); j++ ) {
-									if (destinationCompnent.getInterfaces().get(j).getRole().getName().equals("client") && 
-											interfaceClient.getName().equals(destinationCompnent.getInterfaces().get(j).getName())) {
-										bindingList.get(i).setClientInterface(destinationCompnent.getInterfaces().get(j));
+						if (decision) {
+							for (int i = 0; i < bindingList.size(); i++) {
+								String client = bindingList.get(i).getClient();
+								String server = bindingList.get(i).getServer();
+								Interface interfaceClient = bindingList.get(i).getClientInterface();
+								Interface interfaceServer = bindingList.get(i).getServerInterface();
+								if (client.equals(srcComponentName)) {
+									bindingList.get(i).setClient(componentName);
+									for (int j = 0; j < destinationCompnent.getInterfaces().size(); j++ ) {
+										if (destinationCompnent.getInterfaces().get(j).getRole().getName().equals("client") && 
+												interfaceClient.getName().equals(destinationCompnent.getInterfaces().get(j).getName())) {
+											bindingList.get(i).setClientInterface(destinationCompnent.getInterfaces().get(j));
+										}
 									}
 								}
-							}
-							if (server.equals(srcComponentName)) {
-								bindingList.get(i).setServer(componentName);
-								for (int j = 0; j < destinationCompnent.getInterfaces().size(); j++ ) {
-									if (destinationCompnent.getInterfaces().get(j).getRole().getName().equals("server") && 
-											interfaceServer.getName().equals(destinationCompnent.getInterfaces().get(j).getName())) {
-										bindingList.get(i).setServerInterface(destinationCompnent.getInterfaces().get(j));
+								if (server.equals(srcComponentName)) {
+									bindingList.get(i).setServer(componentName);
+									for (int j = 0; j < destinationCompnent.getInterfaces().size(); j++ ) {
+										if (destinationCompnent.getInterfaces().get(j).getRole().getName().equals("server") && 
+												interfaceServer.getName().equals(destinationCompnent.getInterfaces().get(j).getName())) {
+											bindingList.get(i).setServerInterface(destinationCompnent.getInterfaces().get(j));
+										}
 									}
 								}
 							}
 						}
+					} else if (vp instanceof FragmentSubstitution) { //VClassifier
+						//clone component
 					}
 					
-					if (destinationCompnent != null) {
-						destinationDefinition.getSubComponents().add(destinationCompnent);
-						System.out.println("add:"+destinationCompnent.getName());
-						destinationComponentList.add(destinationCompnent);
-					}
+				} else {
+					System.out.println(vSpec.getName() + " is not configured for product");
 				}
 			}
-			else {
-				System.out.println("");
+			if (destinationCompnent != null) {
+				destinationDefinition.getSubComponents().add(destinationCompnent);
+				//System.out.println("add:"+destinationCompnent.getName());
+				destinationComponentList.add(destinationCompnent);
 			}
 		}
-		
-		for (int i = 0; i < bindingList.size(); i++) {
-			System.out.println("bind: "+bindingList.get(i).getServer());
-		}
-		
 		return true;
 	}
+	
+	
+//	public boolean addComponents1(Definition destinationDefinition, 
+//			List<Component> sourceComponentList, 
+//			ArrayList<VSpec> vSpecList,	
+//			ArrayList<VariationPoint> vpList, ArrayList<VSpecResolution> resolutionList) {
+//		
+//		ArrayList<VariationPoint> vpList_temp = new ArrayList<>(vpList);
+//		for (Iterator<VSpecResolution> iter = resolutionList.listIterator(); iter.hasNext();) {
+//
+//			Component destinationCompnent = null;
+//			VSpecResolution vSpecresolution = iter.next();
+//			int cas = 2;	// cas = 0 : ChoiceResolution
+//			// cas = 1 : VariableValueAssignment
+//			if ((vSpecresolution instanceof ChoiceResolution) && ((ChoiceResolution)vSpecresolution).isDecision()) cas = 0;
+//			else if (vSpecresolution instanceof VariableValueAssignment) cas = 1;
+//			else cas = 2;
+//
+//			if (cas == 0) {
+//				Choice choice = ((ChoiceResolution)vSpecresolution).getResolvedChoice();
+//				if ((!((ChoiceResolution)vSpecresolution).isDecision()) && (! choice.getAvailabilityTime().getName().equals("runtime"))) {
+//					iter.remove();
+//					deleteVSpecInVSpecList(choice, vSpecList);
+//					 //System.out.println(choice.getName());
+//				} else {
+//					VariationPoint vp = returnVPByVSpecName(choice.getName(), vpList_temp);
+//					String componentName = "";
+//			
+//					if (vp instanceof ObjectExistence) {
+//						ObjectHandle oObject = ((ObjectExistence) vp).getOptionalObject();
+//						componentName = oObject.getMOFRef().substring(oObject.getMOFRef().lastIndexOf(".") + 1);;
+//						
+//						Component tempComponent = returnComponentByName(componentName, sourceComponentList);				
+//						if (tempComponent.getSubComponents().isEmpty()) {
+//							//System.out.println(tempComponent.getName());
+//							Component componentA = setAttributeInComponent(tempComponent, vpList_temp, resolutionList);
+//							destinationCompnent = componentA;
+//						} else {
+//							//System.out.println(tempComponent.getName());
+//								
+//							Component component = fractalFractory.createComponent();
+//							component.setName(tempComponent.getName());
+//							component.getInterfaces().addAll(tempComponent.getInterfaces());
+//							
+//							ArrayList<Component> compList = new ArrayList<Component>();
+//							EList<Component> eComponentList = tempComponent.getSubComponents();
+//							for (int i = 0; i < eComponentList.size(); i++) {
+//								compList.add(eComponentList.get(i));
+//							}
+//							
+//							for (int i = 0; i < compList.size(); i++) {
+//								Component subComponentTemp = compList.get(i);
+//								//System.out.println(i+":"+subComponentTemp.getName());	
+//								VariationPoint vpTemp = returnVPByComponent(subComponentTemp.getName(), vpList_temp);
+//								
+//								deleteVPInVPList(vpTemp, vpList_temp);
+//								try {
+//									
+//									VSpec vSpecTemp = returnVSpecByVP(vpTemp, vSpecList);
+//									VSpecResolution vSpecResolutionTemp = returnVSpecResolutionByVSpec(vSpecTemp, resolutionList);
+//									if (vSpecTemp.getAvailabilityTime().toString().equals("runtime") || ((ChoiceResolution)vSpecResolutionTemp).isDecision()) {
+//										if (!compList.get(i).getAttribute().isEmpty()) {
+//											Component componentA = setAttributeInComponent(compList.get(i), vpList_temp, resolutionList);
+//											component.getSubComponents().add(componentA);
+//											System.out.println("add:"+componentA.getName());
+//											destinationComponentList.add(componentA);
+//										} else {
+//											component.getSubComponents().add(compList.get(i));
+//											System.out.println("add:"+compList.get(i).getName());
+//											destinationComponentList.add(compList.get(i));
+//										}
+//								}
+//								}catch (Exception e) {System.out.println(e);}
+//								
+//							}
+//							destinationCompnent = component;
+//						}
+//					} 
+//			
+//					else if (vp instanceof ObjectSubstitution) { 
+//						String mofRefPlacement = ((ObjectSubstitution) vp).getPlacementObject().getMOFRef();
+//						String mofRefReplacement = ((ObjectSubstitution) vp).getReplacementObject().getMOFRef();
+//					
+//						
+//						String srcComponentName = mofRefPlacement.substring(mofRefPlacement.lastIndexOf(".") + 1);
+//						//Component temp_source = returnComponentByName(srcComponentName, sourceComponentList);
+//						
+//						componentName = mofRefReplacement.substring(mofRefReplacement.lastIndexOf(".") + 1);
+//						destinationCompnent = returnComponentByName(componentName, sourceComponentList);
+//					
+//						
+//						for (int i = 0; i < bindingList.size(); i++) {
+//							String client = bindingList.get(i).getClient();
+//							String server = bindingList.get(i).getServer();
+//							Interface interfaceClient = bindingList.get(i).getClientInterface();
+//							Interface interfaceServer = bindingList.get(i).getServerInterface();
+//							if (client.equals(srcComponentName)) {
+//								bindingList.get(i).setClient(componentName);
+//								for (int j = 0; j < destinationCompnent.getInterfaces().size(); j++ ) {
+//									if (destinationCompnent.getInterfaces().get(j).getRole().getName().equals("client") && 
+//											interfaceClient.getName().equals(destinationCompnent.getInterfaces().get(j).getName())) {
+//										bindingList.get(i).setClientInterface(destinationCompnent.getInterfaces().get(j));
+//									}
+//								}
+//							}
+//							if (server.equals(srcComponentName)) {
+//								bindingList.get(i).setServer(componentName);
+//								for (int j = 0; j < destinationCompnent.getInterfaces().size(); j++ ) {
+//									if (destinationCompnent.getInterfaces().get(j).getRole().getName().equals("server") && 
+//											interfaceServer.getName().equals(destinationCompnent.getInterfaces().get(j).getName())) {
+//										bindingList.get(i).setServerInterface(destinationCompnent.getInterfaces().get(j));
+//									}
+//								}
+//							}
+//						}
+//					}
+//					
+//					if (destinationCompnent != null) {
+//						destinationDefinition.getSubComponents().add(destinationCompnent);
+//						System.out.println("add:"+destinationCompnent.getName());
+//						destinationComponentList.add(destinationCompnent);
+//					}
+//				}
+//			}
+//			else {
+//				System.out.println("");
+//			}
+//		}
+//		
+//		for (int i = 0; i < bindingList.size(); i++) {
+//			System.out.println("bind: "+bindingList.get(i).getServer());
+//		}
+//		
+//		return true;
+//	}
 	
 	public Component setAttributeInComponent(Component component, ArrayList<VariationPoint> vpList, ArrayList<VSpecResolution> resolutionList ) {
 		/*
 		 * set value of attribute in component
 		 */		
-		//System.out.println(component.getAttribute().size());
 		for (int i = 0; i < component.getAttribute().size(); i++) {
 			VariationPoint vp = returnVPByAttribute(component.getAttribute().get(i).getName(), vpList);
 			if (vp != null) {
 				VSpec vspec = (vp).getBindingVSpec();
-				VSpecResolution vspecresolution = returnVSpecResolutionByVSpecName(vspec, resolutionList);
+				VSpecResolution vspecresolution = returnVSpecResolutionByVSpec(vspec, resolutionList);
 				String value = ((VariableValueAssignment)vspecresolution).getValue();
 				component.getAttribute().get(i).setValue(value);
 				
@@ -313,7 +445,7 @@ public class GeneratingCompositeArchitecture {
 			if (vpVariable instanceof ParametricSlotAssignment) {
 				VSpec vspec = vpVariable.getBindingVSpec();
 				
-				VSpecResolution vspecresolution = returnVSpecResolutionByVSpecName(vspec, resolutionList);
+				VSpecResolution vspecresolution = returnVSpecResolutionByVSpec(vspec, resolutionList);
 				String value = ((VariableValueAssignment)vspecresolution).getValue();
 				
 				String mofRef =  ((ParametricSlotAssignment) vpVariable).getSlotOwner().getMOFRef();
@@ -338,8 +470,8 @@ public class GeneratingCompositeArchitecture {
 			for (int j = 0; j < vpList.size(); j++) {
 				VariationPoint vp = vpList.get(j);
 				if (vp instanceof ObjectExistence) {
-					ObjectHandle oObject = ((ObjectExistence) vp).getOptionalObject();
-					String componentName = oObject.getMOFRef().split("\\.")[1];
+					String oObject = ((ObjectExistence) vp).getOptionalObject().getMOFRef();
+					String componentName = oObject.substring(oObject.lastIndexOf(".") + 1);
 					if (componentName.equals(sourceComponentList.get(i).getName())) {
 						chk = false;
 						break;
@@ -352,9 +484,7 @@ public class GeneratingCompositeArchitecture {
 	
 	public boolean addBinding(Definition destinationDefinition, ArrayList<Component> destinationComponentList, List<Binding> bindingList,
 			ArrayList<VariationPoint> vpList, ArrayList<VSpecResolution> resolutionList) {
-		//List<Binding> bindingList = new ArrayList(sourceDefinitionFractal.getBindings());
 		Binding destinationBinding;// = fractalFractory.createBinding();
-		//System.out.println(bindingList.size());
 		for (int i = 0; i < bindingList.size(); i++) {
 			destinationBinding = bindingList.get(i);
 			String client = destinationBinding.getClient();
@@ -362,8 +492,6 @@ public class GeneratingCompositeArchitecture {
 			boolean chk1 = false, chk2 = false;
 			
 			for (int j = 0; j < destinationComponentList.size(); j ++) {
-				//System.out.println(destinationComponentList.get(j).getName());
-				
 				if (client.equals(destinationComponentList.get(j).getName())) chk1 = true;
 				if (server.equals(destinationComponentList.get(j).getName())) chk2 = true;
 			}
@@ -372,7 +500,6 @@ public class GeneratingCompositeArchitecture {
 			ChoiceResolution vspr2 = (ChoiceResolution)returnVSpecResolutionByComponentName(server, vpList, resolutionList);
 			//if ((vspr1 != null) && (vspr2 != null)) System.out.println(chk1 +""+ chk2 +""+ vspr1.isDecision() +""+ vspr2.isDecision());
 			if (chk1 && chk2 && vspr1.isDecision() && vspr2.isDecision()) {
-				//System.out.println(client+server);
 				destinationDefinition.getBindings().add(destinationBinding);
 			}
 			
@@ -387,16 +514,26 @@ public class GeneratingCompositeArchitecture {
 		if (vp != null) 
 		if (vp instanceof ObjectExistence) {
 			VSpec vsp = vp.getBindingVSpec();
-			vspr = returnVSpecResolutionByVSpecName(vsp, resolutionList);
+			vspr = returnVSpecResolutionByVSpec(vsp, resolutionList);
 			
 		} else if (vp instanceof ObjectSubstitution) {
 			VSpec vsp = vp.getBindingVSpec();
 			//if vp is objectsubtitution, we need find the parent of a Vspec in Vspec tree  
 			VSpec parent = (VSpec)vsp.eContainer();
-			vspr = returnVSpecResolutionByVSpecName(parent, resolutionList);
+			vspr = returnVSpecResolutionByVSpec(parent, resolutionList);
 		}
 		
 		return vspr;
+	}
+	public VSpecResolution returnVSpecResolutionByVSpec(VSpec vSpec, ArrayList<VSpecResolution> resolutionList) {
+		
+		VSpecResolution vSpecresolution = null;
+		for (int i = 0; i < resolutionList.size(); i++) {
+			if (resolutionList.get(i).getResolvedVSpec().getName().equals(vSpec.getName())) {
+				return resolutionList.get(i);
+			}
+		}
+		return vSpecresolution;
 	}
 	public VariationPoint returnVPByComponent (String componentName, ArrayList<VariationPoint> vpList) {
 		VariationPoint vp = null;
@@ -475,15 +612,7 @@ public class GeneratingCompositeArchitecture {
 			}
 		return bd;
 	}
-	public VSpecResolution returnVSpecResolutionByVSpecName(VSpec vSpec, ArrayList<VSpecResolution> resolutionList) {
-		VSpecResolution vSpecresolution = null;
-		for (int i = 0; i < resolutionList.size(); i++) {
-			if (resolutionList.get(i).getResolvedVSpec().getName().equals(vSpec.getName())) {
-				return resolutionList.get(i);
-			}
-		}
-		return vSpecresolution;
-	}
+	
 	public Component returnComponentByName(String name, List<Component> sourceComponents) {
 		List<Component> listTemp = new ArrayList<Component>(sourceComponents);
 		Component component = null;
@@ -505,17 +634,6 @@ public class GeneratingCompositeArchitecture {
 		return vp;
 	}
 
-//	public int returnVSpecByVP(VariationPoint vp, ArrayList<VSpec> vSpecList) {
-//		int indexofvSpec = -1;
-//		
-//		for (int i = 0; i < vSpecList.size(); i++) {
-//			if (vSpecList.get(i).getName().equals(vp.getBindingVSpec().getName())) {
-//				return i;
-//			}
-//		}
-//		
-//		return indexofvSpec;
-//	}
 	public VSpec returnVSpecByVP(VariationPoint vp, ArrayList<VSpec> vSpecList) {
 		VSpec vSpec = null;
 		
@@ -528,9 +646,13 @@ public class GeneratingCompositeArchitecture {
 		return vSpec;
 	}
 	public static void main(String [] args) {
-		GeneratingCompositeArchitecture q = new GeneratingCompositeArchitecture();
-		
-		
+		String variabilityModelFileName = "model//composite2//model.cvl";
+		String resolutionModelFileName = "model//composite2//resolution.cvl";
+		String baseModelFileName = "model//composite2//architecture.fractal";
+		String productModelFileName = "model//composite2//product.fractal";
+		GeneratingProductArchitecture q = new GeneratingProductArchitecture(variabilityModelFileName, 
+				resolutionModelFileName, baseModelFileName, 
+				productModelFileName);
 		q.createProductModel(q.readArchitecture(""));
 	}
 

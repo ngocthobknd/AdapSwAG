@@ -35,7 +35,7 @@ import cvl.VSpecResolution;
 import cvl.VariableValueAssignment;
 import cvl.VariationPoint;
 
-public class GeneratingArchitecture implements ProductGenerationService {
+public class GeneratingArchitecture {
 	
 	/*
 	 * algorithm for generating product architecture
