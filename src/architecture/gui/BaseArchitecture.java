@@ -1,4 +1,4 @@
-package architecture;
+package architecture.gui;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -7,16 +7,11 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
-import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
-import java.awt.geom.PathIterator;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -40,7 +35,7 @@ import org.ow2.fractal.f4e.fractal.RealizationComponent;
 /*
  * This class presents component architecture in GUI
  */
-class ComponentShape extends Rectangle {
+class ComponentShape {
 	/*
 	 * define a component 
 	 */
@@ -233,12 +228,9 @@ class ConnectionShape {
 		this.interfaceServerOrder = interfaceServerOrder;
 	}
 }
-class ExtendLine {
-	String client;
-	String server;
-	
-}
 
+
+@SuppressWarnings("serial")
 public class BaseArchitecture extends JPanel {
 	ArrayList<ComponentShape> rectList = new ArrayList<ComponentShape>();
 	ArrayList<ConnectionShape> connectionList = new ArrayList<ConnectionShape>();
@@ -260,7 +252,7 @@ public class BaseArchitecture extends JPanel {
 		} catch (Exception e){
 		}
 		ResourceSet resourceSet = new ResourceSetImpl();
-		URI uri = URI.createFileURI("model//architecture.fractal");
+		URI uri = URI.createFileURI("model//composite2//architecture.fractal");
 		Resource resource = resourceSet.getResource(uri, true);
 		//get root of base model 
 		Definition definition = (Definition) resource.getContents().get(0);

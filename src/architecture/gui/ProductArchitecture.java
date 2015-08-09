@@ -1,22 +1,13 @@
-package architecture;
+package architecture.gui;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
-import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Arc2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.PathIterator;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -39,6 +30,7 @@ import org.ow2.fractal.f4e.fractal.Interface;
 import org.ow2.fractal.f4e.fractal.RealizationComponent;
 
 
+@SuppressWarnings("serial")
 public class ProductArchitecture extends JPanel {
 	ArrayList<ComponentShape> rectList = new ArrayList<ComponentShape>();
 	ArrayList<ConnectionShape> connectionList = new ArrayList<ConnectionShape>();
@@ -49,12 +41,13 @@ public class ProductArchitecture extends JPanel {
 	ArrayList<String> listAttributes = new ArrayList<String>();
 	EList<RealizationComponent> realizationCompponentList;
 
-	public ProductArchitecture() {
-		this.loadModel();
+	String productFileName = "model//product.fractal";
+	public ProductArchitecture(String productFileName) {
+		this.loadModel(productFileName);
 		addMouseMotionListener(ma);
 		addMouseListener(ma);
 	}
-	public void loadModel() {
+	public void loadModel(String productFileName) {
 		FractalPackage.eINSTANCE.eClass();
 		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
 		try {
@@ -63,7 +56,7 @@ public class ProductArchitecture extends JPanel {
 		} catch (Exception e){
 		}
 		ResourceSet resourceSet = new ResourceSetImpl();
-		URI uri = URI.createFileURI("model//product.fractal");
+		URI uri = URI.createFileURI(productFileName);
 		
 		Resource resource = resourceSet.getResource(uri, true);
 		//get root of variability model 
@@ -299,7 +292,7 @@ public class ProductArchitecture extends JPanel {
   }
   public static void main(String[] args) {
     JFrame frame = new JFrame("Moving");
-    ProductArchitecture m = new ProductArchitecture();
+    ProductArchitecture m = new ProductArchitecture("model//product.fractal");
     m.setDoubleBuffered(true);
     
     JScrollPane scrollPane = new JScrollPane(m);
