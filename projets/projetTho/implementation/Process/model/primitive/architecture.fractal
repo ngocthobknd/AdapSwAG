@@ -9,11 +9,13 @@
     <interfaces name="s" role="server"/>
     <content class=""/>
   </subComponents>
-  <subComponents name="Temp">
+  <subComponents name="Server1">
     <interfaces name="s" role="server"/>
   </subComponents>
-  <realizationComponents name="Server1" realizes="//@subComponents.1"/>
-  <realizationComponents name="Server2" realizes="//@subComponents.1"/>
+  <subComponents name="Server2">
+    <interfaces name="s" signature="" role="server"/>
+  </subComponents>
+  <subComponents name="Temp"/>
   <bindings client="Client" server="Server" clientInterface="//@subComponents.0/@interfaces.0" serverInterface="//@subComponents.1/@interfaces.0"/>
-  <bindings client="Client" server="Temp" clientInterface="//@subComponents.0/@interfaces.0" serverInterface="//@subComponents.2/@interfaces.0"/>
+  <bindings client="Client" server="Temp" clientInterface="//@subComponents.0/@interfaces.0"/>
 </fractal.ecore:Definition>

@@ -1,4 +1,4 @@
-package tree;
+package test.tree;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
@@ -26,7 +26,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
-import test.VariabilityRenderer;
+
 import cvl.ChoiceResolution;
 import cvl.VInstance;
 import cvl.VPackage;
@@ -39,6 +39,7 @@ public class ResolutionTree extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	String resolutionModelFileName = null;
 	JTree tree ;
 	private Resource resource;
 	//public ArrayList<String> decisionList = new ArrayList<String>(); //list of decision
@@ -67,7 +68,8 @@ public class ResolutionTree extends JPanel {
 		return node;
 	}
 	
-	public ResolutionTree() {
+	public ResolutionTree(String fileName) {
+		this.resolutionModelFileName = fileName;
 		cvlPackage.eINSTANCE.eClass();
 		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
 		try {
@@ -76,7 +78,7 @@ public class ResolutionTree extends JPanel {
 		} catch (Exception e){
 		}
 		ResourceSet resourceSet = new ResourceSetImpl();
-		String filename = new File("model//resolution.cvl").getAbsolutePath();
+		String filename = new File(resolutionModelFileName).getAbsolutePath();
 		URI uri = URI.createFileURI(filename);
 		resource = resourceSet.getResource(uri, true);
 		EcoreUtil.resolveAll(resourceSet);
@@ -114,7 +116,7 @@ public class ResolutionTree extends JPanel {
 		JFrame fr = new JFrame();
 		//fr.setLayout(null);
 		// add panel which contains tree to frame
-		ResolutionTree frTree = new ResolutionTree();
+		ResolutionTree frTree = new ResolutionTree("model//composite//resolution.cvl");
 		//for (String str : decisionList) System.out.println(str);
 		fr.add(frTree);
 		fr.setSize(400,450);

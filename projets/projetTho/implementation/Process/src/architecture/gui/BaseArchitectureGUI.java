@@ -39,6 +39,7 @@ public class BaseArchitectureGUI extends JPanel{
 	ArrayList<Component> sourceComponentList = new ArrayList<Component>();
 	ArrayList<Binding> sourcebindingList = new ArrayList<Binding>();
 	BaseArchitectureService baseArchitecture;
+	Definition definition;
 	public String baseModelFileName;
 	public BaseArchitectureGUI(String file) {
 		// TODO Auto-generated constructor stub
@@ -69,15 +70,9 @@ public class BaseArchitectureGUI extends JPanel{
 	        		File file = fc.getSelectedFile();
 	        		String newFileName = file.getAbsolutePath();
 	        		txtModelcvl.setText(newFileName);
+	        		definition = baseArchitecture.getArchitectureDefinition(baseModelFileName);
 	        		baseModelFileName = newFileName;
 	        		setText(newFileName);
-	 	        	//ResolutionModelService resolutionModel = new ResolutionModel();
-//	 	        	vSpecResolutionRoot = resolutionModel.getVSpecResolutionRoot(newFileName);
-//	 	        	TreeModel treeModel = new DefaultTreeModel(getNode(vSpecResolutionRoot));
-//	 	        	tree.setModel(treeModel);
-//	 	        	expandAllNodes(tree, 0, tree.getRowCount());
-	 	        	 
-	 	        	 
 	             } else {
 	                 //log.append("Open command cancelled by user." + newline);
 	             }
@@ -128,11 +123,11 @@ public class BaseArchitectureGUI extends JPanel{
 		// TODO Auto-generated method stub
 		return baseArchitecture.getArchitectureDefinition(baseModelFileName);
 	}
-	public ArrayList<Component> getComponentList(Definition definition) {
+	public ArrayList<Component> getComponentList() {
 		// TODO Auto-generated method stub
 		return baseArchitecture.getComponentList(definition);
 	}
-	public ArrayList<Binding> getBindingList(Definition definition) {
+	public ArrayList<Binding> getBindingList() {
 		// TODO Auto-generated method stub
 		return baseArchitecture.getBindingList(definition);
 	}
