@@ -231,7 +231,7 @@ class ConnectionShape {
 
 
 @SuppressWarnings("serial")
-public class BaseArchitecture extends JPanel {
+public class BaseArchitecture_temp extends JPanel {
 	ArrayList<ComponentShape> rectList = new ArrayList<ComponentShape>();
 	ArrayList<ConnectionShape> connectionList = new ArrayList<ConnectionShape>();
 	MovingAdapter ma = new MovingAdapter();
@@ -240,7 +240,7 @@ public class BaseArchitecture extends JPanel {
 	int componentNumber;
 	ArrayList<String> listAttributes = new ArrayList<String>();
 	EList<RealizationComponent> realizationCompponentList;
-	public BaseArchitecture() {
+	public BaseArchitecture_temp() {
 		/*
 	     * declare components list
 	     */
@@ -491,7 +491,7 @@ public class BaseArchitecture extends JPanel {
   }
   public static void main(String[] args) {
     JFrame frame = new JFrame("Moving");
-    BaseArchitecture m = new BaseArchitecture();
+    BaseArchitecture_temp m = new BaseArchitecture_temp();
     m.setDoubleBuffered(true);
     
     JScrollPane scrollPane = new JScrollPane(m);
