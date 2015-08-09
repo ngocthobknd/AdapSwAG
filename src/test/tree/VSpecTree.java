@@ -1,4 +1,4 @@
-package tree;
+package test.tree;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridBagLayout;
@@ -53,7 +53,7 @@ public class VSpecTree extends JPanel {
 	public ArrayList<VSpec> vSpecList = new ArrayList<VSpec>(); //list of VSpec 
 	public ArrayList<VariationPoint> VPList = new ArrayList<VariationPoint>();
 
-	
+	String variabilityModelFileName = null;
 	
 	@SuppressWarnings("rawtypes")
 	public DefaultListModel vpInJList = new DefaultListModel(); //variation points in JList 
@@ -86,8 +86,9 @@ public class VSpecTree extends JPanel {
 		return node;
 	}
 
-	public VSpecTree() {
+	public VSpecTree(String fileName) {
 		//this.setBackground(Color.WHITE);
+		this.variabilityModelFileName = fileName;
 		this.loadModel();
 	}
 	@SuppressWarnings("unchecked")
@@ -101,7 +102,7 @@ public class VSpecTree extends JPanel {
 		}
 		ResourceSet resourceSet = new ResourceSetImpl();
 		
-		String filename = new File("model//model.cvl").getAbsolutePath();
+		String filename = new File(variabilityModelFileName).getAbsolutePath();
 		URI uri = URI.createFileURI(filename);
 		resource = resourceSet.getResource(uri, true);
 		//get root of variability model 
@@ -165,7 +166,7 @@ public class VSpecTree extends JPanel {
 		JFrame fr = new JFrame();
 		//fr.setLayout(null);
 		// add panel which contains tree to frame
-		VSpecTree frTree = new VSpecTree();
+		VSpecTree frTree = new VSpecTree("model//primitive//model.cvl");
 		//for (VSpec str : vSpecList) System.out.println(str.getName());
 		fr.add(frTree);
 		fr.setSize(400,450);

@@ -11,16 +11,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import main.*;
 import test.model.ReadModel;
-import tree.VSpecTree;
-import graphic.*;
+import test.tree.VSpecTree;
 public class GUI {
 	public VSpecTree frTree;
 	public static JFrame fr;
 	String str_file="My.variability";
 	public GUI() {
 		fr = new JFrame();
-		frTree = new VSpecTree();
+		frTree = new VSpecTree("model//primitive//model.cvl");
 		fr.add(frTree);
 		fr.setSize(400,450);
 		fr.setVisible(true);

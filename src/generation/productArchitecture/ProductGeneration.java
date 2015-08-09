@@ -451,10 +451,10 @@ public class ProductGeneration {
 		ResolutionModelGUI resolutionModel = new ResolutionModelGUI( "model//composite2//resolution.cvl"); 
 		//BaseArchitectureGUI product = new BaseArchitectureGUI(productModelFileName);
 		
-		Definition definition = baseModel.getArchitectureDefinition();
+		
 		ProductGeneration generateProduct = new ProductGeneration( 
-				baseModel.getComponentList(definition),
-				baseModel.getBindingList(definition), 
+				baseModel.getComponentList(),
+				baseModel.getBindingList(), 
 				variabilityModel.getVSpecList(), 
 				variabilityModel.getVariationPointList(),
 				resolutionModel.getVSpecResolutionList());
@@ -467,7 +467,7 @@ public class ProductGeneration {
 		String footer =  baseModelFileName.substring(i + 2);
 		String productModelFileName = header + "//" + "generated" + footer;
 		
-		
+		Definition definition = baseModel.getArchitectureDefinition();
 		generateProduct.createProductModel(definition, productModelFileName);
 	}
 

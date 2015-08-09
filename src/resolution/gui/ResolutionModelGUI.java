@@ -35,7 +35,7 @@ import cvl.VariableValueAssignment;
 import cvl.VariationPoint;
 import resolution.api.ResolutionModelService;
 import resolution.implement.ResolutionModel;
-import tree.ResolutionTree;
+import test.tree.ResolutionTree;
 import variability.gui.VariabilityModelGUI;
 
 
@@ -57,7 +57,7 @@ public class ResolutionModelGUI extends JPanel{
 		final JTextField txtModelcvl = new JTextField();
 		txtModelcvl.setText("model.cvl");
 		pnLoad.add(txtModelcvl);
-		txtModelcvl.setColumns(10);
+		txtModelcvl.setColumns(30);
 		
 		JButton btnNewButton_1 = new JButton("Load");
 		

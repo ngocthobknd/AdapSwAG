@@ -1,4 +1,6 @@
-package transformation.productArchitecture;
+package test;
+
+import generation.ProductGenerationService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,9 +22,8 @@ import org.ow2.fractal.f4e.fractal.FractalFactory;
 import org.ow2.fractal.f4e.fractal.FractalPackage;
 import org.ow2.fractal.f4e.fractal.RealizationComponent;
 
-import transformation.ProductGenerationService;
-import tree.ResolutionTree;
-import tree.VSpecTree;
+import test.tree.ResolutionTree;
+import test.tree.VSpecTree;
 import cvl.Choice;
 import cvl.ChoiceResolution;
 import cvl.ObjectExistence;
@@ -34,7 +35,7 @@ import cvl.VSpecResolution;
 import cvl.VariableValueAssignment;
 import cvl.VariationPoint;
 
-public class GeneratingProductArchitecture implements ProductGenerationService {
+public class GeneratingArchitecture {
 	
 	/*
 	 * algorithm for generating product architecture
@@ -67,12 +68,12 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 	VSpecTree vSpec;
 	
 	
-	public GeneratingProductArchitecture() {
+	public GeneratingArchitecture() {
 		FractalPackage.eINSTANCE.eClass();
 		fractalFractory = FractalFactory.eINSTANCE;
 		destinationDefinition = fractalFractory.createDefinition();
-		rs = new ResolutionTree();
-		vSpec = new VSpecTree();
+		rs = new ResolutionTree("model//primitive//resolution.cvl");
+		vSpec = new VSpecTree("model//primitive//model.cvl");
 		
 	}
 		
@@ -85,7 +86,7 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 		} catch (Exception e){
 		}
 		ResourceSet resourceSet = new ResourceSetImpl();
-		URI uri = URI.createFileURI("model//architecture.fractal");
+		URI uri = URI.createFileURI("model//primitive//architecture.fractal");
 		Resource resource = resourceSet.getResource(uri, true);
 		//get root of variability model 
 		Definition definition = (Definition) resource.getContents().get(0);
@@ -388,7 +389,7 @@ public class GeneratingProductArchitecture implements ProductGenerationService {
 		return indexofvSpec;
 	}
 	public static void main(String [] args) {
-		new GeneratingProductArchitecture().createProductModel(readArchitecture(""));
+		new GeneratingArchitecture().createProductModel(readArchitecture(""));
 	}
 
 }

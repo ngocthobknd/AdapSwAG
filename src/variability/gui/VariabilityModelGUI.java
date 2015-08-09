@@ -55,10 +55,12 @@ public class VariabilityModelGUI extends JPanel {
 	
 	private VariabilityModelService vty;
 	private VPackage vPackage;
+	String variabilityModelFileName;
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public VariabilityModelGUI(String cvlFileName) {
 		// TODO Auto-generated constructor stub
 		//this.newFileName = cvlFileName;
+		this.variabilityModelFileName = cvlFileName;
 		setLayout(new BorderLayout());
 		JPanel pnLoad = new JPanel();
 		pnLoad.setLayout(new GridLayout(0, 3, 0, 0));
@@ -69,7 +71,7 @@ public class VariabilityModelGUI extends JPanel {
 		final JTextField txtModelcvl = new JTextField();
 		txtModelcvl.setText("model.cvl");
 		pnLoad.add(txtModelcvl);
-		txtModelcvl.setColumns(10);
+		txtModelcvl.setColumns(30);
 		
 		JButton btnNewButton_1 = new JButton("Load");
 		
@@ -135,8 +137,22 @@ public class VariabilityModelGUI extends JPanel {
 			}
 	      });
 	}
+	
+	public VPackage getVPackage() {
+		// TODO Auto-generated method stub
+		return vty.getVPackage(variabilityModelFileName);
+	}
+	public VSpec getVSpecTreeRoot() {
+		// TODO Auto-generated method stub
+		return vty.getVSpecTreeRoot(vPackage);
+	}
 	public ArrayList<VSpec> getVSpecList() {
+		// TODO Auto-generated method stub
 		return vty.getVSpecList(vPackage);
+	}
+	public ArrayList<VariationPoint> getVariationPointList() {
+		// TODO Auto-generated method stub
+		return vty.getVariationPointList(vPackage);
 	}
 	public Node getNode(VSpec vSpec) {
 		String type = vSpec.getClass().getSimpleName().substring(0, vSpec.getClass().getSimpleName().length()-4);
@@ -200,6 +216,7 @@ public class VariabilityModelGUI extends JPanel {
 		fr.setSize(400,450);
 		fr.setVisible(true);
 	}
+	
 }
 class NodeSelectionListener extends MouseAdapter {
     JTree tree;

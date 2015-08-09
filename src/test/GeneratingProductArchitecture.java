@@ -1,4 +1,4 @@
-package generation.productArchitecture;
+package test;
 
 import generation.ProductGenerationService;
 
@@ -25,8 +25,8 @@ import org.ow2.fractal.f4e.fractal.FractalPackage;
 import org.ow2.fractal.f4e.fractal.Interface;
 import org.ow2.fractal.f4e.fractal.RealizationComponent;
 
-import tree.ResolutionTree;
-import tree.VSpecTree;
+import test.tree.ResolutionTree;
+import test.tree.VSpecTree;
 import cvl.Choice;
 import cvl.ChoiceResolution;
 import cvl.FragmentSubstitution;
@@ -73,15 +73,24 @@ public class GeneratingProductArchitecture implements ProductGenerationService{
 	ResolutionTree rs;
 	VSpecTree vSpec;
 	
-	ArrayList<Component> sourceComponentList = new ArrayList<Component>();
 	ArrayList<Component> destinationComponentList = new ArrayList<Component>();
-	List<Binding> sourcebindingList = new ArrayList<Binding>();
+	
+	ArrayList<Component> sourceComponentList = new ArrayList<Component>();
+	ArrayList<Binding> sourceBindingList = new ArrayList<Binding>();
 	List<Binding> bindingList = new ArrayList<Binding>();
+	
+	ArrayList<VSpec> vSpeclist = new ArrayList<VSpec>();
+	ArrayList<VariationPoint> vpList = new ArrayList<VariationPoint>();
+	ArrayList<VSpecResolution> vSpecResolutionList = new ArrayList<VSpecResolution>();
+	
+	
 	
 	String variabilityModelFileName;// = "model//composite2//model.cvl";
 	String resolutionModelFileName;// = "model//composite2//resolution.cvl";
 	String baseModelFileName;// = "model//composite2//architecture.fractal";
 	String productModelFileName;// = "model//composite2//product.fractal";
+	
+	
 	
 	
 	public GeneratingProductArchitecture(String variabilityModel, String resolutionModel, 
@@ -97,7 +106,22 @@ public class GeneratingProductArchitecture implements ProductGenerationService{
 		vSpec = new VSpecTree(variabilityModelFileName);
 		
 	}
-	
+	public GeneratingProductArchitecture(ArrayList<Component> sourceComponentList,
+			ArrayList<Binding> sourceBindingList,
+			ArrayList<VSpec> vSpeclist,
+			ArrayList<VariationPoint> vpList,
+			ArrayList<VSpecResolution> vSpecResolutionList ) {
+		this.sourceComponentList = sourceComponentList;
+		this.sourceBindingList = sourceBindingList;
+		this.vSpeclist = vSpeclist;
+		this.vpList = vpList;
+		this.vSpecResolutionList = vSpecResolutionList;
+		
+		FractalPackage.eINSTANCE.eClass();
+		fractalFractory = FractalFactory.eINSTANCE;
+		destinationDefinition = fractalFractory.createDefinition();
+		
+	}
 	public Definition readArchitecture(String file) {
 		FractalPackage.eINSTANCE.eClass();
 		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
@@ -132,7 +156,7 @@ public class GeneratingProductArchitecture implements ProductGenerationService{
 			readComponent(sourceDefinitionFractal.getSubComponents().get(i));
 		}
 		//List<RealizationComponent> realizationComponentList = new ArrayList(sourceDefinitionFractal.getRealizationComponents());
-		sourcebindingList = new ArrayList(sourceDefinitionFractal.getBindings());
+		sourceBindingList = new ArrayList(sourceDefinitionFractal.getBindings());
 		bindingList = new ArrayList(sourceDefinitionFractal.getBindings());
 	
 		addComponents1(destinationDefinition, sourceComponentList, vSpecList, vpList, resolutionList);
@@ -646,10 +670,10 @@ public class GeneratingProductArchitecture implements ProductGenerationService{
 		return vSpec;
 	}
 	public static void main(String [] args) {
-		String variabilityModelFileName = "model//composite2//model.cvl";
-		String resolutionModelFileName = "model//composite2//resolution.cvl";
-		String baseModelFileName = "model//composite2//architecture.fractal";
-		String productModelFileName = "model//composite2//product.fractal";
+		String variabilityModelFileName = "model//primitive//model.cvl";
+		String resolutionModelFileName = "model//primitive//resolution.cvl";
+		String baseModelFileName = "model//primitive//architecture.fractal";
+		String productModelFileName = "model//primitive//product.fractal";
 		GeneratingProductArchitecture q = new GeneratingProductArchitecture(variabilityModelFileName, 
 				resolutionModelFileName, baseModelFileName, 
 				productModelFileName);
