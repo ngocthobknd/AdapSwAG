@@ -63,19 +63,19 @@ public class VariabilityModelGUI extends JPanel {
 		this.variabilityModelFileName = cvlFileName;
 		setLayout(new BorderLayout());
 		JPanel pnLoad = new JPanel();
-		pnLoad.setLayout(new GridLayout(0, 3, 0, 0));
+		pnLoad.setLayout(new BorderLayout());
 		
 		JLabel lblNewLabel = new JLabel("CVL File");
-		pnLoad.add(lblNewLabel);
+		pnLoad.add(lblNewLabel, BorderLayout.WEST);
 		
 		final JTextField txtModelcvl = new JTextField();
 		txtModelcvl.setText("model.cvl");
-		pnLoad.add(txtModelcvl);
+		pnLoad.add(txtModelcvl, BorderLayout.CENTER);
 		txtModelcvl.setColumns(30);
 		
 		JButton btnNewButton_1 = new JButton("Load");
 		
-		pnLoad.add(btnNewButton_1);
+		pnLoad.add(btnNewButton_1, BorderLayout.EAST);
 		
 		add(pnLoad, BorderLayout.NORTH);
 		JSplitPane splitPane = new JSplitPane();

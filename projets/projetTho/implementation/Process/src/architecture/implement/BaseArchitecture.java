@@ -30,16 +30,19 @@ public class BaseArchitecture implements BaseArchitectureService {
 	public Definition getArchitectureDefinition(String file) {
 		FractalPackage.eINSTANCE.eClass();
 		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+		Definition definition = null;
 		try {
 			//registry extent part of model file ex: *.variability
 			reg.getExtensionToFactoryMap().put("fractal", new XMIResourceFactoryImpl());
+			URI uri = URI.createFileURI(file);
+			ResourceSet resourceSet = new ResourceSetImpl();
+			Resource resource = resourceSet.getResource(uri, true);
+			
+			//get root of variability model 
+			definition = (Definition) resource.getContents().get(0);
 		} catch (Exception e){
 		}
-		ResourceSet resourceSet = new ResourceSetImpl();
-		URI uri = URI.createFileURI(file);
-		Resource resource = resourceSet.getResource(uri, true);
-		//get root of variability model 
-		Definition definition = (Definition) resource.getContents().get(0);
+		
 		return definition;
 	}
 

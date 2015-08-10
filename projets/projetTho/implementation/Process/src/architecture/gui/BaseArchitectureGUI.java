@@ -35,11 +35,10 @@ public class BaseArchitectureGUI extends JPanel{
 	 * 
 	 */
 	public JTextArea edit;
+	public JTextField txtModelcvl;
 	
-	ArrayList<Component> sourceComponentList = new ArrayList<Component>();
-	ArrayList<Binding> sourcebindingList = new ArrayList<Binding>();
-	BaseArchitectureService baseArchitecture;
-	Definition definition;
+	private BaseArchitectureService baseArchitecture;
+	private Definition definition;
 	public String baseModelFileName;
 	public BaseArchitectureGUI(String file) {
 		// TODO Auto-generated constructor stub
@@ -53,7 +52,7 @@ public class BaseArchitectureGUI extends JPanel{
 		JLabel lblNewLabel = new JLabel("File");
 		pnLoad.add(lblNewLabel, BorderLayout.WEST);
 		
-		final JTextField txtModelcvl = new JTextField();
+		txtModelcvl = new JTextField();
 		txtModelcvl.setText("architecture.fractal");
 		pnLoad.add(txtModelcvl, BorderLayout.CENTER);
 		//txtModelcvl.setColumns();
@@ -70,26 +69,23 @@ public class BaseArchitectureGUI extends JPanel{
 	        		File file = fc.getSelectedFile();
 	        		String newFileName = file.getAbsolutePath();
 	        		txtModelcvl.setText(newFileName);
-	        		definition = baseArchitecture.getArchitectureDefinition(baseModelFileName);
+	        		definition = baseArchitecture.getArchitectureDefinition(newFileName);
 	        		baseModelFileName = newFileName;
 	        		setText(newFileName);
 	             } else {
 	                 //log.append("Open command cancelled by user." + newline);
 	             }
-	        	
 			}
 			
 		});
-		
 		add(pnLoad, BorderLayout.NORTH);
-		
 		edit = new JTextArea();
 		setText(file);
-	
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(edit);
 		add(scrollPane, BorderLayout.CENTER);
 		baseArchitecture = new BaseArchitecture();
+		definition = baseArchitecture.getArchitectureDefinition(baseModelFileName);
 	}
 	public void setText(String baseArchitectureFileName) {
 		try
@@ -102,23 +98,6 @@ public class BaseArchitectureGUI extends JPanel{
         }
         catch(Exception e2) {}
  	}
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		
-		JFrame frame = new JFrame("Moving");
-		BaseArchitectureGUI m = new BaseArchitectureGUI("model//composite2//architecture.fractal");
-	
-		//		m.setDoubleBuffered(true);
-		frame.add(m);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(500, 500);
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
-	}
-	
 	public Definition getArchitectureDefinition() {
 		// TODO Auto-generated method stub
 		return baseArchitecture.getArchitectureDefinition(baseModelFileName);
@@ -131,5 +110,20 @@ public class BaseArchitectureGUI extends JPanel{
 		// TODO Auto-generated method stub
 		return baseArchitecture.getBindingList(definition);
 	}
-
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		JFrame frame = new JFrame("Moving");
+		BaseArchitectureGUI m = new BaseArchitectureGUI("model//composite2//architecture.fractal");
+		//		m.setDoubleBuffered(true);
+		frame.add(m);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(500, 500);
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+	}
+	
 }
