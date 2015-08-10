@@ -7,6 +7,7 @@ import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.border.TitledBorder;
 
+import org.ow2.fractal.f4e.fractal.Component;
 import org.ow2.fractal.f4e.fractal.Definition;
 
 import resolution.gui.ResolutionModelGUI;
@@ -27,17 +29,17 @@ import architecture.gui.BaseArchitectureGUI;
 public class MainGUI {
 
 	private JFrame frame;
-	String variabilityModelFileName = "model//primitive//model.cvl";
-	String resolutionModelFileName = "model//primitive//resolution.cvl";
+	String variabilityModelFileName = "model//composite2//model.cvl";
+	String resolutionModelFileName = "model//composite2//resolution.cvl";
 	String baseModelFileName =  "model//composite2//architecture.fractal";
-	String productModelFileName = "model//composite2//product.fractal";
+	String productModelFileName = "";
 	/**
 	 * Launch the application.
 	 */
 	
-	BaseArchitectureGUI product, baseModel ;
-	VariabilityModelGUI variabilityModel;
-	ResolutionModelGUI resolutionModel;
+	private BaseArchitectureGUI product, baseModel ;
+	private VariabilityModelGUI variabilityModel;
+	private ResolutionModelGUI resolutionModel;
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -83,20 +85,14 @@ public class MainGUI {
 		splitPane_2.setLeftComponent(panel_1);
 		panel_1.setLayout(new GridLayout(0, 1, 0, 0));
 		   
-	    //BaseArchitecture m = new BaseArchitecture();
 		baseModel = new BaseArchitectureGUI(baseModelFileName);
 		panel_1.add(baseModel);
-		//scrollPane.setViewportView(m);
-	    baseModel.setDoubleBuffered(true);
 	    
 	    final JPanel panel_2 = new JPanel();
 		panel_2.setBorder(new TitledBorder(null, "Adaptive architecture", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		splitPane_2.setRightComponent(panel_2);
 		panel_2.setLayout(new GridLayout(0, 1, 0, 0));
 		
-		//final ProductArchitecture pa = new ProductArchitecture();
-		
-		//final ProductArchitecture prA = new ProductArchitecture();
 		product = new BaseArchitectureGUI(productModelFileName);
 		panel_2.add(product);
 	
@@ -166,33 +162,28 @@ public class MainGUI {
 		pnCtrl.add(btnVerifyConsistency);
 		
 		JButton btnNewButton_2 = new JButton("Generate adaptative architecture");
+		
+			
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent paramActionEvent) {
-				//GeneratingProductArchitecture generateProduct = new GeneratingProductArchitecture(variabilityModelFileName, resolutionModelFileName, baseModelFileName, productModelFileName);
-				//Definition definition = baseModel.getArchitectureDefinition();
-				ProductGeneration generateProduct = new ProductGeneration(baseModel.getComponentList(),
-						baseModel.getBindingList(), 
-						variabilityModel.getVSpecList(), 
-						variabilityModel.getVariationPointList(),
-						resolutionModel.getVSpecResolutionList());
-				
-				String baseModelFileName =  baseModel.baseModelFileName;
+		
+				baseModel = new BaseArchitectureGUI(baseModelFileName);
+				System.out.println("1:"+baseModel.getComponentList().size());	
 				int i = baseModelFileName.lastIndexOf("/");
 				String header = baseModelFileName.substring(0, i);
 				String footer =  baseModelFileName.substring(i + 1);
 				String productModelFileName = header + "//" + "generated" + footer;
 				
-				
+				ProductGeneration generateProduct = new ProductGeneration(baseModel.getComponentList(),
+						baseModel.getBindingList(), 
+						variabilityModel.getVSpecList(), 
+						variabilityModel.getVariationPointList(),
+						resolutionModel.getVSpecResolutionList());
 				generateProduct.createProductModel(baseModel.getArchitectureDefinition(), productModelFileName);
 				product.setText(productModelFileName);
-				//prA.loadModel();
-				//prA.revalidate();
+				product.txtModelcvl.setText(productModelFileName);
 				
-				panel_2.revalidate();
-				splitPane_2.revalidate();
-				pnBase.revalidate();
-				splitPane.revalidate();
-				
+				System.out.println("2:"+baseModel.getComponentList().size());	
 			}
 		});
 		pnCtrl.add(btnNewButton_2);

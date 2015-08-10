@@ -10,21 +10,25 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.eclipse.emf.common.util.EList;
 
 public class TestList {
+	private ArrayList<String > a = new ArrayList<String>();
+	public TestList(ArrayList<String > a) {
+		this.a = a;
+	}
+	public void rem(ArrayList<String> a){
+		ArrayList<String> b = new ArrayList<String>(a);
+		for (int i = 0; i < b.size(); i++) {
+			if (b.get(i).equals("3")) b.remove(i);
+		}
+	}
 	public static void main(String arg[]) {
-		List<String> myList = new CopyOnWriteArrayList<String>();
-        
-//        myList.add("1");
-//        myList.add("2");
-//        myList.add("3");
-//        myList.add("4");
-//        myList.add("5");
-//        ArrayList<String> b = new ArrayList<String>();
-//        b.add("6");
-//        b.add("7");
-//        
-		for (int i = 0; i < myList.size(); i++) {
-			
-			System.out.println("123"+myList.get(i));
+		ArrayList<String > a = new ArrayList<String>();
+		a.add("1");
+		a.add("2");
+		a.add("3");
+		TestList b = new TestList(a);
+		b.rem(b.a);
+		for (int i = 0; i < b.a.size(); i++) {
+			System.out.println(b.a.get(i));
 		}
 //        myList.addAll(b);
 //        Iterator<String> it = myList.iterator();

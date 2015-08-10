@@ -134,7 +134,6 @@ public class ResolutionModelVerification {
 	public static void main (String [] args) {
 		VariabilityModelGUI variabilityModel = new VariabilityModelGUI("model//composite2//model.cvl");
 		ResolutionModelGUI resolutionModel = new ResolutionModelGUI( "model//composite2//resolution.cvl"); 
-	
 		System.out.println(new ResolutionModelVerification(variabilityModel.getVSpecList(), resolutionModel.getVSpecResolutionList()).verifyRM());
 	}
 	

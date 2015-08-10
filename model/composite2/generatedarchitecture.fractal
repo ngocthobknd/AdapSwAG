@@ -4,14 +4,19 @@
     <interfaces name="r"/>
     <attribute name="synchrone" value="yes"/>
   </subComponents>
-  <subComponents name="Server1">
-    <interfaces name="s1" role="server"/>
-    <attribute name="id"/>
+  <subComponents name="Server">
+    <interfaces name="s"/>
+    <subComponents name="Server1">
+      <interfaces name="s1" role="server"/>
+      <attribute name="id" value="id1.2"/>
+    </subComponents>
+    <subComponents name="Server2">
+      <interfaces name="s2" role="server"/>
+    </subComponents>
   </subComponents>
-  <bindings client="Client" server="Server1" clientInterface="//@subComponents.0/@interfaces.0">
-    <serverInterface href="model//composite2//architecture.fractal#//@subComponents.0/@interfaces.0"/>
-  </bindings>
-  <bindings client="Server1" server="Server1" serverInterface="//@subComponents.1/@interfaces.0">
-    <clientInterface href="model//composite2//architecture.fractal#//@subComponents.0/@interfaces.0"/>
-  </bindings>
+  <subComponents name="A1">
+    <interfaces name="sa1" role="server"/>
+  </subComponents>
+  <bindings client="Client" server="Server" clientInterface="//@subComponents.0/@interfaces.0" serverInterface="//@subComponents.1/@interfaces.0"/>
+  <bindings client="Server" server="Server1" clientInterface="//@subComponents.1/@interfaces.0" serverInterface="//@subComponents.1/@subComponents.0/@interfaces.0"/>
 </fractal.ecore:Definition>
