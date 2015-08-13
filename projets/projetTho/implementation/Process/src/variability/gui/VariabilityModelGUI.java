@@ -40,6 +40,7 @@ import cvl.ParametricSlotAssignment;
 import cvl.VPackage;
 import cvl.VSpec;
 import cvl.VariationPoint;
+import cvl.Choice;
 
 
 
@@ -158,13 +159,17 @@ public class VariabilityModelGUI extends JPanel {
 		String type = vSpec.getClass().getSimpleName().substring(0, vSpec.getClass().getSimpleName().length()-4);
 		String groupMultiplicity;
 		String availabilityTime;
+		String defaultResolution;
 		if (vSpec.getAvailabilityTime().getName().equals("default")) {
 			availabilityTime = "runtime";
 		} else availabilityTime = vSpec.getAvailabilityTime().getName(); 
 		if (vSpec.getGroupMultiplicity() != null) {
 			groupMultiplicity = "[" + vSpec.getGroupMultiplicity().getLower() +","+vSpec.getGroupMultiplicity().getUpper() + "]" ;
-		} else groupMultiplicity = ""; 
-		Node node = new Node(vSpec.getName(),type, groupMultiplicity, "", availabilityTime, true);
+		} else groupMultiplicity = "";
+		if (vSpec instanceof Choice) {
+			defaultResolution = ""+((Choice)vSpec).isDefaultResolution();
+		} else defaultResolution = "";
+		Node node = new Node(vSpec.getName(),type, groupMultiplicity, "", availabilityTime, defaultResolution, true);
 		if (vSpec.getChild().size() > 0)
 			for (int i=0; i<vSpec.getChild().size(); i++) {
 				VSpec vSpecChild = vSpec.getChild().get(i); 
@@ -261,7 +266,11 @@ class NodeRenderer extends JPanel implements TreeCellRenderer {
 		Node node = (Node)value;
 		if (leaf) {
 				this.setBackground(Color.WHITE);
-				lbl_Node.setText(node.getName()+":"+node.type + node.getGroupMultiplicity() + ":" + node.availabilityTime);
+				if (node.defaultResolution.equals("true"))
+				lbl_Node.setText(node.getName()+":"+node.type + node.getGroupMultiplicity() + ":" 
+									+ node.availabilityTime 
+									+ ":"+node.defaultResolution);
+				else lbl_Node.setText(node.getName()+":"+node.type + node.getGroupMultiplicity() + ":" + node.availabilityTime);
 				chk_leafRenderer.setSelected(node.selected);
 				chk_leafRenderer.setEnabled(true);
 				//this.add(chk_leafRenderer);
@@ -269,7 +278,12 @@ class NodeRenderer extends JPanel implements TreeCellRenderer {
 		} 
 		else {
 				this.setBackground(Color.WHITE);
-				lbl_Node.setText(node.getName()+":"+node.type+ node.getGroupMultiplicity()+ ":" + node.availabilityTime);
+				//lbl_Node.setText(node.getName()+":"+node.type+ node.getGroupMultiplicity()+ ":" + node.availabilityTime);
+				if (node.defaultResolution.equals("true"))
+					lbl_Node.setText(node.getName()+":"+node.type + node.getGroupMultiplicity() + ":" 
+										+ node.availabilityTime 
+										+ ":"+node.defaultResolution);
+					else lbl_Node.setText(node.getName()+":"+node.type + node.getGroupMultiplicity() + ":" + node.availabilityTime);
 				chk_leafRenderer.setSelected(node.selected);
 				chk_leafRenderer.setEnabled(true);
 				//this.add(chk_leafRenderer);
@@ -333,6 +347,7 @@ class Node extends DefaultMutableTreeNode {
 	String groupMultiplicity;
 	String resolutionTime;
 	String availabilityTime;
+	String defaultResolution;
 	boolean selected;
 	public Node(String name, String type, boolean selected) {
 		this.name = name;
@@ -340,15 +355,27 @@ class Node extends DefaultMutableTreeNode {
 		this.type = type;
 	}
 	
-	public Node(String name, String type, String groupMultiplicity, String resolutionTime, String availabilityTime, boolean selected) {
+	public Node(String name, String type, String groupMultiplicity, 
+			String resolutionTime, String availabilityTime, 
+			String defaultResolution,
+			boolean selected) {
 		this.name = name;
 		this.selected = selected;
 		this.type = type;
 		this.groupMultiplicity = groupMultiplicity;
 		this.resolutionTime = resolutionTime;
 		this.availabilityTime = availabilityTime;
+		this.defaultResolution = defaultResolution;
 	}
 		
+	public String getDefaultResolution() {
+		return defaultResolution;
+	}
+
+	public void setDefaultResolution(String defaultResolution) {
+		this.defaultResolution = defaultResolution;
+	}
+
 	public String getGroupMultiplicity() {
 		return groupMultiplicity;
 	}
