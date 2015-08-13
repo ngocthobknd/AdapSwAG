@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cvl:VPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cvl="http:///cvl.ecore" name="variability">
+  <packageElement xsi:type="cvl:Choice" name="Service" resolutionTime="" isImpliedByParent="true">
+    <child xsi:type="cvl:Choice" name="Client" resolutionTime="" availabilityTime="runtime" isImpliedByParent="true">
+      <child xsi:type="cvl:Variable" name="synchrone" resolutionTime="">
+        <type href="type.cvl#/"/>
+      </child>
+    </child>
+    <child xsi:type="cvl:Choice" name="Server" resolutionTime="" availabilityTime="design" isImpliedByParent="true">
+      <groupMultiplicity upper="1" lower="1"/>
+      <child xsi:type="cvl:Choice" name="Server1" resolutionTime="" availabilityTime="runtime" defaultResolution="true"/>
+      <child xsi:type="cvl:Choice" name="Server2" resolutionTime="" availabilityTime="runtime"/>
+    </child>
+
+  </packageElement>
+  <packageElement xsi:type="cvl:ObjectExistence" name="ClientVP" bindingVSpec="//@packageElement.0/@child.0" bindingChoice="//@packageElement.0/@child.0">
+    <optionalObject MOFRef="CompositeArchitecture.Client"/>
+  </packageElement>
+  <packageElement xsi:type="cvl:ParametricSlotAssignment" name="setValue" bindingVSpec="//@packageElement.0/@child.0/@child.0" bindingVariable="//@packageElement.0/@child.0/@child.0" slotIdentifier="">
+    <slotOwner MOFRef="CompositeArchitecture.Client.synchrone"/>
+  </packageElement>
+  <packageElement xsi:type="cvl:ObjectExistence" name="ServerVP" bindingVSpec="//@packageElement.0/@child.1" bindingChoice="//@packageElement.0/@child.1">
+    <optionalObject MOFRef="CompositeArchitecture.Server"/>
+  </packageElement>
+  <packageElement xsi:type="cvl:ObjectExistence" name="Server1VP" bindingVSpec="//@packageElement.0/@child.1/@child.0" bindingChoice="//@packageElement.0/@child.1/@child.0">
+    <optionalObject MOFRef="CompositeArchitecture.Server.Server1"/>
+  </packageElement>
+  <packageElement xsi:type="cvl:ObjectExistence" name="Server2VP" bindingVSpec="//@packageElement.0/@child.1/@child.1" bindingChoice="//@packageElement.0/@child.1/@child.1">
+    <optionalObject MOFRef="CompositeArchitecture.Server.Server2"/>
+  </packageElement>
+
+
+</cvl:VPackage>
