@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -17,12 +16,10 @@ import org.ow2.fractal.f4e.fractal.Binding;
 import org.ow2.fractal.f4e.fractal.Component;
 import org.ow2.fractal.f4e.fractal.Definition;
 import org.ow2.fractal.f4e.fractal.FractalFactory;
-import org.ow2.fractal.f4e.fractal.FractalPackage;
 import org.ow2.fractal.f4e.fractal.Interface;
-import org.ow2.fractal.f4e.fractal.RealizationComponent;
 
+import base.gui.BaseArchitectureGUI;
 import resolution.gui.ResolutionModelGUI;
-import architecture.gui.BaseArchitectureGUI;
 import variability.gui.VariabilityModelGUI;
 import cvl.Choice;
 import cvl.ChoiceResolution;
@@ -38,6 +35,10 @@ import cvl.VariationPoint;
 
 public class ProductGeneration {
 
+	private ArrayList<VSpec> vSpecList = new ArrayList<VSpec>();
+	private ArrayList<VariationPoint> vpList = new ArrayList<VariationPoint>();
+	private ArrayList<VSpecResolution> vSpecResolutionList = new ArrayList<VSpecResolution>();
+
 	private Definition destDefinition;
 	private FractalFactory fractalADLFractory;
 	
@@ -45,10 +46,6 @@ public class ProductGeneration {
 	private ArrayList<Component> sourceComponentList = new ArrayList<Component>();
 	private ArrayList<Binding> sourceBindingList = new ArrayList<Binding>();
 	
-	private ArrayList<VSpec> vSpecList = new ArrayList<VSpec>();
-	private ArrayList<VariationPoint> vpList = new ArrayList<VariationPoint>();
-	private ArrayList<VSpecResolution> vSpecResolutionList = new ArrayList<VSpecResolution>();
-
 	public ProductGeneration(ArrayList<Component> sourceComponentList,
 			ArrayList<Binding> sourceBindingList,
 			ArrayList<VSpec> vSpeclist,
@@ -59,20 +56,15 @@ public class ProductGeneration {
 		this.vSpecList = vSpeclist;
 		this.vpList = vpList;
 		this.vSpecResolutionList = vSpecResolutionList;
-		
-		
-		
 	}
 	public void createProductModel(Definition sourceDefinitionFractal, String createdFileName) {
 		//FractalPackage.eINSTANCE.eClass();
 		fractalADLFractory = FractalFactory.eINSTANCE;
 		destDefinition = fractalADLFractory.createDefinition();
-
-	    
 		destDefinition.setName("product"+sourceDefinitionFractal.getName());
-		
-		addComponents(destDefinition, sourceComponentList, vSpecList, vpList, vSpecResolutionList);
 
+		addComponents(destDefinition, sourceComponentList, vSpecList, vpList, vSpecResolutionList);
+		
 		addBinding(destDefinition, destinationComponentList, sourceBindingList, vpList, vSpecResolutionList);
 		/*
 		 * write to file
@@ -127,7 +119,6 @@ public class ProductGeneration {
 						componentName = objHandle.getMOFRef().substring(objHandle.getMOFRef().lastIndexOf(".") + 1);
 						
 						Component tempComponent = returnComponentByName(componentName, srcComponentListTemp);	
-						
 						if (tempComponent.getSubComponents().isEmpty()) {
 							Component componentA = setAttributeInComponent(tempComponent, vpList_temp, vSpecResolutionList);
 							destinationCompnent = componentA;
@@ -153,7 +144,7 @@ public class ProductGeneration {
 									VSpecResolution vSpecResolutionTemp = returnVSpecResolutionByVSpec(vSpecTemp, vSpecResolutionList);
 									if (vSpecTemp.getAvailabilityTime().toString().equals("runtime") 
 											|| ((ChoiceResolution)vSpecResolutionTemp).isDecision()) {
-										if (!subComponentTemp.getAttribute().isEmpty()) {
+										if ((subComponentTemp.getAttributesController() != null) && (!subComponentTemp.getAttributesController().getAttributes().isEmpty())) {
 											Component componentA = setAttributeInComponent(subComponentTemp, vpList_temp, vSpecResolutionList);
 											component.getSubComponents().add(componentA); ////////////////////
 											destinationComponentList.add(componentA);
@@ -162,7 +153,7 @@ public class ProductGeneration {
 											destinationComponentList.add(compList.get(i));
 										}
 								}
-								}catch (Exception e) {System.out.println(e);}
+								}catch (Exception e) {System.out.println("s:"+e);}
 								
 							}
 							destinationCompnent = component;
@@ -223,42 +214,19 @@ public class ProductGeneration {
 		/*
 		 * set value of attribute in component
 		 */		
-		for (int i = 0; i < component.getAttribute().size(); i++) {
-			VariationPoint vp = returnVPByAttribute(component.getAttribute().get(i).getName(), vpList);
+		for (int i = 0; i < component.getAttributesController().getAttributes().size(); i++) {
+			VariationPoint vp = returnVPByAttribute(component.getAttributesController().getAttributes().get(i).getName(), vpList);
 			if (vp != null) {
 				VSpec vspec = (vp).getBindingVSpec();
 				VSpecResolution vspecresolution = returnVSpecResolutionByVSpec(vspec, resolutionList);
 				String value = ((VariableValueAssignment)vspecresolution).getValue();
-				component.getAttribute().get(i).setValue(value);
+				component.getAttributesController().getAttributes().get(i).setValue(value);
 				
 			}
 		}
 		return component;
 	}
-	//for the first case
-	public void setAttribute(Definition destinationDefinition, ArrayList<VariationPoint> vpList, ArrayList<VSpecResolution> resolutionList ) {
-		/*
-		 * set value of attribute in component
-		 */		
-		for (int i = 0; i < vpList.size(); i++) {
-			VariationPoint vpVariable = vpList.get(i);
-			if (vpVariable instanceof ParametricSlotAssignment) {
-				VSpec vspec = vpVariable.getBindingVSpec();
-				
-				VSpecResolution vspecresolution = returnVSpecResolutionByVSpec(vspec, resolutionList);
-				String value = ((VariableValueAssignment)vspecresolution).getValue();
-				
-				String mofRef =  ((ParametricSlotAssignment) vpVariable).getSlotOwner().getMOFRef();
-				
-				String valueComponentName = mofRef.substring(mofRef.lastIndexOf(".") + 1);
-				for (int j = 0; j < destinationDefinition.getSubComponents().size(); j++) {
-					//System.out.println(vspecresolution);		
-					String str = destinationDefinition.getSubComponents().get(j).getName();
-					if (str.equals(valueComponentName))  destinationDefinition.getSubComponents().get(j).getAttribute().get(0).setValue(value);
-				}
-			}
-		}
-	}
+
 	
 	public boolean addBinding(Definition destinationDefinition, ArrayList<Component> destinationComponentList, List<Binding> bindingList,
 			ArrayList<VariationPoint> vpList, ArrayList<VSpecResolution> resolutionList) {
@@ -425,7 +393,7 @@ public class ProductGeneration {
 	}
 	
 	public void addDisconnectedComponent(Definition destinationDefinition, List<Component> sourceComponentList, 
-			List<RealizationComponent> realizationComponentList, ArrayList<VSpec> vSpecList,	
+			ArrayList<VSpec> vSpecList,	
 			ArrayList<VariationPoint> vpList, ArrayList<VSpecResolution> resolutionList) {
 		//add component to destination model if it has not relation with VP
 		// if search component MOF is not in VPs, add this component to product	
@@ -447,29 +415,30 @@ public class ProductGeneration {
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-//		BaseArchitectureGUI baseModel = new BaseArchitectureGUI("model//composite2//architecture.fractal");
-//		VariabilityModelGUI variabilityModel = new VariabilityModelGUI("model//composite2//model.cvl");
-//		ResolutionModelGUI resolutionModel = new ResolutionModelGUI( "model//composite2//resolution.cvl"); 
-//		//BaseArchitectureGUI product = new BaseArchitectureGUI(productModelFileName);
-//		
-//		
+		BaseArchitectureGUI baseModel = new BaseArchitectureGUI("model//primitive//architecture.fractal");
+		VariabilityModelGUI variabilityModel = new VariabilityModelGUI("model//primitive//model.cvl");
+		ResolutionModelGUI resolutionModel = new ResolutionModelGUI( "model//primitive//resolution.cvl"); 
+		//BaseArchitectureGUI product = new BaseArchitectureGUI(productModelFileName);
+		
+	//	Definition definition = baseModel.getArchitectureDefinition("model//composite2//architecture.fractal");
+		
 //		ProductGeneration generateProduct = new ProductGeneration( 
-//				baseModel.getComponentList(baseModel.getArchitectureDefinition()),
-//				baseModel.getBindingList(baseModel.getArchitectureDefinition()), 
+//				baseModel.getComponentList(definition),
+//				baseModel.getBindingList(definition), 
 //				variabilityModel.getVSpecList(), 
 //				variabilityModel.getVariationPointList(),
 //				resolutionModel.getVSpecResolutionList());
 //		
-//		//generateProduct.createProductModel(definition, productModelFileName);
-//		//generateProduct.createProductModel(generateProduct.readArchitecture(""));
-//		String baseModelFileName =  baseModel.baseModelFileName;
-//		int i = baseModelFileName.lastIndexOf("//");
-//		String header = baseModelFileName.substring(0, i);
-//		String footer =  baseModelFileName.substring(i + 2);
-//		String productModelFileName = header + "//" + "generated" + footer;
-//		
-//		Definition definition = baseModel.getArchitectureDefinition();
-//		generateProduct.createProductModel(definition, productModelFileName);
+		//generateProduct.createProductModel(definition, productModelFileName);
+		//generateProduct.createProductModel(generateProduct.readArchitecture(""));
+		String baseModelFileName =  baseModel.baseModelFileName;
+		int i = baseModelFileName.lastIndexOf("//");
+		String header = baseModelFileName.substring(0, i);
+		String footer =  baseModelFileName.substring(i + 2);
+		String productModelFileName = header + "//" + "generated" + footer;
+		
+		//Definition definition = baseModel.getArchitectureDefinition();
+	//	generateProduct.createProductModel(definition, productModelFileName);
 	}
 
 }
