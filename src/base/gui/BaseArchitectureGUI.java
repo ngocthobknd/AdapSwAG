@@ -21,8 +21,12 @@ import org.ow2.fractal.f4e.fractal.Binding;
 import org.ow2.fractal.f4e.fractal.Component;
 import org.ow2.fractal.f4e.fractal.Definition;
 
-import fractalADL.api.BaseArchitectureService;
-import fractalADL.implement.BaseArchitecture;
+import ACME.Attachment;
+import ACME.ComponentInstance;
+import ACME.Connector;
+import base.acme.implement.ACMEImpl;
+import base.api.BaseArchitectureService;
+import base.fractalADL.implement.FractalADLImpl;
 
 @SuppressWarnings("serial")
 public class BaseArchitectureGUI extends JPanel{
@@ -33,9 +37,12 @@ public class BaseArchitectureGUI extends JPanel{
 	public JTextArea edit;
 	public JTextField txtModelcvl;
 	
-	private BaseArchitectureService baseArchitecture;
+	public BaseArchitectureService baseArchitecture;
 	private Definition definition;
 	public String baseModelFileName;
+	
+	private ACME.System system;
+	
 	public BaseArchitectureGUI(String file) {
 		// TODO Auto-generated constructor stub
 		this.baseModelFileName = file;
@@ -65,8 +72,15 @@ public class BaseArchitectureGUI extends JPanel{
 	        		File file = fc.getSelectedFile();
 	        		String newFileName = file.getAbsolutePath();
 	        		txtModelcvl.setText(newFileName);
-	        		definition = baseArchitecture.getArchitectureDefinition(newFileName);
 	        		baseModelFileName = newFileName;
+	        		String ext = newFileName.substring(newFileName.lastIndexOf(".")+1);
+	        		if (ext.equals("fractal")) {
+	        			baseArchitecture = new FractalADLImpl();
+	        			definition = baseArchitecture.getArchitectureDefinition(baseModelFileName);
+	        		} else if (ext.equals("acme")) {
+	        			baseArchitecture = new ACMEImpl();
+	        			system = baseArchitecture.getACMESystem(baseModelFileName);
+	        		}
 	        		setText(newFileName);
 	             } else {
 	                 //log.append("Open command cancelled by user." + newline);
@@ -80,8 +94,14 @@ public class BaseArchitectureGUI extends JPanel{
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(edit);
 		add(scrollPane, BorderLayout.CENTER);
-		baseArchitecture = new BaseArchitecture();
-		definition = baseArchitecture.getArchitectureDefinition(baseModelFileName);
+		String ext = baseModelFileName.substring(baseModelFileName.lastIndexOf(".")+1);
+		if (ext.equals("fractal")) {
+			baseArchitecture = new FractalADLImpl();
+			definition = baseArchitecture.getArchitectureDefinition(baseModelFileName);
+		} else if (ext.equals("acme")) {
+			baseArchitecture = new ACMEImpl();
+			system = baseArchitecture.getACMESystem(baseModelFileName);
+		}
 	}
 	public void setText(String baseArchitectureFileName) {
 		try
@@ -94,25 +114,54 @@ public class BaseArchitectureGUI extends JPanel{
         }
         catch(Exception e2) {}
  	}
-	public Definition getArchitectureDefinition() {
-		// TODO Auto-generated method stub
-		return baseArchitecture.getArchitectureDefinition(baseModelFileName);
+	
+	public String getFileName() {
+		return this.baseModelFileName;
 	}
-	public ArrayList<Component> getComponentList() {
+	//for Fractal ADL
+	public Definition getDefinition() {
+		return this.definition;				
+	}
+//	public Definition getArchitectureDefinition() {
+//		// TODO Auto-generated method stub
+//		return baseArchitecture.getArchitectureDefinition(baseModelFileName);
+//	}
+	public ArrayList<Component> getComponentList(Definition definition) {
 		// TODO Auto-generated method stub
 		return baseArchitecture.getComponentList(definition);
 	}
-	public ArrayList<Component> getParentComponentList() {
+	public ArrayList<Component> getParentComponentList(Definition definition) {
 		// TODO Auto-generated method stub
 		return baseArchitecture.getParentComponentList(definition);
 	}
-	public ArrayList<Binding> getBindingList() {
+	public ArrayList<Binding> getBindingList(Definition definition) {
 		// TODO Auto-generated method stub
 		return baseArchitecture.getBindingList(definition);
 	}
-	public ArrayList<Binding> getParentBindingList() {
+	public ArrayList<Binding> getParentBindingList(Definition definition) {
 		// TODO Auto-generated method stub
 		return baseArchitecture.getParentBindingList(definition);
+	}
+	
+	//for ACME
+	public ACME.System getSystem() {
+		return this.system;
+	}
+	public ACME.System getACMESystem() {
+		return baseArchitecture.getACMESystem(baseModelFileName);
+	}
+	public ArrayList<ComponentInstance> getParentComponentList(ACME.System sys) {
+		return baseArchitecture.getParentComponentList(system);
+	}
+	public ArrayList<Connector> getParentConnectorList(ACME.System sys) {
+		return baseArchitecture.getParentConnectorList(sys);
+	}
+	public ArrayList<Attachment> getParentAttchmentList(ACME.System sys) {
+		return baseArchitecture.getParentAttchmentList(sys);
+				
+	}
+	public ArrayList<ACME.Binding> getParentBindingList(ACME.System sys) {
+		return baseArchitecture.getParentBindingList(sys);
 	}
 	/**
 	 * @param args
