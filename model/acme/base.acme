@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<acme.org:System xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:acme.org="www.acme.org" name="ClientServer">
+  <componentDeclaration name="Client">
+    <property name="synchrone" val=""/>
+    <ports name="r"/>
+    <ports name="s"/>
+  </componentDeclaration>
+  <componentDeclaration name="Server">
+    <representations>
+      <systems name="composite">
+        <componentDeclaration name="Server1">
+          <ports name="s1"/>
+        </componentDeclaration>
+        <componentDeclaration name="Server2">
+          <ports name="s2"/>
+        </componentDeclaration>
+        <connectorDeclaration name="udp">
+          <roles name="caller"/>
+          <roles name="callee"/>
+        </connectorDeclaration>
+        <attachement xsi:type="acme.org:Binding" compSrc="Server" portSrc="receiveRequest" compDest="Server1" portDest="s1"/>
+        <attachement xsi:type="acme.org:Binding" compSrc="Server" portSrc="receiveRequest" compDest="Server2" portDest="s2"/>
+      </systems>
+    </representations>
+    <ports name="receiveRequest"/>
+  </componentDeclaration>
+  <connectorDeclaration name="tcp">
+    <property name="buffer" val="0"/>
+    <roles name="caller"/>
+    <roles name="callee"/>
+  </connectorDeclaration>
+  <attachement xsi:type="acme.org:Attachment" comp="Client" port="r" con="tcp" role="caller"/>
+  <attachement xsi:type="acme.org:Attachment" comp="Server" port="s" con="tcp" role="callee"/>
+</acme.org:System>
