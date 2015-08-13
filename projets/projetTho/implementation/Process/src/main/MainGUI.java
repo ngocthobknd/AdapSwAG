@@ -1,5 +1,7 @@
 package main;
 
+import generation.productArchitecture.ACMEGeneration;
+import generation.productArchitecture.FractalGeneration;
 import generation.productArchitecture.ProductGeneration;
 
 import java.awt.BorderLayout;
@@ -18,20 +20,27 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.border.TitledBorder;
 
+import org.ow2.fractal.f4e.fractal.Binding;
 import org.ow2.fractal.f4e.fractal.Component;
 import org.ow2.fractal.f4e.fractal.Definition;
 
+import ACME.Attachment;
+import ACME.ComponentInstance;
+import base.acme.implement.ACMEImpl;
+import base.api.BaseArchitectureService;
+import base.fractalADL.implement.FractalADLImpl;
+import base.gui.BaseArchitectureGUI;
 import resolution.gui.ResolutionModelGUI;
 import variability.gui.VariabilityModelGUI;
 import verification.ResolutionModelVerification;
-import architecture.gui.BaseArchitectureGUI;
+import cvl.*;
 
 public class MainGUI {
 
 	private JFrame frame;
-	String variabilityModelFileName = "model//composite2//model.cvl";
-	String resolutionModelFileName = "model//composite2//resolution.cvl";
-	String baseModelFileName =  "model//composite2//architecture.fractal";
+	String variabilityModelFileName = "model//fractal2//model.cvl";
+	String resolutionModelFileName = "model//fractal2//resolution.cvl";
+	String baseModelFileName =  "model//fractal2//architecture.fractal";
 	String productModelFileName = "";
 	/**
 	 * Launch the application.
@@ -118,7 +127,6 @@ public class MainGUI {
 		variabilityModel = new VariabilityModelGUI(variabilityModelFileName);
 		pnTree.add(variabilityModel);
 		
-		
 		JPanel pnResolutionTree = new JPanel();
 		pnResolutionTree.setBorder(new TitledBorder(null, "Resolution tree", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		splitPane_1.setRightComponent(pnResolutionTree);
@@ -147,9 +155,6 @@ public class MainGUI {
 						ResolutionModelVerification(variabilityModel.getVSpecList(), 
 								resolutionModel.getVSpecResolutionList());
 				
-				System.out.println("1."+variabilityModel.getVSpecList().size());
-				System.out.println("2."+resolutionModel.getVSpecResolutionList().size());
-				
 				if (rmv.verifyRM()) {
 					JOptionPane.showMessageDialog (null, "Verification OK",
 							"Verification", mc);
@@ -166,24 +171,57 @@ public class MainGUI {
 			
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent paramActionEvent) {
-		
-				baseModel = new BaseArchitectureGUI(baseModelFileName);
-				System.out.println("1:"+baseModel.getComponentList().size());	
+				baseModelFileName = baseModel.getFileName();
 				int i = baseModelFileName.lastIndexOf("/");
 				String header = baseModelFileName.substring(0, i);
 				String footer =  baseModelFileName.substring(i + 1);
 				String productModelFileName = header + "//" + "generated" + footer;
 				
-				ProductGeneration generateProduct = new ProductGeneration(baseModel.getComponentList(),
-						baseModel.getBindingList(), 
-						variabilityModel.getVSpecList(), 
-						variabilityModel.getVariationPointList(),
-						resolutionModel.getVSpecResolutionList());
-				generateProduct.createProductModel(baseModel.getArchitectureDefinition(), productModelFileName);
+//				ProductGeneration generateProduct = new ProductGeneration(baseModel.getComponentList(),
+//						baseModel.getBindingList(), 
+//						variabilityModel.getVSpecList(), 
+//						variabilityModel.getVariationPointList(),
+//						resolutionModel.getVSpecResolutionList());
+//				generateProduct.createProductModel(baseModel.getArchitectureDefinition(), productModelFileName);
+				ArrayList<VSpec> vSpecList = variabilityModel.getVSpecList(); 
+				ArrayList<VariationPoint> vpList =	variabilityModel.getVariationPointList();
+				ArrayList<VSpecResolution> vSpecResolutionList = resolutionModel.getVSpecResolutionList();
+
+				BaseArchitectureService baseArchitectureService = baseModel.baseArchitecture;
+				if (baseArchitectureService instanceof FractalADLImpl) {
+					Definition definition = baseModel.getDefinition();
+					ArrayList<Component> sourceComponentList = baseModel.getParentComponentList(definition);
+					ArrayList<Binding> sourceBindingList = baseModel.getParentBindingList(definition);
+					
+					FractalGeneration fractalGeneration = new FractalGeneration(vSpecList, 
+							vpList, 
+							vSpecResolutionList, 
+							sourceComponentList, 
+							sourceBindingList); 
+					
+					fractalGeneration.create(productModelFileName, definition.getName());
+				} if (baseArchitectureService instanceof ACMEImpl) {
+					ACME.System sys = baseModel.getACMESystem();
+					ArrayList<ComponentInstance> sourceComponentList = baseModel.getParentComponentList(sys);
+					ArrayList<ACME.Connector> connectorList = baseModel.getParentConnectorList(sys);
+					ArrayList<Attachment> attachmentList = baseModel.getParentAttchmentList(sys);
+					ArrayList<ACME.Binding> sourceBindingList = baseModel.getParentBindingList(sys);
+					
+					ACMEGeneration acm = new ACMEGeneration(vSpecList, 
+							vpList, 
+							vSpecResolutionList, 
+							sourceComponentList, 
+							connectorList,
+							attachmentList, 
+							sourceBindingList);
+					acm.create(productModelFileName, sys.getName());
+				}
+					
+				
 				product.setText(productModelFileName);
 				product.txtModelcvl.setText(productModelFileName);
 				
-				System.out.println("2:"+baseModel.getComponentList().size());	
+				//System.out.println("2:"+baseModel.getComponentList().size());	
 			}
 		});
 		pnCtrl.add(btnNewButton_2);
