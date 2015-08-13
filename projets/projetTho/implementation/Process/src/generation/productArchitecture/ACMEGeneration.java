@@ -223,8 +223,8 @@ public class ACMEGeneration {
 							String componentName = mofRefReplacement.substring(mofRefReplacement.lastIndexOf(".") + 1);
 							ComponentInstance comp_temp = returnComponentByName(componentName, componentList);
 							ComponentInstance comp_del = returnComponentByName(srcComponentName, componentList);
-							System.out.println("add:"+comp_temp.getName());
-							System.out.println("del:"+comp_del.getName());
+							//System.out.println("add:"+comp_temp.getName());
+							//System.out.println("del:"+comp_del.getName());
 							
 							system_recusif.getComponentDeclaration().add(comp_temp);
 							system_recusif.getComponentDeclaration().remove(comp_del);
