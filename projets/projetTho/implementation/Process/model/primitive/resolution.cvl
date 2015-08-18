@@ -3,7 +3,7 @@
   <resolvedVSpec xsi:type="cvl:Choice" href="model.cvl#//@packageElement.0"/>
   <child xsi:type="cvl:ChoiceResolution" name="Client" decision="true">
     <resolvedVSpec xsi:type="cvl:Choice" href="model.cvl#//@packageElement.0/@child.0"/>
-    <child xsi:type="cvl:VariableValueAssignment" name="synchrone" value="yes">
+    <child xsi:type="cvl:VariableValueAssignment" name="synchrone" value="no">
       <resolvedVSpec xsi:type="cvl:Variable" href="model.cvl#//@packageElement.0/@child.0/@child.0"/>
       <resolvedVariable href="model.cvl#//@packageElement.0/@child.0/@child.0"/>
     </child>
@@ -11,11 +11,11 @@
   </child>
   <child xsi:type="cvl:ChoiceResolution" name="Server" decision="true">
     <resolvedVSpec xsi:type="cvl:Choice" href="model.cvl#//@packageElement.0/@child.1"/>
-    <child xsi:type="cvl:ChoiceResolution" name="Server1" decision="true">
+    <child xsi:type="cvl:ChoiceResolution" name="Server1" decision="false">
       <resolvedVSpec xsi:type="cvl:Choice" href="model.cvl#//@packageElement.0/@child.1/@child.0"/>
       <resolvedChoice href="model.cvl#//@packageElement.0/@child.1/@child.0"/>
     </child>
-    <child xsi:type="cvl:ChoiceResolution" name="Server2">
+    <child xsi:type="cvl:ChoiceResolution" name="Server2" decision="true">
       <resolvedVSpec xsi:type="cvl:Choice" href="model.cvl#//@packageElement.0/@child.1/@child.1"/>
       <resolvedChoice href="model.cvl#//@packageElement.0/@child.1/@child.1"/>
     </child>

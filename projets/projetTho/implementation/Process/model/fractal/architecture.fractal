@@ -6,19 +6,19 @@
       <attributes name="synchrone"/>
     </attributesController>
   </subComponents>
-  <subComponents name="Server">
+  <subComponents name="Server_0">
     <interfaces name="s"/>
-    <subComponents name="Server1">
+    <subComponents name="Server_1">
       <interfaces name="s1" role="server"/>
       <attributesController>
       	<attributes name="id"/>
       </attributesController>
     </subComponents>
-    <subComponents name="Server2">
+    <subComponents name="Server_2">
       <interfaces name="s2" role="server"/>
     </subComponents>
-  	<bindings client="Server" server="Server1" clientInterface="//@subComponents.1/@interfaces.0" serverInterface="//@subComponents.1/@subComponents.0/@interfaces.0"/>
-  	<bindings client="Server" server="Server2" clientInterface="//@subComponents.1/@interfaces.0" serverInterface="//@subComponents.1/@subComponents.1/@interfaces.0"/>
+    <bindings client="Server" server="Server1" clientInterface="//@subComponents.1/@interfaces.0" serverInterface="//@subComponents.1/@subComponents.0/@interfaces.0"/>
+    <bindings client="Server" server="Server2" clientInterface="//@subComponents.1/@interfaces.0" serverInterface="//@subComponents.1/@subComponents.1/@interfaces.0"/>
   </subComponents>
   <bindings client="Client" server="Server" clientInterface="//@subComponents.0/@interfaces.0" serverInterface="//@subComponents.1/@interfaces.0"/>
  </fractal.ecore:Definition>

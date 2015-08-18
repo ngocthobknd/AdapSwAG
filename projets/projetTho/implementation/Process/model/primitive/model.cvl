@@ -9,7 +9,7 @@
     <child xsi:type="cvl:Choice" name="Server" resolutionTime="" availabilityTime="design" isImpliedByParent="true">
       <groupMultiplicity upper="1" lower="1"/>
       <child xsi:type="cvl:Choice" name="Server1" resolutionTime="" availabilityTime="runtime" defaultResolution="true"/>
-      <child xsi:type="cvl:Choice" name="Server2" resolutionTime="" availabilityTime="design"/>
+      <child xsi:type="cvl:Choice" name="Server2" resolutionTime="" availabilityTime="runtime"/>
     </child>
     <child xsi:type="cvl:Choice" name="Temp"/>
   </packageElement>

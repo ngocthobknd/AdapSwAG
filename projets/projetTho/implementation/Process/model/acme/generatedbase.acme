@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ASCII"?>
 <acme.org:System xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:acme.org="www.acme.org" name="productClientServer">
   <componentDeclaration name="Client">
-    <property name="synchrone" val="sss"/>
+    <property name="synchrone" val="yes"/>
     <ports name="r"/>
     <ports name="s"/>
   </componentDeclaration>
@@ -18,6 +18,7 @@
           <roles name="caller"/>
           <roles name="callee"/>
         </connectorDeclaration>
+        <attachement xsi:type="acme.org:Binding" compSrc="Server" portSrc="receiveRequest" compDest="Server1" portDest="s1"/>
       </systems>
     </representations>
     <ports name="receiveRequest"/>

@@ -11,6 +11,9 @@
         <componentDeclaration name="Server1">
           <ports name="s1"/>
         </componentDeclaration>
+        <componentDeclaration name="Server2">
+          <ports name="s2"/>
+        </componentDeclaration>
         <connectorDeclaration name="udp">
           <roles name="caller"/>
           <roles name="callee"/>
@@ -20,6 +23,7 @@
     </representations>
     <ports name="receiveRequest"/>
   </componentDeclaration>
+  <componentDeclaration name="A1"/>
   <componentDeclaration name="A2"/>
   <connectorDeclaration name="tcp">
     <property name="buffer" val="0"/>
@@ -28,5 +32,5 @@
   </connectorDeclaration>
   <attachement xsi:type="acme.org:Attachment" comp="Client" port="r" con="tcp" role="caller"/>
   <attachement xsi:type="acme.org:Attachment" comp="Server" port="s" con="tcp" role="callee"/>
-  <attachement xsi:type="acme.org:Attachment" comp="A2" port="" con="tcp" role="callee"/>
+  <attachement xsi:type="acme.org:Attachment" comp="A1" port="" con="tcp" role="callee"/>
 </acme.org:System>
