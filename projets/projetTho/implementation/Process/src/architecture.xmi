@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fractal.ecore:Definition xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fractal.ecore="http://org.ow2.fractal/f4e/fractal.ecore/1.0.0" xsi:schemaLocation="http://org.ow2.fractal/f4e/fractal.ecore/1.0.0 fractal.ecore" name="clientServer">
+  <subComponents name="Client" definition="">
+    <interfaces name="r" signature="ServerService"/>
+    <interfaces name="s" signature="RuntimeService" role="server"/>
+    <attributesController>
+      <attributes name="synchrone" value="no"/>
+    </attributesController>
+  </subComponents>
+  <subComponents name="Server1">
+    <interfaces name="s" signature="ServerService" role="server"/>
+  </subComponents>
+  <subComponents name="Server2">
+    <interfaces name="s" signature="ServerService" role="server"/>
+  </subComponents>
+  <bindings client="Client" server="Server1" clientInterface="//@subComponents.0/@interfaces.0" serverInterface="//@subComponents.1/@interfaces.0"/>
+</fractal.ecore:Definition>
