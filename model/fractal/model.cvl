@@ -24,16 +24,16 @@
     <slotOwner MOFRef="CompositeArchitecture.Client.synchrone"/>
   </packageElement>
   <packageElement xsi:type="cvl:ObjectExistence" name="ServerVP" bindingVSpec="//@packageElement.0/@child.1" bindingChoice="//@packageElement.0/@child.1">
-    <optionalObject MOFRef="CompositeArchitecture.Server"/>
+    <optionalObject MOFRef="CompositeArchitecture.Server_0"/>
   </packageElement>
   <packageElement xsi:type="cvl:ObjectExistence" name="Server1VP" bindingVSpec="//@packageElement.0/@child.1/@child.0" bindingChoice="//@packageElement.0/@child.1/@child.0">
-    <optionalObject MOFRef="CompositeArchitecture.Server.Server1"/>
+    <optionalObject MOFRef="CompositeArchitecture.Server_0.Server_1"/>
   </packageElement>
   <packageElement xsi:type="cvl:ObjectExistence" name="Server2VP" bindingVSpec="//@packageElement.0/@child.1/@child.1" bindingChoice="//@packageElement.0/@child.1/@child.1">
-    <optionalObject MOFRef="CompositeArchitecture.Server.Server2"/>
+    <optionalObject MOFRef="CompositeArchitecture.Server_0.Server_2"/>
   </packageElement>
   <packageElement xsi:type="cvl:ParametricSlotAssignment" name="idVP" bindingVSpec="//@packageElement.0/@child.1/@child.0/@child.0" bindingVariable="//@packageElement.0/@child.1/@child.0/@child.0">
-    <slotOwner MOFRef="CompositeArchitecture.Server.Server1.id"/>
+    <slotOwner MOFRef="CompositeArchitecture.Server.Server_1.id"/>
   </packageElement>
 
 </cvl:VPackage>
