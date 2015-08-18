@@ -1,0 +1,53 @@
+«IMPORT fractal»
+//extends ext
+«EXTENSION toJava::fractal2Java::metamodel::Extensions»
+//root definition
+«DEFINE definition FOR Definition»
+	//call template
+	«EXPAND component FOREACH getComponentList()»
+«ENDDEFINE»
+
+«DEFINE component FOR Component»
+	«IF subComponents.size > 0 »
+		«EXPAND component FOREACH subComponents»
+	«ELSE»
+		«FILE name+".java"»
+import org.apache.felix.ipojo.annotations.*;	
+@Component(name="«name»")
+//begin the class
+public class «name» «EXPAND implementation FOREACH getInterfaceList()»{
+		//declare interface
+   		«EXPAND interfaceInstance FOREACH getInterfaceList()»
+   		«EXPAND attributes FOREACH getAttributeList()»
+}
+		«ENDFILE»
+	«ENDIF»
+«ENDDEFINE»
+«DEFINE implementation FOR Interface»
+	«IF this.role.toString() == "server"»	
+		«IF this.signature != null »
+			implements «this.signature»
+		«ENDIF»
+	«ENDIF»
+«ENDDEFINE»
+
+«DEFINE interfaceInstance FOR Interface»
+	«IF this.signature != null »
+		«IF this.role.toString() == "server"»
+				«FILE this.signature+".java"»
+					public interface «this.signature» {
+					} 
+				«ENDFILE»
+			
+		«ELSE»
+			@Requires
+			«this.signature» «this.name»;
+			
+		«ENDIF»
+	«ENDIF»
+«ENDDEFINE»
+
+«DEFINE attributes FOR Attribute»
+	@Property(name="«this.name»")
+	String «this.name»;
+«ENDDEFINE»

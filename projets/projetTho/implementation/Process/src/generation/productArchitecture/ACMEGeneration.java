@@ -131,7 +131,7 @@ public class ACMEGeneration {
 						ComponentInstance comp_temp = acmeFactory.createComponentInstance();
 						comp_temp = comp;
 		
-						if (comp.getRepresentations() != null) {
+						if (comp.getRepresentations().size() > 0) {
 							
 							ArrayList<Representation> repList = new ArrayList<Representation>();
 							for (int j = 0; j < comp.getRepresentations().size(); j++) {
@@ -141,7 +141,7 @@ public class ACMEGeneration {
 							for (int j = 0; j < comp.getRepresentations().size(); j++) {
 								EList<ACME.System> subSystemList = comp.getRepresentations().get(j).getSystems();
 								Representation representation_temp = acmeFactory.createRepresentation();
-								if (subSystemList != null) {
+								if (subSystemList.size() > 0) {
 									for (int k = 0; k < subSystemList.size(); k++) {
 										ACME.System systemSub = subSystemList.get(k);
 									
@@ -190,12 +190,11 @@ public class ACMEGeneration {
 										representation_temp.getSystems().add(sys);
 									}
 								}
-								
 								comp_temp.getRepresentations().add(representation_temp);
 							}
 						}
 						//search property
-						if (comp.getProperty() != null) {
+						if (comp.getProperty().size() > 0) {
 							for (int j = 0; j < comp.getProperty().size(); j++) {
 								Property proper = comp.getProperty().get(j);
 								VariationPoint vpT = returnVPByAttribute(proper.getName().toString(), vpList);
@@ -230,7 +229,7 @@ public class ACMEGeneration {
 							system_recusif.getComponentDeclaration().remove(comp_del);
 							
 							//search property
-							if (comp_temp.getProperty() != null) {
+							if (comp_temp.getProperty().size() > 0) {
 								for (int j = 0; j < comp_temp.getProperty().size(); j++) {
 									Property proper = comp_temp.getProperty().get(j);
 									VariationPoint vpT = returnVPByAttribute(proper.getName().toString(), vpList);
