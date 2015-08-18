@@ -19,10 +19,9 @@ import org.ow2.fractal.f4e.fractal.Definition;
 import org.ow2.fractal.f4e.fractal.FractalFactory;
 import org.ow2.fractal.f4e.fractal.Interface;
 
-import base.gui.BaseArchitectureGUI;
 import resolution.gui.ResolutionModelGUI;
 import variability.gui.VariabilityModelGUI;
-import ACME.ComponentInstance;
+import base.gui.BaseArchitectureGUI;
 import cvl.Choice;
 import cvl.ChoiceResolution;
 import cvl.ObjectExistence;
@@ -120,7 +119,7 @@ public class FractalGeneration {
 						Component comp = sourceComponentList.get(i);
 						Component comp_temp = fractalADLFractory.createComponent();
 						comp_temp = comp;
-						if (comp.getSubComponents() != null) {
+						if (comp.getSubComponents().size() > 0) {
 							ArrayList<Component> subComponentList = new ArrayList<Component>();
 							subComponentList.addAll(comp.getSubComponents());
 							ArrayList<Binding> subBindingList = new ArrayList<Binding>();
@@ -252,9 +251,9 @@ public class FractalGeneration {
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		BaseArchitectureGUI baseModel = new BaseArchitectureGUI("model//composite2//architecture.fractal");
-		VariabilityModelGUI variabilityModel = new VariabilityModelGUI("model//composite2//model.cvl");
-		ResolutionModelGUI resolutionModel = new ResolutionModelGUI( "model//composite2//resolution.cvl"); 
+		BaseArchitectureGUI baseModel = new BaseArchitectureGUI("model//fractal//architecture.fractal");
+		VariabilityModelGUI variabilityModel = new VariabilityModelGUI("model//fractal//model.cvl");
+		ResolutionModelGUI resolutionModel = new ResolutionModelGUI( "model//fractal//resolution.cvl"); 
 		//BaseArchitectureGUI product = new BaseArchitectureGUI(productModelFileName);
 		Definition definition = baseModel.getDefinition();
 		FractalGeneration generateProduct = new FractalGeneration(variabilityModel.getVSpecList(),

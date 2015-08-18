@@ -55,7 +55,8 @@ public class ResolutionModelGUI extends JPanel{
 		pnLoad.add(lblNewLabel, BorderLayout.WEST);
 		
 		final JTextField txtModelcvl = new JTextField();
-		txtModelcvl.setText("model.cvl");
+		String tm = resolutionModelFileName.replaceAll("//", "/");
+		txtModelcvl.setText(tm);
 		pnLoad.add(txtModelcvl, BorderLayout.CENTER);
 		txtModelcvl.setColumns(30);
 		

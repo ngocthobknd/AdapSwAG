@@ -1,0 +1,29 @@
+/*
+import metamodel;
+
+Model model(Type this) :
+	eContainer;
+	
+List[Entity] entities(Model this) :
+	types.typeSelect(Entity);
+	*/
+
+import fractal;
+Definition definition1(Component this) : 
+	eContainer;
+List[Component] getComponentList(Definition this) : 
+	subComponents.typeSelect(Component);
+List[Component] getSubComponentList(Component this) :
+	subComponents.typeSelect(Component).without({this});
+	
+List[Interface] getInterfaceList(Component this) :
+	interfaces.typeSelect(Interface);
+
+List[Attribute] getAttributeList(Component this) :
+	attributesController.attributes.typeSelect(Attribute); 
+
+	
+
+	
+	
+	
