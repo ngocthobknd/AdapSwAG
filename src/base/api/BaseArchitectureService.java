@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.ow2.fractal.f4e.fractal.Component;
 import org.ow2.fractal.f4e.fractal.Definition;
-
 import ACME.Attachment;
 import ACME.ComponentInstance;
 import ACME.Connector;
