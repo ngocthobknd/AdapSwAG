@@ -8,9 +8,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.ow2.fractal.f4e.fractal.Definition;
-
-import base.api.BaseArchitectureService;
+import base.implement.BaseArchitecture;
 import ACME.ACMEPackage;
 import ACME.Attachment;
 import ACME.Binding;
@@ -20,7 +18,7 @@ import ACME.Connector;
 import ACME.Link;
 import ACME.Representation;
 
-public class ACMEImpl implements BaseArchitectureService {
+public class ACMEImpl extends BaseArchitecture {// implements BaseArchitectureService {
 
 	public ACMEImpl() {
 		// TODO Auto-generated constructor stub
@@ -187,33 +185,5 @@ public class ACMEImpl implements BaseArchitectureService {
 			System.out.println("binding: "+bindingList.get(i).getCompDest());
 		}
 	}
-	@Override
-	public Definition getArchitectureDefinition(String file) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public ArrayList<org.ow2.fractal.f4e.fractal.Component> getComponentList(
-			Definition definition) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public ArrayList<org.ow2.fractal.f4e.fractal.Binding> getBindingList(
-			Definition definition) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public ArrayList<org.ow2.fractal.f4e.fractal.Component> getParentComponentList(
-			Definition definition) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public ArrayList<org.ow2.fractal.f4e.fractal.Binding> getParentBindingList(
-			Definition definition) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 }

@@ -56,7 +56,9 @@ public class BaseArchitectureGUI extends JPanel{
 		pnLoad.add(lblNewLabel, BorderLayout.WEST);
 		
 		txtModelcvl = new JTextField();
-		txtModelcvl.setText("architecture.fractal");
+		
+		String tm = file.replaceAll("//", "/");
+		txtModelcvl.setText(tm);
 		pnLoad.add(txtModelcvl, BorderLayout.CENTER);
 		//txtModelcvl.setColumns();
 		JButton btnNewButton_1 = new JButton("Load");

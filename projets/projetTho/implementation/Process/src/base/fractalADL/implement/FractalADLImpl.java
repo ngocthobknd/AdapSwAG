@@ -16,16 +16,15 @@ import org.ow2.fractal.f4e.fractal.Definition;
 import org.ow2.fractal.f4e.fractal.FractalPackage;
 
 import base.api.BaseArchitectureService;
-import ACME.Attachment;
-import ACME.ComponentInstance;
-import ACME.Connector;
+import base.implement.BaseArchitecture;
+
 
 
 /**
  * @author hnt
  *
  */
-public class FractalADLImpl implements BaseArchitectureService {
+public class FractalADLImpl extends BaseArchitecture {//implements BaseArchitectureService {
 
 	/**
 	 * 
@@ -97,30 +96,6 @@ public class FractalADLImpl implements BaseArchitectureService {
 		}
 
 	}
-	@Override
-	public ACME.System getACMESystem(String file) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public ArrayList<ComponentInstance> getParentComponentList(ACME.System sys) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public ArrayList<Connector> getParentConnectorList(ACME.System sys) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public ArrayList<Attachment> getParentAttchmentList(ACME.System sys) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public ArrayList<ACME.Binding> getParentBindingList(ACME.System sys) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 }
