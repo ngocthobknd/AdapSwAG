@@ -18,9 +18,9 @@ import org.eclipse.xtend.typesystem.emf.EmfRegistryMetaModel;
 import org.ow2.fractal.f4e.fractal.Definition;
 import org.ow2.fractal.f4e.fractal.FractalPackage;
 import org.eclipse.emf.mwe.utils.DirectoryCleaner;
-public class JavaGeneration {
+public class Fractal2Java {
 
-	public JavaGeneration(String file) {
+	public Fractal2Java(String file) {
 		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
 	    Map<String, Object> factoryMap = reg.getExtensionToFactoryMap();
 	    factoryMap.put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
@@ -59,7 +59,7 @@ public class JavaGeneration {
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		new JavaGeneration("model//primitive//generatedarchitecture.fractal");
+		new Fractal2Java("model//primitive//generatedarchitecture.fractal");
 	}
 
 }
