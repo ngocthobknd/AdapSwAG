@@ -49,7 +49,7 @@ public class Fractal2Java {
 		}
         
         
-        String templatePath = "toJava::fractal2Java::template::template::definition";
+        String templatePath = "toJava::fractal2Java::template::Template::definition";
         XpandExecutionContextImpl execCtx = new XpandExecutionContextImpl(out, null);
         execCtx.registerMetaModel(new EmfRegistryMetaModel());
         XpandFacade facade = XpandFacade.create(execCtx);

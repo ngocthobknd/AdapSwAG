@@ -11,7 +11,8 @@
 	«IF subComponents.size > 0 »
 		«EXPAND component FOREACH subComponents»
 	«ELSE»
-		«FILE name+".java"»
+		«FILE name.toLowerCase()+"/"+name+".java"»
+package «name.toLowerCase()»;		
 import org.apache.felix.ipojo.annotations.*;	
 @Component(name="«name»")
 //begin the class
