@@ -9,10 +9,18 @@ List[Entity] entities(Model this) :
 	*/
 
 import fractal;
-Definition definition1(Component this) : 
+Definition getDefinition(Component this) : 
 	eContainer;
+	
+Component getComponentOfInterface(Interface this) : 
+	eContainer;
+
+Component getComponentOfComponent(Component this) : 
+	eContainer;
+			
 List[Component] getComponentList(Definition this) : 
 	subComponents.typeSelect(Component);
+	
 List[Component] getSubComponentList(Component this) :
 	subComponents.typeSelect(Component).without({this});
 	
@@ -22,8 +30,10 @@ List[Interface] getInterfaceList(Component this) :
 List[Attribute] getAttributeList(Component this) :
 	attributesController.attributes.typeSelect(Attribute); 
 
-	
+List[Binding] getBinding(Component this) :
+	bindings.typeSelect(Binding);
 
-	
+List[Binding] getBindingOfDefinition(Definition this) :
+	bindings.typeSelect(Binding);	
 	
 	

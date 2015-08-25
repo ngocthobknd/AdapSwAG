@@ -169,6 +169,7 @@ public class FractalGeneration {
 							
 							Component comp_temp = returnComponentByName(componentName, sourceComponentList);
 							Component comp_del = returnComponentByName(srcComponentName, sourceComponentList);
+							//add component to C
 							if (comp_temp != null) component.getSubComponents().add(comp_temp);
 							if (comp_del != null) component.getSubComponents().remove(comp_del);
 							//add attribute

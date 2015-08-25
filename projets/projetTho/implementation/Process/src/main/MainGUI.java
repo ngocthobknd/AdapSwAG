@@ -2,7 +2,6 @@ package main;
 
 import generation.productArchitecture.ACMEGeneration;
 import generation.productArchitecture.FractalGeneration;
-import generation.productArchitecture.ProductGeneration;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
@@ -33,6 +32,7 @@ import base.api.BaseArchitectureService;
 import base.fractalADL.implement.FractalADLImpl;
 import base.gui.BaseArchitectureGUI;
 import resolution.gui.ResolutionModelGUI;
+import test.ProductGeneration;
 import variability.gui.VariabilityModelGUI;
 import verification.ResolutionModelVerification;
 import cvl.*;
@@ -203,7 +203,7 @@ public class MainGUI {
 							sourceBindingList); 
 					
 					fractalGeneration.create(productModelFileName, definition.getName());
-				} if (baseArchitectureService instanceof ACMEImpl) {
+				} else if (baseArchitectureService instanceof ACMEImpl) {
 					ACME.System sys = baseModel.getACMESystem();
 					ArrayList<ComponentInstance> sourceComponentList = baseModel.getParentComponentList(sys);
 					ArrayList<ACME.Connector> connectorList = baseModel.getParentConnectorList(sys);
@@ -219,8 +219,6 @@ public class MainGUI {
 							sourceBindingList);
 					acme.create(productModelFileName, sys.getName());
 				}
-					
-				
 				product.setText(productModelFileName);
 				product.txtModelcvl.setText(productModelFileName);
 				

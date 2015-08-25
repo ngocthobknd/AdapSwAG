@@ -59,7 +59,7 @@ public class Fractal2Java {
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		new Fractal2Java("model//primitive//generatedarchitecture.fractal");
+		new Fractal2Java("model//fractal2//generatedarchitecture.fractal");
 	}
 
 }
