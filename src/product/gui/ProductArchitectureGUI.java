@@ -20,7 +20,9 @@ import java.io.FileReader;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 
-import toJava.fractal2Java.JavaGeneration;
+import toJava.acme2Java.ACME2Java;
+import toJava.fractal2Java.Fractal2Java;
+
 
 public class ProductArchitectureGUI extends JPanel {
 
@@ -29,7 +31,7 @@ public class ProductArchitectureGUI extends JPanel {
 	
 	public BaseArchitectureService baseArchitecture;
 	public String baseModelFileName;
-	private JTextField textField;
+	//private JTextField textField;
 	/**
 	 * Create the panel.
 	 */
@@ -94,9 +96,13 @@ public class ProductArchitectureGUI extends JPanel {
 				int mc = JOptionPane.WARNING_MESSAGE;
 				
 				String fileName = txtModelcvl.getText().replaceAll("/", "//");
-				//
-				System.out.println(fileName);
-				new JavaGeneration(fileName);
+				String ext = fileName.substring(fileName.lastIndexOf(".")+1);
+				if (ext.equals("fractal")) {
+					new Fractal2Java(fileName);
+				}
+				else if (ext.equals("acme")) {
+					new ACME2Java(fileName);
+				}
 				JOptionPane.showMessageDialog (null, "Generate Java code",
 						"Verification", mc);
 			}
@@ -118,7 +124,7 @@ public class ProductArchitectureGUI extends JPanel {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		JFrame frame = new JFrame("Moving");
+		JFrame frame = new JFrame("Product");
 		ProductArchitectureGUI m = new ProductArchitectureGUI("model//composite2//architecture.fractal");
 		//		m.setDoubleBuffered(true);
 		frame.getContentPane().add(m);
