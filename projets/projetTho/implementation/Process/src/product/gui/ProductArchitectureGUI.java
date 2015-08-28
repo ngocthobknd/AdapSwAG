@@ -20,6 +20,7 @@ import java.io.FileReader;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 
+import toJava.JavaGeneration;
 import toJava.acme2Java.ACME2Java;
 import toJava.fractal2Java.Fractal2Java;
 
@@ -95,14 +96,15 @@ public class ProductArchitectureGUI extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				int mc = JOptionPane.WARNING_MESSAGE;
 				
-				String fileName = txtModelcvl.getText().replaceAll("/", "//");
-				String ext = fileName.substring(fileName.lastIndexOf(".")+1);
-				if (ext.equals("fractal")) {
-					new Fractal2Java(fileName);
-				}
-				else if (ext.equals("acme")) {
-					new ACME2Java(fileName);
-				}
+//				String fileName = txtModelcvl.getText().replaceAll("/", "//");
+//				String ext = fileName.substring(fileName.lastIndexOf(".")+1);
+//				if (ext.equals("fractal")) {
+//					new Fractal2Java(fileName);
+//				}
+//				else if (ext.equals("acme")) {
+//					new ACME2Java(fileName);
+//				}
+				new JavaGeneration(txtModelcvl.getText());
 				JOptionPane.showMessageDialog (null, "Generate Java code",
 						"Verification", mc);
 			}

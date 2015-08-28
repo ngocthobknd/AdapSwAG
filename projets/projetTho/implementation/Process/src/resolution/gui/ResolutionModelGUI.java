@@ -36,7 +36,7 @@ import cvl.VariationPoint;
 import resolution.api.ResolutionModelService;
 import resolution.implement.ResolutionModel;
 import test.tree.ResolutionTree;
-import variability.gui.VariabilityModelGUI;
+
 
 
 

@@ -11,7 +11,7 @@ import cvl.VInstance;
 import cvl.VSpec;
 import cvl.VSpecResolution;
 import resolution.gui.ResolutionModelGUI;
-import variability.gui.VariabilityModelGUI;
+import vspectree.gui.VSpecTreeGUI;
 
 public class ResolutionModelVerification {
 	/*
@@ -132,7 +132,7 @@ public class ResolutionModelVerification {
 		return vSpecresolution;
 	}
 	public static void main (String [] args) {
-		VariabilityModelGUI variabilityModel = new VariabilityModelGUI("model//composite2//model.cvl");
+		VSpecTreeGUI variabilityModel = new VSpecTreeGUI("model//composite2//model.cvl");
 		ResolutionModelGUI resolutionModel = new ResolutionModelGUI( "model//composite2//resolution.cvl"); 
 		System.out.println(new ResolutionModelVerification(variabilityModel.getVSpecList(), resolutionModel.getVSpecResolutionList()).verifyRM());
 	}
