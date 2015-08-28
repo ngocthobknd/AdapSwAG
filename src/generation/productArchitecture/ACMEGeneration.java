@@ -14,7 +14,8 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
 import base.acme.implement.ACMEImpl;
 import resolution.gui.ResolutionModelGUI;
-import variability.gui.VariabilityModelGUI;
+import vspectree.gui.VSpecTreeGUI;
+import variationpoint.gui.VariationPointGUI;
 import ACME.ACMEFactory;
 import ACME.Attachment;
 import ACME.Binding;
@@ -317,14 +318,15 @@ public class ACMEGeneration {
 	}
 	public static void main(String args[]) {
 		
-		VariabilityModelGUI variabilityModel = new VariabilityModelGUI("model//acme//model.cvl");
+		VSpecTreeGUI variabilityModel = new VSpecTreeGUI("model//fractal//vspectree.cvl");
+		VariationPointGUI variationpointModel = new VariationPointGUI("model//fractal//variationpoint.cvl");
 		ResolutionModelGUI resolutionModel = new ResolutionModelGUI( "model//acme//resolution.cvl"); 
 		
 		ACMEImpl baseModel = new ACMEImpl();
 		ACME.System sys = baseModel.getACMESystem("model//acme//base.acme");
 		
 		ACMEGeneration acm = new ACMEGeneration(variabilityModel.getVSpecList(), 
-				variabilityModel.getVariationPointList(), 
+				variationpointModel.getVariationPointList(), 
 				resolutionModel.getVSpecResolutionList(), 
 				baseModel.getParentComponentList(sys), 
 				baseModel.getParentConnectorList(sys),

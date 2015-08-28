@@ -20,7 +20,8 @@ import org.ow2.fractal.f4e.fractal.FractalFactory;
 import org.ow2.fractal.f4e.fractal.Interface;
 
 import resolution.gui.ResolutionModelGUI;
-import variability.gui.VariabilityModelGUI;
+import vspectree.gui.VSpecTreeGUI;
+import variationpoint.gui.VariationPointGUI;
 import base.gui.BaseArchitectureGUI;
 import cvl.Choice;
 import cvl.ChoiceResolution;
@@ -253,12 +254,13 @@ public class FractalGeneration {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		BaseArchitectureGUI baseModel = new BaseArchitectureGUI("model//fractal//architecture.fractal");
-		VariabilityModelGUI variabilityModel = new VariabilityModelGUI("model//fractal//model.cvl");
+		VSpecTreeGUI variabilityModel = new VSpecTreeGUI("model//fractal//vspectree.cvl");
+		VariationPointGUI variationpointModel = new VariationPointGUI("model//fractal//variationpoint.cvl");
 		ResolutionModelGUI resolutionModel = new ResolutionModelGUI( "model//fractal//resolution.cvl"); 
 		//BaseArchitectureGUI product = new BaseArchitectureGUI(productModelFileName);
 		Definition definition = baseModel.getDefinition();
 		FractalGeneration generateProduct = new FractalGeneration(variabilityModel.getVSpecList(),
-				variabilityModel.getVariationPointList(),
+				variationpointModel.getVariationPointList(),
 				resolutionModel.getVSpecResolutionList(),
 				baseModel.getParentComponentList(definition), 
 				baseModel.getParentBindingList(definition));

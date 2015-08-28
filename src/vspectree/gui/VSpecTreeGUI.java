@@ -1,9 +1,8 @@
-package variability.gui;
+package vspectree.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -21,7 +20,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.border.TitledBorder;
@@ -31,115 +29,86 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import variability.api.VariabilityModelService;
-import variability.implement.VariabilityModel;
-import cvl.ObjectExistence;
-import cvl.ObjectHandle;
-import cvl.ObjectSubstitution;
-import cvl.ParametricSlotAssignment;
+import vspectree.implement.VSpecTreeImpl;
+import cvl.Choice;
 import cvl.VPackage;
 import cvl.VSpec;
 import cvl.VariationPoint;
-import cvl.Choice;
-
-
-
-@SuppressWarnings("serial")
-public class VariabilityModelGUI extends JPanel {
-	
-	//public String newFileName;
-	
-	
+import vspectree.api.*;
+public class VSpecTreeGUI extends JPanel{
 	private JTree tree;
 	@SuppressWarnings("rawtypes")
 	private JList list;
 	
-	private VariabilityModelService vty;
+	private VSpecTreeService vty;
 	private VPackage vPackage;
 	String variabilityModelFileName;
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public VariabilityModelGUI(String cvlFileName) {
+	public VSpecTreeGUI(String cvlFileName) {
 		// TODO Auto-generated constructor stub
-		//this.newFileName = cvlFileName;
-		this.variabilityModelFileName = cvlFileName;
-		setLayout(new BorderLayout());
-		JPanel pnLoad = new JPanel();
-		pnLoad.setLayout(new BorderLayout());
-		
-		JLabel lblNewLabel = new JLabel("CVL File");
-		pnLoad.add(lblNewLabel, BorderLayout.WEST);
-		
-		final JTextField txtModelcvl = new JTextField();
-		String tm = cvlFileName.replaceAll("//", "/");
-		txtModelcvl.setText(tm);
-		pnLoad.add(txtModelcvl, BorderLayout.CENTER);
-		txtModelcvl.setColumns(30);
-		
-		JButton btnNewButton_1 = new JButton("Load");
-		
-		pnLoad.add(btnNewButton_1, BorderLayout.EAST);
-		
-		add(pnLoad, BorderLayout.NORTH);
-		JSplitPane splitPane = new JSplitPane();
-		splitPane.setResizeWeight(0.7);
-		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-		
-		vty = new VariabilityModel();
-		vPackage = vty.getVPackage(cvlFileName);
-		Node root = getNode(vty.getVSpecTreeRoot(vPackage));
-		
-		tree = new JTree(root);
-		tree.putClientProperty("JTree.lineStyle", "Angled");
-		NodeRenderer renderer = new NodeRenderer();
-		tree.setCellRenderer(renderer); 
-		expandAllNodes(tree, 0, tree.getRowCount());
-		tree.addMouseListener(new NodeSelectionListener(tree));
-		JScrollPane scrollPane = new JScrollPane(tree);
-		scrollPane.setBorder(new TitledBorder(null, "VSpec tree", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		splitPane.setTopComponent(scrollPane);
-	
-		//List VP in GUI
-		
-		ArrayList<VariationPoint> vpList = vty.getVariationPointList(vPackage);
-		DefaultListModel vpInJList = this.getVPListModel(vpList); 
-		
-		list = new JList(vpInJList);
-		list.setBorder(new TitledBorder(null, "Variation Point", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		splitPane.setBottomComponent(list);
-		add(splitPane, BorderLayout.CENTER);
-		
-		
-		btnNewButton_1.addActionListener(new ActionListener() {
-	        @Override
-			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-	        	JFileChooser fc = new JFileChooser();
-	        	File fi = new File("/home/DiskD/Dropbox/workspace/Process/model");
-	            fc.setCurrentDirectory(fi);
-	            
-	            int returnVal = fc.showOpenDialog(VariabilityModelGUI.this);
-	        	if (returnVal == JFileChooser.APPROVE_OPTION) {
-	        		File file = fc.getSelectedFile();
-	        		String newFileName = file.getAbsolutePath();
-	        		txtModelcvl.setText(newFileName);
-	        		
-	        		vPackage = vty.getVPackage(newFileName);
-	        		TreeModel treeModel = new DefaultTreeModel(getNode(vty.getVSpecTreeRoot(vPackage)));
-	        		tree.setModel(treeModel);
-	        		expandAllNodes(tree, 0, tree.getRowCount());
-	        		
-	        		ArrayList<VariationPoint> vpList = vty.getVariationPointList(vPackage);
-	        		DefaultListModel vpInJList = getVPListModel(vpList); 
-	        		list.setModel(vpInJList);
-	 	        	 
-	        	} else {
-	        		//log.append("Open command cancelled by user." + newline);
-	        	}
-	        	
-			}
-	      });
+		// TODO Auto-generated constructor stub
+				//this.newFileName = cvlFileName;
+				this.variabilityModelFileName = cvlFileName;
+				setLayout(new BorderLayout());
+				JPanel pnLoad = new JPanel();
+				pnLoad.setLayout(new BorderLayout());
+				
+				JLabel lblNewLabel = new JLabel("VSpec File");
+				pnLoad.add(lblNewLabel, BorderLayout.WEST);
+				
+				final JTextField txtModelcvl = new JTextField();
+				String tm = cvlFileName.replaceAll("//", "/");
+				txtModelcvl.setText(tm);
+				pnLoad.add(txtModelcvl, BorderLayout.CENTER);
+				txtModelcvl.setColumns(30);
+				
+				JButton btnNewButton_1 = new JButton("Load");
+				
+				pnLoad.add(btnNewButton_1, BorderLayout.EAST);
+				
+				add(pnLoad, BorderLayout.NORTH);
+				
+				vty = new VSpecTreeImpl();
+				vPackage = vty.getVPackage(cvlFileName);
+				Node root = getNode(vty.getVSpecTreeRoot(vPackage));
+				
+				tree = new JTree(root);
+				tree.putClientProperty("JTree.lineStyle", "Angled");
+				NodeRenderer renderer = new NodeRenderer();
+				tree.setCellRenderer(renderer); 
+				expandAllNodes(tree, 0, tree.getRowCount());
+				tree.addMouseListener(new NodeSelectionListener(tree));
+				JScrollPane scrollPane = new JScrollPane(tree);
+				scrollPane.setBorder(new TitledBorder(null, "VSpec tree", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+				add(scrollPane, BorderLayout.CENTER);
+				
+				
+				btnNewButton_1.addActionListener(new ActionListener() {
+			        @Override
+					public void actionPerformed(ActionEvent arg0) {
+						// TODO Auto-generated method stub
+			        	JFileChooser fc = new JFileChooser();
+			        	File fi = new File("/home/DiskD/Dropbox/workspace/Process/model");
+			            fc.setCurrentDirectory(fi);
+			            
+			            int returnVal = fc.showOpenDialog(VSpecTreeGUI.this);
+			        	if (returnVal == JFileChooser.APPROVE_OPTION) {
+			        		File file = fc.getSelectedFile();
+			        		String newFileName = file.getAbsolutePath();
+			        		txtModelcvl.setText(newFileName);
+			        		
+			        		vPackage = vty.getVPackage(newFileName);
+			        		TreeModel treeModel = new DefaultTreeModel(getNode(vty.getVSpecTreeRoot(vPackage)));
+			        		tree.setModel(treeModel);
+			        		expandAllNodes(tree, 0, tree.getRowCount());
+			  	        	 
+			        	} else {
+			        		//log.append("Open command cancelled by user." + newline);
+			        	}
+			        	
+					}
+			      });
 	}
-	
 	public VPackage getVPackage() {
 		// TODO Auto-generated method stub
 		return vty.getVPackage(variabilityModelFileName);
@@ -152,10 +121,7 @@ public class VariabilityModelGUI extends JPanel {
 		// TODO Auto-generated method stub
 		return vty.getVSpecList(vPackage);
 	}
-	public ArrayList<VariationPoint> getVariationPointList() {
-		// TODO Auto-generated method stub
-		return vty.getVariationPointList(vPackage);
-	}
+	
 	public Node getNode(VSpec vSpec) {
 		String type = vSpec.getClass().getSimpleName().substring(0, vSpec.getClass().getSimpleName().length()-4);
 		String groupMultiplicity;
@@ -187,34 +153,9 @@ public class VariabilityModelGUI extends JPanel {
 	        expandAllNodes(tree,rowCount, tree.getRowCount());
 	    }
 	}
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public DefaultListModel getVPListModel(ArrayList<VariationPoint> vpList) {
-		DefaultListModel vpInJList = new DefaultListModel(); 
-		for (int i = 1; i < vpList.size(); i++) {
-			//System.out.println(packageElement.size());
-			VariationPoint vp = vpList.get(i);
-			if (vp instanceof ObjectExistence) {
-				ObjectHandle oObject = ((ObjectExistence) vp).getOptionalObject();
-				vpInJList.addElement(vp.getName() + ":ObjectExistence (" + vp.getBindingVSpec().getName()+" -> " + oObject.getMOFRef()+")");
-			} 
-			else if (vp instanceof ParametricSlotAssignment) {
-				ObjectHandle oObject = ((ParametricSlotAssignment) vp).getSlotOwner();
-				vpInJList.addElement(vp.getName() + ":ParametricSlotAssignment (" + vp.getBindingVSpec().getName() + " -> "+oObject.getMOFRef() + ")");
-			}
-			else if (vp instanceof ObjectSubstitution) {
-				ObjectHandle oPlacementObject = ((ObjectSubstitution) vp).getPlacementObject();
-				ObjectHandle oReplacementObject = ((ObjectSubstitution) vp).getReplacementObject();
-				vpInJList.addElement(vp.getName()+":ObjectSubstitution (" + vp.getBindingVSpec().getName()+" -> " + oPlacementObject.getMOFRef() +
-						"," + oReplacementObject.getMOFRef() + ")");
-		
-			}
-		}
-		return vpInJList;
-	}
-
 	public static void main(String arg[]) {
 		JFrame fr = new JFrame();
-		VariabilityModelGUI frTree = new VariabilityModelGUI("model//primitive//model.cvl");
+		VSpecTreeGUI frTree = new VSpecTreeGUI("model//fractal//vspectree.cvl");
 		fr.setLayout(new BorderLayout());
 		//frTree.setLayout(new BorderLayout());
 		fr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -417,18 +358,3 @@ class Node extends DefaultMutableTreeNode {
 		return getClass().getName() + "[" + name + "/" + selected +"/" + type + "]";
 	}
 }
-//class NamedVector extends Vector {
-//	String name;
-//	public NamedVector(String name) {
-//		this.name = name;
-//	}
-//	public NamedVector(String name, Object elements[]) {
-//		this.name = name;
-//		for (int i = 0, n = elements.length; i < n; i++) {
-//			add(elements[i]);
-//		}
-//	}
-//	public String toString() {
-//		return "[" + name + "]";
-//	}
-//}

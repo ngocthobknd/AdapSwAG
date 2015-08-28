@@ -20,7 +20,7 @@ import org.ow2.fractal.f4e.fractal.Interface;
 
 import base.gui.BaseArchitectureGUI;
 import resolution.gui.ResolutionModelGUI;
-import variability.gui.VariabilityModelGUI;
+
 import cvl.Choice;
 import cvl.ChoiceResolution;
 import cvl.FragmentSubstitution;
@@ -416,7 +416,7 @@ public class ProductGeneration {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		BaseArchitectureGUI baseModel = new BaseArchitectureGUI("model//primitive//architecture.fractal");
-		VariabilityModelGUI variabilityModel = new VariabilityModelGUI("model//primitive//model.cvl");
+	//	VariabilityModelGUI variabilityModel = new VariabilityModelGUI("model//primitive//model.cvl");
 		ResolutionModelGUI resolutionModel = new ResolutionModelGUI( "model//primitive//resolution.cvl"); 
 		//BaseArchitectureGUI product = new BaseArchitectureGUI(productModelFileName);
 		

@@ -24,7 +24,6 @@ import org.ow2.fractal.f4e.fractal.Component;
 import org.ow2.fractal.f4e.fractal.Definition;
 
 import product.gui.ProductArchitectureGUI;
-import product.gui.ProductArchitectureGUI_temp;
 import ACME.Attachment;
 import ACME.ComponentInstance;
 import base.acme.implement.ACMEImpl;
@@ -32,17 +31,18 @@ import base.api.BaseArchitectureService;
 import base.fractalADL.implement.FractalADLImpl;
 import base.gui.BaseArchitectureGUI;
 import resolution.gui.ResolutionModelGUI;
-import test.ProductGeneration;
-import variability.gui.VariabilityModelGUI;
+import variationpoint.gui.VariationPointGUI;
 import verification.ResolutionModelVerification;
+import vspectree.gui.VSpecTreeGUI;
 import cvl.*;
 
 public class MainGUI {
 
 	private JFrame frame;
-	String variabilityModelFileName = "//home//DiskD//Dropbox//workspace//Process//model//fractal2//model.cvl";
-	String resolutionModelFileName = "//home//DiskD//Dropbox//workspace//Process//model//fractal2//resolution.cvl";
-	String baseModelFileName =  "//home//DiskD//Dropbox//workspace//Process//model//fractal2//architecture.fractal";
+	String variabilityModelFileName = "//home//DiskD//Dropbox//workspace//Process//model//fractal//vspectree.cvl";
+	String VPFileName = "//home//DiskD//Dropbox//workspace//Process//model//fractal//variationpoint.cvl";
+	String resolutionModelFileName = "//home//DiskD//Dropbox//workspace//Process//model//fractal//resolution.cvl";
+	String baseModelFileName =  "//home//DiskD//Dropbox//workspace//Process//model//fractal//base.fractal";
 	String productModelFileName = "";
 	
 	/**
@@ -50,7 +50,8 @@ public class MainGUI {
 	 */
 	private ProductArchitectureGUI product;
 	private BaseArchitectureGUI baseModel ;
-	private VariabilityModelGUI variabilityModel;
+	private VSpecTreeGUI variabilityModel;
+	private VariationPointGUI vpModel;
 	private ResolutionModelGUI resolutionModel;
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -123,13 +124,18 @@ public class MainGUI {
 		splitPane_1.setLeftComponent(pnVSpec);
 		pnVSpec.setLayout(new GridLayout(0, 1, 0, 0));
 		
-		JPanel pnTree = new JPanel();
-		pnVSpec.add(pnTree);
-		pnTree.setLayout(new BorderLayout(0, 0));
+		
+		
+		JSplitPane splitPane_3 = new JSplitPane();
+		splitPane_3.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		pnVSpec.add(splitPane_3, BorderLayout.CENTER);
 
 		
-		variabilityModel = new VariabilityModelGUI(variabilityModelFileName);
-		pnTree.add(variabilityModel);
+		variabilityModel = new VSpecTreeGUI(variabilityModelFileName);
+		
+		splitPane_3.setTopComponent(variabilityModel);
+		vpModel = new VariationPointGUI(VPFileName);
+		splitPane_3.setBottomComponent(vpModel);
 		
 		JPanel pnResolutionTree = new JPanel();
 		pnResolutionTree.setBorder(new TitledBorder(null, "Resolution tree", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -170,7 +176,7 @@ public class MainGUI {
 		});
 		pnCtrl.add(btnVerifyConsistency);
 		
-		JButton btnNewButton_2 = new JButton("Generate adaptative architecture");
+		JButton btnNewButton_2 = new JButton("Generate adaptative software architecture");
 		
 			
 		btnNewButton_2.addActionListener(new ActionListener() {
@@ -187,7 +193,7 @@ public class MainGUI {
 //						resolutionModel.getVSpecResolutionList());
 //				generateProduct.createProductModel(baseModel.getArchitectureDefinition(), productModelFileName);
 				ArrayList<VSpec> vSpecList = variabilityModel.getVSpecList(); 
-				ArrayList<VariationPoint> vpList =	variabilityModel.getVariationPointList();
+				ArrayList<VariationPoint> vpList =	vpModel.getVariationPointList();
 				ArrayList<VSpecResolution> vSpecResolutionList = resolutionModel.getVSpecResolutionList();
 
 				BaseArchitectureService baseArchitectureService = baseModel.baseArchitecture;
