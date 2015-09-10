@@ -1,4 +1,4 @@
-package product.gui;
+package test;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;

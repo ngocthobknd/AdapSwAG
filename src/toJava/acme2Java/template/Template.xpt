@@ -5,6 +5,24 @@
 «ENDDEFINE-»
 
 «DEFINE component FOR Component-»
+	«FILE name.toLowerCase()+"/"+name+".java"»
+package «name.toLowerCase()»;	
+«EXPAND importBinding FOR this»	
+«EXPAND importBindingImpl FOR this»
+«EXPAND importAttachment FOR this»	
+«EXPAND importAttachmentImpl FOR this»
+import org.apache.felix.ipojo.annotations.*;	
+@Component(name="«name»")
+//begin the class
+public class «name» 
+	«EXPAND implementAttachment FOR this-»
+	«EXPAND implementsBinding FOR this-»
+{
+	«EXPAND property FOREACH getProperties()-»
+	«EXPAND binding FOR this»
+	«EXPAND attachment FOR this»
+}
+	 «ENDFILE-»
 	«IF representations.size > 0-»
 		«FOREACH getRepresentations() AS representation-»
 			«IF representation.getSystems().size > 0 -»
@@ -14,30 +32,140 @@
 					«ENDIF-»
 				«ENDFOREACH-»
 			«ENDIF-»
-				
 		«ENDFOREACH-»
-	«ELSE-»
-		«FILE name.toLowerCase()+"/"+name+".java"-»
-package «name.toLowerCase()-»;		
-import org.apache.felix.ipojo.annotations.*;	
-@Component(name="«name-»")
-//begin the class
-public class «name-» {
-			«EXPAND property FOREACH getProperties()-»
-}
-		«ENDFILE-»
 	«ENDIF-»
 «ENDDEFINE-»
-
-«DEFINE implementation FOR Type-»
-«ENDDEFINE-»
-
 «DEFINE property FOR Property-»
 	@Property(name="«this.name-»")
 	«IF val ==  null-»
-		String «this.name-»;
+	String «this.name-»;
 	«ELSE-»
-		String «this.name-» = "«val-»";
+	String «this.name-» = "«val-»";
 	«ENDIF-»
-	
+«ENDDEFINE-»
+«DEFINE binding FOR Component -»
+	«LET name AS e-»
+	«IF representations.size > 0-»
+		«FOREACH getRepresentations() AS representation-»
+			«IF representation.getSystems().size > 0 -»
+				«FOREACH representation.systems AS system-»
+					«FOREACH system.getBinding() AS bind -»
+						«IF e == bind.getCompSrc() -»
+	@Requires
+	«bind.getCompDest()+"Service"» service_«bind.getPortSrc()»;
+							«FILE bind.getCompDest().toLowerCase()+"Service"+"/"+bind.getCompDest()+
+							"Service.java"»
+package « bind.getCompDest().toLowerCase()+"Service"»;
+public interface «bind.getCompDest()+
+							"Service"»{
+} 						
+							«ENDFILE-»
+						«ENDIF-»
+					«ENDFOREACH-»
+				«ENDFOREACH-»
+			«ENDIF-»
+		«ENDFOREACH-»
+	«ENDIF-»
+	«ENDLET-»	
+«ENDDEFINE-»
+«DEFINE importBinding FOR Component-»
+	«LET name AS e-»
+	«IF representations.size > 0-»
+		«FOREACH getRepresentations() AS representation-»
+			«IF representation.getSystems().size > 0 -»
+				«FOREACH representation.systems AS system-»
+					«FOREACH system.getBinding() AS bind -»
+						«IF e == bind.getCompSrc() -»
+import «bind.getCompDest().toLowerCase()+"Service"».*;	
+						«ENDIF-»
+					«ENDFOREACH-»
+					
+				«ENDFOREACH-»
+			«ENDIF-»
+		«ENDFOREACH-»
+	«ENDIF-»
+	«ENDLET-»	
+«ENDDEFINE-»
+«DEFINE implementsBinding FOR Component-»
+	«LET name AS compName-»
+		«LET this.getSystem() AS sys-»
+			«FOREACH sys.getBinding() AS bind-»
+				«IF bind.getCompDest() == name -»
+	implements «name»Service
+				«ENDIF-»
+			«ENDFOREACH-»
+		«ENDLET-»
+	«ENDLET-»
+«ENDDEFINE-»
+«DEFINE importBindingImpl FOR Component-»
+	«LET name AS compName-»
+		«LET this.getSystem() AS sys-»
+			«FOREACH sys.getBinding() AS bind»
+				«IF bind.getCompDest() == name -»
+import «name.toLowerCase()»Service.*;
+				«ENDIF-»
+			«ENDFOREACH-»
+		«ENDLET-»
+	«ENDLET-»
+«ENDDEFINE-»
+«DEFINE attachment FOR Component-»
+	«LET name AS compName-»
+		«LET this.getSystem() AS sys-»
+			«FOREACH sys.getAttachments() AS att-»
+				«IF att.getRole() == "client" && att.getComp() == compName-»
+					«LET att.getCon() AS connection-»
+						«FOREACH sys.getAttachments() AS att2-»
+							«IF att2.getCon() == connection && att2.getRole() == "server"-»
+	«att2.getComp()»Service service_«att.getPort()»;
+							«FILE att2.getComp().toLowerCase()+"Service"+"/"+att2.getComp()+"Service.java"-»
+package «att2.getComp().toLowerCase()»Service;
+public interface «att2.getComp()»Service{
+} 						
+							«ENDFILE-»
+						«ENDIF-»
+						«ENDFOREACH-»
+					«ENDLET-»
+				«ENDIF-»
+			«ENDFOREACH-»
+		«ENDLET-»		
+	«ENDLET-»
+«ENDDEFINE-»
+«DEFINE importAttachment FOR Component-»
+	«LET name AS compName-»
+		«LET this.getSystem() AS sys-»
+			«FOREACH sys.getAttachments() AS att-»
+				«IF att.getRole() == "client" && att.getComp() == compName-»
+					«LET att.getCon() AS connection-»
+						«FOREACH sys.getAttachments() AS att2-»
+							«IF att2.getCon() == connection && att2.getRole() == "server"-»
+import «att2.getComp().toLowerCase()»Service.*;
+							«ENDIF-»
+						«ENDFOREACH-»
+					«ENDLET-»
+				«ENDIF-»
+			«ENDFOREACH-»
+		«ENDLET-»		
+	«ENDLET-»
+«ENDDEFINE-»
+«DEFINE implementAttachment FOR Component-»
+	«LET name AS compName-»
+		«LET this.getSystem() AS sys-»
+			«FOREACH sys.getAttachments() AS att-»
+				«IF att.getRole() == "server" && att.getComp() == compName-»
+	implements «name»Service
+				«ENDIF-»
+			«ENDFOREACH-»
+		«ENDLET-»		
+	«ENDLET-»
+«ENDDEFINE-»
+«DEFINE importAttachmentImpl FOR Component-»
+	«LET name AS compName-»
+		«LET this.getSystem() AS sys-»
+			«FOREACH sys.getAttachments() AS att-»
+				«IF att.getRole() == "server" && att.getComp() == compName-»
+import «name.toLowerCase()»Service.*;
+				«ENDIF-»
+			«ENDFOREACH-»
+		«ENDLET-»		
+	«ENDLET-»
 «ENDDEFINE-»

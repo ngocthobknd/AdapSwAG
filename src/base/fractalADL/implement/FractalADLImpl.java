@@ -88,14 +88,25 @@ public class FractalADLImpl extends BaseArchitecture {//implements BaseArchitect
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		BaseArchitectureService m = new FractalADLImpl();
-		Definition def = m.getArchitectureDefinition("model//composite2//architecture.fractal");
+		FractalADLImpl m = new FractalADLImpl();
+		Definition def = m.getArchitectureDefinition("model//fractal//base.fractal");
 		ArrayList<Component> compList = m.getComponentList(def);
 		for (int i = 0; i < compList.size(); i++) {
-			System.out.println(compList.get(i).getName());
+			//System.out.println(compList.get(i).getName());
+			System.out.println(m.getComponentFullName(compList.get(i)));
 		}
 
 	}
-	
-
+	String getComponentFullName(Component comp) {
+		String str = comp.getName();
+		if (comp.getParent() instanceof Component) {
+			Component tmp = (Component) comp.getParent();
+			str = getComponentFullName(tmp) + "." + str;
+		} else if (comp.getParent() instanceof Definition) {
+			Definition def = (Definition)comp.getParent();
+			str = def.getName() + "." + str; 
+		}
+		
+		return str;
+	}
 }

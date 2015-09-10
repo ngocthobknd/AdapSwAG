@@ -62,7 +62,7 @@ public class ACME2Java {
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		new ACME2Java("model//acme2//generatedbase.acme");
+		new ACME2Java("model//acme2//base.acme");
 	}
 
 }

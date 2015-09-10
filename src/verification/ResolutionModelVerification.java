@@ -1,5 +1,6 @@
 package verification;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -23,7 +24,7 @@ public class ResolutionModelVerification {
 	
 	ArrayList<VSpec> vSpecList = new ArrayList<VSpec>();
 	ArrayList<VSpecResolution> resolutionList = new ArrayList<VSpecResolution>();
-	
+	String [] processTime = {"requirement", "design", "configuration", "deployment", "runtime"};
 	public String messageAlert = "";
 	public ResolutionModelVerification(ArrayList<VSpec> vSpecList, ArrayList<VSpecResolution> resolutionList) {
 		this.vSpecList = vSpecList;
@@ -51,6 +52,11 @@ public class ResolutionModelVerification {
 		
 		for (Iterator<VSpec> iter = vSpecList.listIterator(); iter.hasNext();) {
 			VSpec vSpec = iter.next();
+			if ((vSpec.getResolutionTime() != null) && 
+				(indexOfString(processTime, vSpec.getResolutionTime()) > indexOfString(processTime, vSpec.getAvailabilityTime().toString()) )) {
+				messageAlert = "conflit resolutionTime and availabilityTime";
+				return false;
+			}
 			if (vSpec instanceof Choice) {
 				Choice vspChoice = (Choice) vSpec;
 				List<VSpec> vSpecChilds = new ArrayList<VSpec>();
@@ -121,6 +127,15 @@ public class ResolutionModelVerification {
 		}
 		return result;
 	}
+	int indexOfString(String [] strArr, String str) {
+		int  index = 0;
+		for (int i = 0; i < strArr.length; i++) {
+			if (strArr[i].equals(str)) {
+				return i;
+			}
+		}
+		return index;
+	}
 	public VSpecResolution returnVSpecResolutionByVSpec(VSpec vSpec, ArrayList<VSpecResolution> resolutionList) {
 		
 		VSpecResolution vSpecresolution = null;
@@ -132,8 +147,8 @@ public class ResolutionModelVerification {
 		return vSpecresolution;
 	}
 	public static void main (String [] args) {
-		VSpecTreeGUI variabilityModel = new VSpecTreeGUI("model//composite2//model.cvl");
-		ResolutionModelGUI resolutionModel = new ResolutionModelGUI( "model//composite2//resolution.cvl"); 
+		VSpecTreeGUI variabilityModel = new VSpecTreeGUI("model//vspectree.cvl");
+		ResolutionModelGUI resolutionModel = new ResolutionModelGUI( "model//resolution.cvl"); 
 		System.out.println(new ResolutionModelVerification(variabilityModel.getVSpecList(), resolutionModel.getVSpecResolutionList()).verifyRM());
 	}
 	

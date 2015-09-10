@@ -103,8 +103,9 @@ public class FractalGeneration {
 			ArrayList<Binding> sourceBindingList) {
 		for (int i = 0; i < sourceComponentList.size(); i++ ){
 			VSpec vSpec = returnVSpecByComponentName(sourceComponentList.get(i).getName(), vpList, vSpecList);
-			
+			//VSpec vSpec = returnVSpecByComponentName(getComponentFullName(sourceComponentList.get(i)), vpList, vSpecList);
 			VariationPoint vp = returnVPByComponent(sourceComponentList.get(i).getName(), vpList);
+			//VariationPoint vp = returnVPByComponent(getComponentFullName(sourceComponentList.get(i)), vpList);
 			if (vSpec instanceof Choice) {
 				Choice choice = (Choice) vSpec;
 				VSpecResolution vSpecResolution = returnVSpecResolutionByComponentName(sourceComponentList.get(i).getName(), vpList, vSpecResolutionList);
@@ -154,7 +155,6 @@ public class FractalGeneration {
 									comp_temp.getAttributesController().getAttributes().add(attribute);
 								}
 							}
-							
 						}
 						//System.out.println(comp_temp.getName());
 						component.getSubComponents().add(comp_temp);
@@ -253,10 +253,10 @@ public class FractalGeneration {
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		BaseArchitectureGUI baseModel = new BaseArchitectureGUI("model//fractal//architecture.fractal");
-		VSpecTreeGUI variabilityModel = new VSpecTreeGUI("model//fractal//vspectree.cvl");
+		BaseArchitectureGUI baseModel = new BaseArchitectureGUI("model//fractal//base.fractal");
+		VSpecTreeGUI variabilityModel = new VSpecTreeGUI("model//vspectree.cvl");
 		VariationPointGUI variationpointModel = new VariationPointGUI("model//fractal//variationpoint.cvl");
-		ResolutionModelGUI resolutionModel = new ResolutionModelGUI( "model//fractal//resolution.cvl"); 
+		ResolutionModelGUI resolutionModel = new ResolutionModelGUI( "model//resolution.cvl"); 
 		//BaseArchitectureGUI product = new BaseArchitectureGUI(productModelFileName);
 		Definition definition = baseModel.getDefinition();
 		FractalGeneration generateProduct = new FractalGeneration(variabilityModel.getVSpecList(),
@@ -418,5 +418,19 @@ public class FractalGeneration {
 		if (vp != null) vSpec = returnVSpecByVP(vp, vSpecList);
 		return vSpec;
 	}
+	
+	String getComponentFullName(Component comp) {
+		String str = comp.getName();
+		if (comp.getParent() instanceof Component) {
+			Component tmp = (Component) comp.getParent();
+			str = getComponentFullName(tmp) + "." + str;
+		} else if (comp.getParent() instanceof Definition) {
+			Definition def = (Definition)comp.getParent();
+			str = def.getName() + "." + str; 
+		}
+		
+		return str;
+	}
+	
 	
 }
