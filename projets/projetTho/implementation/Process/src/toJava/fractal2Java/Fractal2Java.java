@@ -55,11 +55,11 @@ public class Fractal2Java {
         XpandFacade facade = XpandFacade.create(execCtx);
         facade.evaluate(templatePath, definition);
 	    
-        System.out.println("End generate code");
+        System.out.println("End generate code from fractal");
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		new Fractal2Java("model//fractal2//generatedarchitecture.fractal");
+		new Fractal2Java("model//fractal//generatedbase.fractal");
 	}
 
 }

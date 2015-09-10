@@ -55,7 +55,7 @@ public class VariationPointImpl implements VariationPointService {
 	}
 	public static void main(String arg[]) {
 		VariationPointImpl vm = new VariationPointImpl();
-		VPackage vpk = vm.getVPackage("model//fractal//variationpoint.cvl");
+		VPackage vpk = vm.getVPackage("model//fractal//variationpoint2.cvl");
 		ArrayList<VariationPoint> vsplist = vm.getVariationPointList(vpk);
 		for (int i = 0; i < vsplist.size(); i++) {
 			System.out.println(vsplist.get(i).getName());

@@ -15,7 +15,7 @@ Definition getDefinition(Component this) :
 Component getComponentOfInterface(Interface this) : 
 	eContainer;
 
-Component getComponentOfComponent(Component this) : 
+Component getComponentParentOfComponent(Component this) : 
 	eContainer;
 			
 List[Component] getComponentList(Definition this) : 

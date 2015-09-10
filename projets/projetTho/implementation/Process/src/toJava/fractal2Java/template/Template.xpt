@@ -7,104 +7,102 @@
 	«EXPAND component FOREACH getComponentList()-»
 «ENDDEFINE»
 «DEFINE component FOR Component»
-	«IF subComponents.size > 0 »
-		«EXPAND component FOREACH subComponents»
-	«ELSE»
-		«FILE name.toLowerCase()+"/"+name+".java"-»
+	«FILE name.toLowerCase()+"/"+name+".java"-»
 package «name.toLowerCase()»;		
-«EXPAND packageImplementation FOREACH getInterfaceList()-»
+«EXPAND importUsingInterface FOR this»
+«EXPAND importImplement FOR this»
+«EXPAND importBinding FOR this»
 import org.apache.felix.ipojo.annotations.*;	
 @Component(name="«name»")
 //begin the class
-public class «name»	«EXPAND implementation FOREACH getInterfaceList()-»
+public class «name»	
+	«EXPAND implement FOR this»
 {
 		//declare interface
-   		«EXPAND interfaceInstance FOREACH getInterfaceList()»
    		«EXPAND attributes FOREACH getAttributeList()»
+   		«EXPAND usingInterface FOR this»
+   		«EXPAND binding FOR this»
 }
 		«ENDFILE-»
+	«IF subComponents.size > 0 »
+		«EXPAND component FOREACH subComponents»
 	«ENDIF-»
 «ENDDEFINE-»
-«DEFINE packageImplementation FOR Interface-» 
-	«IF this.signature != null -»
-		«IF this.role.toString() == "server"-»
-import «signature.toLowerCase()».*;
-		«ENDIF-»
-	«ELSE-»
-		«IF this.role.toString() != "server"-»
-			«LET this AS thisInterface-»
-			«LET this.getComponentOfInterface() AS thisComponent-»
-				«IF thisComponent.getDefinition() != null-»
-					«LET thisComponent.getDefinition() AS definition-»
-						«FOREACH definition.getBindingOfDefinition() AS binding-»
-						«IF thisComponent.name == binding.client && thisInterface == binding.clientInterface-»
-import «binding.serverInterface.signature.toLowerCase()».*;
-						«ENDIF-»	
-						«ENDFOREACH-»
-					«ENDLET-»
-				«ELSEIF thisComponent.getComponentOfComponent() !=null-»
-					«LET thisComponent.getComponentOfComponent() AS component_t-»
-						«FOREACH component_t.getBinding() AS binding-»
-						«IF thisComponent.name == binding.client && thisInterface == binding.clientInterface-»
-import «binding.serverInterface.signature.toLowerCase()».*;
-						«ENDIF-»	
-					«ENDFOREACH-»
-					«ENDLET-»
-				«ENDIF-»
-			«ENDLET-»
-			«ENDLET-»
-		«ENDIF-»
-	«ENDIF-»	
-«ENDDEFINE-»
-«DEFINE implementation FOR Interface-»
-	«IF this.role.toString() == "server"-»	
-		«IF this.signature != null -»
-implements «this.signature»
-		«ENDIF-»
-	«ENDIF-»
-«ENDDEFINE-»
-
-«DEFINE interfaceInstance FOR Interface-»
-	«IF this.signature != null -»
-		«IF this.role.toString() == "server"-»
-				«FILE signature.toLowerCase()+"/"+this.signature+".java"-»
-package «signature.toLowerCase()»;
-public interface «this.signature» {
-} 
-				«ENDFILE-»
-		«ELSE-»
-			@Requires
-			«this.signature» «this.name»;
-		«ENDIF-»
-	«ELSE-»
-		«IF this.role.toString() != "server" -»
-			«LET this AS thisInterface-»
-			«LET this.getComponentOfInterface() AS thisComponent-»
-				«IF thisComponent.getDefinition() != null-»
-					«LET thisComponent.getDefinition() AS definition-»
-							«FOREACH definition.getBindingOfDefinition() AS binding-»
-									«IF thisComponent.name == binding.client && thisInterface == binding.clientInterface-»
-	@Requires
-	«binding.serverInterface.signature» «thisInterface.name»_«binding.serverInterface.signature.toLowerCase()»;
-									«ENDIF-»	
-							«ENDFOREACH-»
-					«ENDLET-»
-				«ELSEIF thisComponent.getComponentOfComponent() !=null-»
-					«LET thisComponent.getComponentOfComponent() AS component_t-»
-							«FOREACH component_t.getBinding() AS binding-»
-								«IF thisComponent.name == binding.client && thisInterface == binding.clientInterface-»
-	«binding.serverInterface.signature» «thisInterface.name»_«binding.serverInterface.signature.toLowerCase()»;
-								«ENDIF-»	
-							«ENDFOREACH-»
-					«ENDLET-»
-				«ENDIF-»
-			«ENDLET-»
-			«ENDLET-»
-		«ENDIF-»
-	«ENDIF-»
-«ENDDEFINE-»
+«REM»attribute«ENDREM»
 «DEFINE attributes FOR Attribute-»
 	@Property(name="«this.name»")
 	String «this.name»;
 «ENDDEFINE-»
-
+«DEFINE usingInterface FOR Component-»
+		«FOREACH this.getInterfaceList() AS interface-»
+			«IF interface.role.toString() != "server" && interface.signature != null -»
+	@Requires
+	«interface.signature» service_«interface.name»;				
+			«ELSE-»
+				«FILE this.name.toLowerCase()+"Service"+"/"+interface.signature+".java"-»
+package «this.name.toLowerCase()+"Service"»;
+public interface «interface.signature» {
+}
+				«ENDFILE-»	
+			«ENDIF-»
+		«ENDFOREACH-»
+«ENDDEFINE-»
+«DEFINE importUsingInterface FOR Component-»
+	«FOREACH this.getInterfaceList() AS interface-»
+			«IF interface.role.toString() != "server" && interface.signature != null -»			
+				«IF this.getDefinition() != null-»
+					«LET this.getDefinition() AS define-»
+						«FOREACH define.getComponentList() AS complist-»
+							«FOREACH complist.getInterfaceList() AS interfacelist-»
+								«IF interface.signature == interfacelist.signature && 
+										interfacelist.role.toString() == "server"-»					
+import «complist.name.toLowerCase()+"Service.*"»;	
+								«ENDIF-»
+							«ENDFOREACH-»
+						«ENDFOREACH-»
+					«ENDLET-»
+				«ELSE-»
+				«IF this.getComponentParentOfComponent() != null-»
+					«LET this.getComponentParentOfComponent() AS define-»
+						«FOREACH define.getSubComponentList() AS complist-»
+							«FOREACH complist.getInterfaceList() AS interfacelist-»
+								«IF interface.signature == interfacelist.signature-»
+import «complist.name.toLowerCase()+"Service.*"»;	
+								«ENDIF-»
+							«ENDFOREACH-»
+						«ENDFOREACH-»
+					«ENDLET-»
+				«ENDIF-»
+				«ENDIF-»
+			«ENDIF-»
+	«ENDFOREACH-»
+«ENDDEFINE-»
+«DEFINE implement FOR Component -»
+		«FOREACH this.getInterfaceList() AS interface-»
+			«IF interface.role.toString() == "server" && interface.signature != null -»
+	implements «interface.signature»
+			«ENDIF-»
+		«ENDFOREACH-»
+«ENDDEFINE-»
+«DEFINE importImplement FOR Component -»
+		«FOREACH this.getInterfaceList() AS interface-»
+			«IF interface.role.toString() == "server" && interface.signature != null -»
+import «this.name.toLowerCase()»Service.*;
+			«ENDIF-»
+		«ENDFOREACH-»
+«ENDDEFINE-»
+«DEFINE binding FOR Component-»
+	«FOREACH this.getBinding() AS bind-»
+		«IF bind.client == this.name»
+	@Requires
+	«bind.serverInterface.signature» using«bind.serverInterface.signature»;	
+		«ENDIF»
+	«ENDFOREACH-»
+«ENDDEFINE-»
+«DEFINE importBinding FOR Component-»
+	«FOREACH this.getBinding() AS bind-»
+		«IF bind.client == this.name-»
+import	«bind.server.toLowerCase()»Service.«bind.serverInterface.signature»;	
+		«ENDIF-»
+	«ENDFOREACH-»
+«ENDDEFINE-»

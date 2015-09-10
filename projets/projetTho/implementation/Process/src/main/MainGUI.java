@@ -39,10 +39,12 @@ import cvl.*;
 public class MainGUI {
 
 	private JFrame frame;
-	String variabilityModelFileName = "//home//DiskD//Dropbox//workspace//Process//model//fractal//vspectree.cvl";
+	String variabilityModelFileName = "//home//DiskD//Dropbox//workspace//Process//model//vspectree.cvl";
+	String resolutionModelFileName = "//home//DiskD//Dropbox//workspace//Process//model//resolution.cvl";
+	
 	String VPFileName = "//home//DiskD//Dropbox//workspace//Process//model//fractal//variationpoint.cvl";
-	String resolutionModelFileName = "//home//DiskD//Dropbox//workspace//Process//model//fractal//resolution.cvl";
 	String baseModelFileName =  "//home//DiskD//Dropbox//workspace//Process//model//fractal//base.fractal";
+	
 	String productModelFileName = "";
 	
 	/**

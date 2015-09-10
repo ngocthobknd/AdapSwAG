@@ -125,7 +125,7 @@ public class VariationPointGUI extends JPanel {
 	}
 	public static void main(String arg[]) {
 		JFrame fr = new JFrame();
-		VariationPointGUI frTree = new VariationPointGUI("model//acme//variationpoint.cvl");
+		VariationPointGUI frTree = new VariationPointGUI("model//fractal//variationpoint2.cvl");
 		fr.setLayout(new BorderLayout());
 		//frTree.setLayout(new BorderLayout());
 		fr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
