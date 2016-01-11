@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cvl:VPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cvl="http:///cvl.ecore" name="variationpoint">
+  <packageElement xsi:type="cvl:ObjectExistence" name="ClientVP">
+    <bindingVSpec xsi:type="cvl:Choice" href="../vspectree.cvl#//@packageElement.0/@child.0"/>
+    <bindingChoice href="../vspectree.cvl#//@packageElement.0/@child.0"/>
+    <optionalObject MOFRef="base.Client"/>
+  </packageElement>
+  <packageElement xsi:type="cvl:ParametricSlotAssignment" name="setValue" slotIdentifier="">
+    <bindingVSpec xsi:type="cvl:Variable" href="../vspectree.cvl#//@packageElement.0/@child.0/@child.0"/>
+    <bindingVariable href="../vspectree.cvl#//@packageElement.0/@child.0/@child.0"/>
+    <slotOwner MOFRef="base.Client.synchrone"/>
+  </packageElement>
+  <packageElement xsi:type="cvl:ObjectExistence" name="ServerVP">
+    <bindingVSpec xsi:type="cvl:Choice" href="../vspectree.cvl#//@packageElement.0/@child.1"/>
+    <bindingChoice href="../vspectree.cvl#//@packageElement.0/@child.1"/>
+    <optionalObject MOFRef="base.Server"/>
+  </packageElement>
+  <packageElement xsi:type="cvl:ObjectExistence" name="Server1VP">
+    <bindingVSpec xsi:type="cvl:Choice" href="../vspectree.cvl#//@packageElement.0/@child.1/@child.0"/>
+    <bindingChoice href="../vspectree.cvl#//@packageElement.0/@child.1/@child.0"/>
+    <optionalObject MOFRef="base.Server.Server1"/>
+  </packageElement>
+  <packageElement xsi:type="cvl:ObjectExistence" name="Server2VP">
+    <bindingVSpec xsi:type="cvl:Choice" href="../vspectree.cvl#//@packageElement.0/@child.1/@child.1"/>
+    <bindingChoice href="../vspectree.cvl#//@packageElement.0/@child.1/@child.1"/>
+    <optionalObject MOFRef="base.Server.Server2"/>
+  </packageElement>
+</cvl:VPackage>

@@ -10,10 +10,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.ow2.fractal.f4e.fractal.Binding;
-import org.ow2.fractal.f4e.fractal.Component;
-import org.ow2.fractal.f4e.fractal.Definition;
-import org.ow2.fractal.f4e.fractal.FractalPackage;
+import fractal.fractal.*;
 
 import base.api.BaseArchitectureService;
 import base.implement.BaseArchitecture;
@@ -93,7 +90,7 @@ public class FractalADLImpl extends BaseArchitecture {//implements BaseArchitect
 		ArrayList<Component> compList = m.getComponentList(def);
 		for (int i = 0; i < compList.size(); i++) {
 			//System.out.println(compList.get(i).getName());
-			System.out.println(m.getComponentFullName(compList.get(i)));
+			java.lang.System.out.println(m.getComponentFullName(compList.get(i)));
 		}
 
 	}

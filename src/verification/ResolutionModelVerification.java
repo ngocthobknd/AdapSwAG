@@ -7,6 +7,7 @@ import java.util.List;
 
 import cvl.Choice;
 import cvl.ChoiceResolution;
+import cvl.ChoiceResolutuion;
 import cvl.MultiplicityInterval;
 import cvl.VInstance;
 import cvl.VSpec;

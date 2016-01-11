@@ -12,13 +12,9 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.ow2.fractal.f4e.fractal.Attribute;
-import org.ow2.fractal.f4e.fractal.Binding;
-import org.ow2.fractal.f4e.fractal.Component;
-import org.ow2.fractal.f4e.fractal.Definition;
-import org.ow2.fractal.f4e.fractal.FractalFactory;
-import org.ow2.fractal.f4e.fractal.Interface;
 
+import fractal.fractal.*;
+import fractal.fractal.Definition;
 import resolution.gui.ResolutionModelGUI;
 import vspectree.gui.VSpecTreeGUI;
 import variationpoint.gui.VariationPointGUI;
@@ -407,7 +403,7 @@ public class FractalGeneration {
 					return vSpecList.get(i);
 				}
 			}catch (Exception e) {
-				System.out.println(vSpecList.get(i)+"::::::::"+vp.getBindingVSpec());
+				java.lang.System.out.println(vSpecList.get(i)+"::::::::"+vp.getBindingVSpec());
 			}
 		}
 		return vSpec;

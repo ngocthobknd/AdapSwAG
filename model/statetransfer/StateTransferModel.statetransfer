@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ASCII"?>
+<statetransfer.org:StateTransferModel
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:statetransfer.org="http://statetransfer.org"
+    xsi:schemaLocation="http://statetransfer.org statetransfer.ecore">
+  <points>
+    <srcVariable
+          id="1"
+          name="buf">
+        <variableHandle
+            mofRef="Server1.buffer"/>
+        <type
+            xsi:type="statetransfer.org:PrimitiveType"/>
+      </srcVariable>
+      <dstVariable
+          name="buf">
+        <variableHandle
+            mofRef="Server2.buffer"/>
+        <type
+            xsi:type="statetransfer.org:PrimitiveType"/>
+      </dstVariable>
+  </points>
+</statetransfer.org:StateTransferModel>

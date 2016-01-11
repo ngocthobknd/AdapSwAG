@@ -17,9 +17,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import org.ow2.fractal.f4e.fractal.Binding;
-import org.ow2.fractal.f4e.fractal.Component;
-import org.ow2.fractal.f4e.fractal.Definition;
+import fractal.fractal.*;
 
 import ACME.Attachment;
 import ACME.ComponentInstance;
