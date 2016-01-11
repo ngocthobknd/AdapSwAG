@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="src-gen"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="/home/DiskD/Dropbox/workspace/Process/variability.jar"/>
-	<classpathentry kind="lib" path="org.eclipse.core.resources_3.7.101.v20120125-1505.jar"/>
-	<classpathentry kind="lib" path="org.eclipse.emf.common_2.7.0.v20120127-1122.jar"/>
-	<classpathentry kind="lib" path="org.eclipse.emf.ecore_2.7.0.v20120127-1122.jar"/>
-	<classpathentry kind="lib" path="org.eclipse.emf.edit_2.7.2.v20120130-0943.jar"/>
-	<classpathentry kind="lib" path="org.eclipse.emf.ecore.xmi_2.7.0.v20120127-1122.jar"/>
-	<classpathentry kind="lib" path="cvl.jar"/>
-	<classpathentry kind="lib" path="fractal.jar"/>
+	<classpathentry kind="lib" path="/home/DiskD/Eclipse/linux_eclipse_xtext/eclipse/plugins/org.eclipse.xpand_2.0.0.v201406030414.jar"/>
+	<classpathentry kind="lib" path="/home/DiskD/Eclipse/linux_eclipse_xtext/eclipse/plugins/org.eclipse.xtend.typesystem.emf_2.0.0.v201406030414.jar"/>
+	<classpathentry kind="lib" path="/home/DiskD/Eclipse/linux_eclipse_xtext/eclipse/plugins/org.eclipse.xtend_2.0.0.v201406030414.jar"/>
+	<classpathentry kind="lib" path="/home/DiskD/Eclipse/linux_eclipse_xtext/eclipse/plugins/org.apache.commons.logging_1.1.1.v201101211721.jar"/>
+	<classpathentry kind="lib" path="/home/DiskD/Eclipse/linux_eclipse_xtext/eclipse/plugins/org.eclipse.emf.mwe.utils_1.3.4.v201409021027.jar"/>
+	<classpathentry kind="lib" path="/home/DiskD/Eclipse/linux_eclipse_xtext/eclipse/plugins/org.eclipse.emf.mwe.core_1.3.4.v201409021027.jar"/>
+	<classpathentry kind="lib" path="/home/DiskD/Eclipse/linux_eclipse_xtext/eclipse/plugins/org.eclipse.core.resources_3.9.1.v20140825-1431.jar"/>
+	<classpathentry kind="lib" path="/home/DiskD/Eclipse/linux_eclipse_xtext/eclipse/plugins/org.antlr.runtime_3.2.0.v201101311130.jar"/>
+	<classpathentry kind="lib" path="/home/DiskD/Eclipse/linux_eclipse_xtext/eclipse/plugins/com.ibm.icu_52.1.1.v201501240615.jar"/>
+	<classpathentry kind="lib" path="/home/DiskD/Eclipse/linux_eclipse_xtext/eclipse/plugins/org.eclipse.emf.mwe2.runtime_2.7.0.v201409021027.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.core.resources_3.7.101.v20120125-1505.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.emf.ecore_2.7.0.v20120127-1122.jar"/>
+	<classpathentry kind="lib" path="lib/acme.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.emf.common_2.10.1.v20150123-0348.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.emf.ecore.xmi_2.10.2.v20150123-0348.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.emf.edit_2.10.1.v20150123-0452.jar"/>
+	<classpathentry kind="lib" path="lib/plan.jar"/>
+	<classpathentry kind="lib" path="lib/cvl.jar"/>
+	<classpathentry kind="lib" path="lib/fractal.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

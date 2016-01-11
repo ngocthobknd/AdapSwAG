@@ -35,7 +35,7 @@ import cvl.VariableValueAssignment;
 import cvl.VariationPoint;
 import resolution.api.ResolutionModelService;
 import resolution.implement.ResolutionModel;
-import test.tree.ResolutionTree;
+
 
 
 

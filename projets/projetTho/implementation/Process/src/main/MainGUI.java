@@ -19,9 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.border.TitledBorder;
 
-import org.ow2.fractal.f4e.fractal.Binding;
-import org.ow2.fractal.f4e.fractal.Component;
-import org.ow2.fractal.f4e.fractal.Definition;
+import fractal.fractal.*;
 
 import product.gui.ProductArchitectureGUI;
 import ACME.Attachment;
@@ -172,7 +170,7 @@ public class MainGUI {
 							"Verification", mc);
 				} else JOptionPane.showMessageDialog (null, "Errors: "+rmv.messageAlert,
 						"Verification", mc);
-				System.out.println("Result of verification: "+
+				java.lang.System.out.println("Result of verification: "+
 						(new ResolutionModelVerification(variabilityModel.getVSpecList(), resolutionModel.getVSpecResolutionList())).verifyRM());
 			}
 		});

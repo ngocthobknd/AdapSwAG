@@ -15,8 +15,9 @@ import org.eclipse.xpand2.output.Outlet;
 import org.eclipse.xpand2.output.Output;
 import org.eclipse.xpand2.output.OutputImpl;
 import org.eclipse.xtend.typesystem.emf.EmfRegistryMetaModel;
-import org.ow2.fractal.f4e.fractal.Definition;
-import org.ow2.fractal.f4e.fractal.FractalPackage;
+
+import fractal.fractal.*; 
+
 import org.eclipse.emf.mwe.utils.DirectoryCleaner;
 public class Fractal2Java {
 
@@ -55,7 +56,7 @@ public class Fractal2Java {
         XpandFacade facade = XpandFacade.create(execCtx);
         facade.evaluate(templatePath, definition);
 	    
-        System.out.println("End generate code from fractal");
+        java.lang.System.out.println("End generate code from fractal");
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub

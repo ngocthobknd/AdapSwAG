@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cvl:VPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cvl="http:///cvl.ecore" name="variability">
+  <packageElement xsi:type="cvl:Choice" name="Service" resolutionTime="" isImpliedByParent="true">
+    <child xsi:type="cvl:Choice" name="Client" resolutionTime="runtime" availabilityTime="runtime" isImpliedByParent="true">
+      <child xsi:type="cvl:Variable" name="synchrone" >
+        <type href="type.cvl#/"/>
+      </child>
+    </child>
+    <child xsi:type="cvl:Choice" name="Server" resolutionTime="" availabilityTime="design" isImpliedByParent="true">
+      <groupMultiplicity upper="1" lower="1"/>
+      <child xsi:type="cvl:Choice" name="Server1" resolutionTime="" availabilityTime="runtime" defaultResolution="true"/>
+      <child xsi:type="cvl:Choice" name="Server2" resolutionTime="" availabilityTime="runtime"/>
+    </child>
+  </packageElement>
+</cvl:VPackage>

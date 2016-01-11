@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ASCII"?>
+<plan.org:LocalPlan xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:plan.org="http://plan.org">
+  <activation>
+    <actions id="0" component="base.ClientServer.Server.Server2"/>
+  </activation>
+  <disconnection>
+    <actions id="0" componentSrc="Server" componentDst="base.ClientServer.Server.Server1"/>
+  </disconnection>
+  <connection>
+    <actions id="0" componentSrc="Server" componentDst="base.ClientServer.Server.Server2"/>
+  </connection>
+  <stateTransfer>
+    <points href="model//statetransfer//StateTransferModel.statetransfer#//@points.0"/>
+  </stateTransfer>
+  <deactivation>
+    <actions id="0" component="base.ClientServer.Server.Server2"/>
+  </deactivation>
+</plan.org:LocalPlan>
